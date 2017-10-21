@@ -25,31 +25,33 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Exceptions;
-
-
-use Throwable;
+namespace DownloadApp\App\DownloadBundle\Service;
+use League\Flysystem\FilesystemInterface;
 
 /**
- * Class MissingDownloadServiceException
- * @package Benkle\DownloadApp\DownloadBundle\Exceptions
+ * Trait SafeFilenameTrait
+ *
+ * We don't want to overwrite an existing file, so we use this trait to produce safe filenames.
+ *
+ * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class MissingDownloadServiceException extends \Exception
+trait SafeFilenameTrait
 {
-    const CODE = 224465;
-
     /**
-     * MissingDownloadServiceException constructor.
-     * @param string $class
-     * @param Throwable|null $previous
+     * Extend a filename, so it won't clash with an existing file.
+     *
+     * @param string $filename
+     * @param FilesystemInterface $fs
+     * @return string
      */
-    public function __construct($class = "", Throwable $previous = null)
+    protected function findSafeFilename(string $filename, FilesystemInterface $fs): string
     {
-        parent::__construct(
-            sprintf('No download service found for class "%s"', $class),
-            self::CODE,
-            $previous
-        );
+        $i = 1;
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $basename = pathinfo($filename, PATHINFO_FILENAME);
+        while ($fs->has($filename)) {
+            $filename = implode('.', [$basename, $i++, $extension]);
+        }
+        return $filename;
     }
-
 }

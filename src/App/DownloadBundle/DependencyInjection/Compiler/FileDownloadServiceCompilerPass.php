@@ -1,6 +1,6 @@
 <?php
 
-namespace Benkle\DownloadApp\DownloadBundle\DependencyInjection\Compiler;
+namespace DownloadApp\App\DownloadBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

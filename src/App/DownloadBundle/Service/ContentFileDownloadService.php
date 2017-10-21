@@ -25,33 +25,35 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Service;
+
+use DownloadApp\App\DownloadBundle\Entity\ContentFile;
+use DownloadApp\App\DownloadBundle\Entity\File;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Trait SafeFilenameTrait
+ * Class ContentFileDownloadService
  *
- * We don't want to overwrite an existing file, so we use this trait to produce safe filenames.
+ * This service "downloads" content files.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-trait SafeFilenameTrait
+class ContentFileDownloadService implements FileDownloadServiceInterface
 {
+    use SafeFilenameTrait;
+
     /**
-     * Extend a filename, so it won't clash with an existing file.
+     * Download a file entity.
      *
-     * @param string $filename
+     * @param File $file
      * @param FilesystemInterface $fs
-     * @return string
+     * @return string The final filename
      */
-    protected function findSafeFilename(string $filename, FilesystemInterface $fs): string
+    public function download(File $file, FilesystemInterface $fs): string
     {
-        $i = 1;
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $basename = pathinfo($filename, PATHINFO_FILENAME);
-        while ($fs->has($filename)) {
-            $filename = implode('.', [$basename, $i++, $extension]);
-        }
+        /** @var ContentFile $file */
+        $filename = $this->findSafeFilename($file->getFilename(), $fs);
+        $fs->put($filename, $file->getContent());
         return $filename;
     }
 }

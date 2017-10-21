@@ -24,31 +24,49 @@
  * THE SOFTWARE.
  */
 
-namespace Benkle\DownloadApp\DownloadBundle;
 
-use Benkle\DownloadApp\DownloadBundle\DependencyInjection\Compiler\FileDownloadServiceCompilerPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+namespace DownloadApp\App\DownloadBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class BenkleDownloadAppDownloadBundle
- * @package Benkle\DownloadApp\DownloadBundle
+ * Class ContentFile
+ *
+ * These files aren't really downloaded, but rather already contain their content in the db.
+ *
+ * @package Benkle\DownloadApp\DownloadBundle\Entity
+ * @ORM\Entity()
+ * @ORM\Table(name="download_file_content")
  */
-class BenkleDownloadAppDownloadBundle extends Bundle
+class ContentFile extends File
 {
     /**
-     * Builds the bundle.
-     *
-     * It is only ever called once when the cache is empty.
-     *
-     * This method can be overridden to register compilation passes,
-     * other extensions, ...
-     *
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @var string
+     * @ORM\Column(type="text")
+     * @Serializer\Expose()
      */
-    public function build(ContainerBuilder $container)
+    private $content;
+
+    /**
+     * Get the content.
+     *
+     * @return string
+     */
+    public function getContent(): string
     {
-        parent::build($container);
-        $container->addCompilerPass(new FileDownloadServiceCompilerPass());
+        return $this->content;
+    }
+
+    /**
+     * Set the content.
+     *
+     * @param string $content
+     * @return $this
+     */
+    public function setContent(string $content): ContentFile
+    {
+        $this->content = $content;
+        return $this;
     }
 }

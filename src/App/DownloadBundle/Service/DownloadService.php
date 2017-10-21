@@ -25,12 +25,18 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Service;
 
 
-use Benkle\DownloadApp\DownloadBundle\Entity\File;
-use Benkle\DownloadApp\DownloadBundle\Exceptions\MissingDownloadServiceException;
+use DownloadApp\App\DownloadBundle\Entity\Download;
+use DownloadApp\App\DownloadBundle\Entity\File;
+use DownloadApp\App\DownloadBundle\Exceptions\MissingDownloadServiceException;
 use Doctrine\ORM\EntityManager;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Exception;
+use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 
 /**
@@ -120,5 +126,42 @@ class DownloadService
         }
         $file = $this->expandFileEntity($file);
         return $this->fileDownloadServices[$class]->download($file, $fs);
+    }
+
+    /**
+     * Mark a download as failed.
+     *
+     * @param Download $download
+     * @param \Exception $e
+     */
+    private function failDownload(Download $download, \Exception $e)
+    {
+        $download
+            ->setFailed(true)
+            ->setError($e);
+    }
+
+    /**
+     * Do the download.
+     *
+     * @param Download $download
+     */
+    public function download(Download $download)
+    {
+        try {
+            $fs = new Filesystem(new Local('/home/bizzl'));
+            $filename = $this->fetchFile($download->getFile(), $fs);
+            $fs->put("$filename.txt", $download);
+            $download->setDownloaded(true);
+        } catch (Exception $e) {
+            $this->failDownload($download, $e);
+        } catch (MissingDownloadServiceException $e) {
+            $this->failDownload($download, $e);
+        } catch (ClientException $e) {
+            $this->failDownload($download, $e);
+        } catch (RequestException $e) {
+            $this->failDownload($download, $e);
+        }
+        $this->entityManager->persist($download);
     }
 }

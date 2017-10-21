@@ -25,48 +25,74 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Entity;
+namespace DownloadApp\App\DownloadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class ContentFile
+ * Class File
  *
- * These files aren't really downloaded, but rather already contain their content in the db.
+ * There're a couple of ways that a "file" for a download can be described, so we use inheritance to add more types later.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Entity
  * @ORM\Entity()
- * @ORM\Table(name="download_file_content")
+ * @ORM\Table(name="download_files")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({
+ *     "file" = "Benkle\DownloadApp\DownloadBundle\Entity\File"
+ * })
+ * @Serializer\AccessType("public_method")
  */
-class ContentFile extends File
+class File
 {
     /**
-     * @var string
-     * @ORM\Column(type="text")
+     * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @Serializer\Expose()
+     * @Serializer\ReadOnly()
      */
-    private $content;
+    private $id;
 
     /**
-     * Get the content.
-     *
-     * @return string
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     * @Serializer\Expose()
      */
-    public function getContent(): string
+    private $filename;
+
+    /**
+     * Set the filename.
+     *
+     * @param string $filename
+     * @return $this
+     */
+    public function setFilename(string $filename): File
     {
-        return $this->content;
+        $this->filename = $filename;
+        return $this;
     }
 
     /**
-     * Set the content.
+     * Get the ID.
      *
-     * @param string $content
-     * @return $this
+     * @return int
      */
-    public function setContent(string $content): ContentFile
+    public function getId(): int
     {
-        $this->content = $content;
-        return $this;
+        return $this->id;
+    }
+
+    /**
+     * Get the filename.
+     *
+     * @return string
+     */
+    public function getFilename(): string
+    {
+        return $this->filename;
     }
 }

@@ -25,35 +25,31 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Exceptions;
 
-use Benkle\DownloadApp\DownloadBundle\Entity\ContentFile;
-use Benkle\DownloadApp\DownloadBundle\Entity\File;
-use League\Flysystem\FilesystemInterface;
+
+use Throwable;
 
 /**
- * Class ContentFileDownloadService
- *
- * This service "downloads" content files.
- *
- * @package Benkle\DownloadApp\DownloadBundle\Service
+ * Class MissingDownloadServiceException
+ * @package Benkle\DownloadApp\DownloadBundle\Exceptions
  */
-class ContentFileDownloadService implements FileDownloadServiceInterface
+class MissingDownloadServiceException extends \Exception
 {
-    use SafeFilenameTrait;
+    const CODE = 224465;
 
     /**
-     * Download a file entity.
-     *
-     * @param File $file
-     * @param FilesystemInterface $fs
-     * @return string The final filename
+     * MissingDownloadServiceException constructor.
+     * @param string $class
+     * @param Throwable|null $previous
      */
-    public function download(File $file, FilesystemInterface $fs): string
+    public function __construct($class = "", Throwable $previous = null)
     {
-        /** @var ContentFile $file */
-        $filename = $this->findSafeFilename($file->getFilename(), $fs);
-        $fs->put($filename, $file->getContent());
-        return $filename;
+        parent::__construct(
+            sprintf('No download service found for class "%s"', $class),
+            self::CODE,
+            $previous
+        );
     }
+
 }

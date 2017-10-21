@@ -25,74 +25,77 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Entity;
+namespace DownloadApp\App\DownloadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class File
+ * Class RemoteFile
  *
- * There're a couple of ways that a "file" for a download can be described, so we use inheritance to add more types later.
+ * Remote files can be downloaded via guzzle.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Entity
  * @ORM\Entity()
- * @ORM\Table(name="download_files")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({
- *     "file" = "Benkle\DownloadApp\DownloadBundle\Entity\File"
- * })
- * @Serializer\AccessType("public_method")
+ * @ORM\Table(name="download_files_remote")
  */
-class File
+class RemoteFile extends File
 {
     /**
-     * @var integer
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var string
+     * @ORM\Column(type="string", length=1024)
      * @Serializer\Expose()
-     * @Serializer\ReadOnly()
      */
-    private $id;
+    private $url;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=1024)
      * @Serializer\Expose()
      */
-    private $filename;
+    private $referer;
 
     /**
-     * Set the filename.
+     * Get the referer.
      *
-     * @param string $filename
-     * @return $this
+     * @return string
      */
-    public function setFilename(string $filename): File
+    public function getReferer(): string
     {
-        $this->filename = $filename;
+        return $this->referer;
+    }
+
+    /**
+     * Set the referer.
+     *
+     * @param string $referer
+     * @return RemoteFile
+     */
+    public function setReferer(string $referer): RemoteFile
+    {
+        $this->referer = $referer;
         return $this;
     }
 
     /**
-     * Get the ID.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Get the filename.
+     * Get the url.
      *
      * @return string
      */
-    public function getFilename(): string
+    public function getUrl(): string
     {
-        return $this->filename;
+        return $this->url;
+    }
+
+    /**
+     * Set the url.
+     *
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl(string $url): RemoteFile
+    {
+        $this->url = $url;
+        return $this;
     }
 }

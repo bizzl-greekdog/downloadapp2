@@ -25,52 +25,18 @@
  */
 
 
-namespace Benkle\DownloadApp\DownloadBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Service;
 
 
-use Benkle\DownloadApp\DownloadBundle\Entity\File;
-use Benkle\DownloadApp\DownloadBundle\Entity\RemoteFile;
-use GuzzleHttp\Client;
+use DownloadApp\App\DownloadBundle\Entity\File;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Class RemoteFileFileDownloadService
- *
- * Download a remote file.
- *
+ * Interface FileDownloadServiceInterface
  * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class RemoteFileFileDownloadService implements FileDownloadServiceInterface
+interface FileDownloadServiceInterface
 {
-    use SafeFilenameTrait;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * Get the guzzle client.
-     *
-     * @return Client
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
-    }
-
-    /**
-     * Set the guzzle client.
-     *
-     * @param Client $client
-     * @return $this
-     */
-    public function setClient($client): RemoteFileFileDownloadService
-    {
-        $this->client = $client;
-        return $this;
-    }
-
     /**
      * Download a file entity.
      *
@@ -78,16 +44,5 @@ class RemoteFileFileDownloadService implements FileDownloadServiceInterface
      * @param FilesystemInterface $fs
      * @return string The final filename
      */
-    public function download(File $file, FilesystemInterface $fs): string
-    {
-        /** @var RemoteFile $file */
-        $filename = $this->findSafeFilename($file->getFilename(), $fs);
-        $response = $this->client->get($file->getUrl(), [
-            'headers' => [
-                'Referer' => $file->getReferer()
-            ]
-        ]);
-        $fs->putStream($filename, $response->getBody()->detach());
-        return $filename;
-    }
+    public function download(File $file, FilesystemInterface $fs): string;
 }

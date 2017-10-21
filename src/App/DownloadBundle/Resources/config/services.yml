@@ -1,36 +1,36 @@
 services:
     downloadapp.download.remote_file:
-        class: Benkle\DownloadApp\DownloadBundle\Entity\RemoteFile
+        class: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         tags:
             - name: benkle.doctrine.adoption.child
-              of: Benkle\DownloadApp\DownloadBundle\Entity\File
+              of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: remote_file
 
     downloadapp.download.content_file:
-        class: Benkle\DownloadApp\DownloadBundle\Entity\ContentFile
+        class: DownloadApp\App\DownloadBundle\Entity\ContentFile
         tags:
             - name: benkle.doctrine.adoption.child
-              of: Benkle\DownloadApp\DownloadBundle\Entity\File
+              of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: content_file
 
     downloadapp.download.content_file_download_service:
-        class: Benkle\DownloadApp\DownloadBundle\Service\ContentFileDownloadService
+        class: DownloadApp\App\DownloadBundle\Service\ContentFileDownloadService
         tags:
             - name: downloadapp.file_download_service
-              for: Benkle\DownloadApp\DownloadBundle\Entity\ContentFile
+              for: DownloadApp\App\DownloadBundle\Entity\ContentFile
 
     downloadapp.download.remote_file_download_service:
-        class: Benkle\DownloadApp\DownloadBundle\Service\RemoteFileFileDownloadService
+        class: DownloadApp\App\DownloadBundle\Service\RemoteFileFileDownloadService
         tags:
             - name: downloadapp.file_download_service
-              for: Benkle\DownloadApp\DownloadBundle\Entity\RemoteFile
+              for: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         calls:
           - method: setClient
             arguments:
                 - "@csa_guzzle.client.general"
 
     downloadapp.download:
-      class: Benkle\DownloadApp\DownloadBundle\Service\DownloadService
+      class: DownloadApp\App\DownloadBundle\Service\DownloadService
       calls:
         - method: setEntityManager
           arguments:

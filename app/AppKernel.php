@@ -20,7 +20,7 @@ class AppKernel extends Kernel
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new Benkle\DoctrineAdoptionBundle\BenkleDoctrineAdoptionBundle(),
             // Internal Bundles,
-            new \Benkle\DownloadApp\DownloadBundle\BenkleDownloadAppDownloadBundle(),
+            new \DownloadApp\App\DownloadBundle\DownloadBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
