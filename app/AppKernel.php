@@ -18,7 +18,9 @@ class AppKernel extends Kernel
             // External Bundles
             new \Csa\Bundle\GuzzleBundle\CsaGuzzleBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new Benkle\DoctrineAdoptionBundle\BenkleDoctrineAdoptionBundle(),
             // Internal Bundles,
+            new \Benkle\DownloadApp\DownloadBundle\BenkleDownloadAppDownloadBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

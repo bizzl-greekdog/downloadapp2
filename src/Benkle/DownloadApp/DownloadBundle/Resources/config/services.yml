@@ -1,0 +1,37 @@
+services:
+    downloadapp.download.remote_file:
+        class: Benkle\DownloadApp\DownloadBundle\Entity\RemoteFile
+        tags:
+            - name: benkle.doctrine.adoption.child
+              of: Benkle\DownloadApp\DownloadBundle\Entity\File
+              discriminator: remote_file
+
+    downloadapp.download.content_file:
+        class: Benkle\DownloadApp\DownloadBundle\Entity\ContentFile
+        tags:
+            - name: benkle.doctrine.adoption.child
+              of: Benkle\DownloadApp\DownloadBundle\Entity\File
+              discriminator: content_file
+
+    downloadapp.download.content_file_download_service:
+        class: Benkle\DownloadApp\DownloadBundle\Service\ContentFileDownloadService
+        tags:
+            - name: downloadapp.file_download_service
+              for: Benkle\DownloadApp\DownloadBundle\Entity\ContentFile
+
+    downloadapp.download.remote_file_download_service:
+        class: Benkle\DownloadApp\DownloadBundle\Service\RemoteFileFileDownloadService
+        tags:
+            - name: downloadapp.file_download_service
+              for: Benkle\DownloadApp\DownloadBundle\Entity\RemoteFile
+        calls:
+          - method: setClient
+            arguments:
+                - "@csa_guzzle.client.general"
+
+    downloadapp.download:
+      class: Benkle\DownloadApp\DownloadBundle\Service\DownloadService
+      calls:
+        - method: setEntityManager
+          arguments:
+              - "@doctrine.orm.entity_manager"
