@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new Benkle\DoctrineAdoptionBundle\BenkleDoctrineAdoptionBundle(),
             // Internal Bundles,
             new \DownloadApp\App\DownloadBundle\DownloadBundle(),
+            new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

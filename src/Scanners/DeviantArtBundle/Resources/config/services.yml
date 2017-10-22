@@ -1,0 +1,20 @@
+services:
+    downloadapp.scanners.deviantart.fetching:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\DeviationFetchingService
+        arguments:
+            - '@downloadapp.scanners.deviantart.api'
+            - '@csa_guzzle.client.general'
+            - '@doctrine.orm.entity_manager'
+
+    downloadapp.scanners.deviantart.api:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiService
+        arguments:
+            - '%deviantart.authentication.id%'
+            - '%deviantart.authentication.secret%'
+            - '%deviantart.authentication.redirectUri%'
+            - '@downloadapp.scanners.deviantart.simple_token_service'
+
+    downloadapp.scanners.deviantart.simple_token_service:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\SimpleFileTokenService
+        arguments:
+            - '%deviantart.simpleToken.filename%'

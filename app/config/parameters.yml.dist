@@ -19,3 +19,7 @@ parameters:
     secret: ThisTokenIsNotSoSecretChangeIt
 
     user_agent: DownloadApp/2.0
+
+    deviantart_secret: ~
+    deviantart_id: ~
+    url_prefix: ~

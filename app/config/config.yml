@@ -68,3 +68,11 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     spool: { type: memory }
+
+deviantart:
+    authentication:
+        id: '%deviantart_id%'
+        secret: '%deviantart_secret%'
+        redirectUri: '%url_prefix%/deviantart/auth'
+    simpleToken:
+        filename: '%kernel.project_dir%/var/deviantart_token.json'

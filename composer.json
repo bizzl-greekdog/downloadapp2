@@ -4,7 +4,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "DownloadApp\\App\\DownloadBundle\\": "src/App/DownloadBundle"
+            "DownloadApp\\App\\DownloadBundle\\": "src/App/DownloadBundle",
+            "DownloadApp\\Scanners\\DeviantArtBundle\\": "src/Scanners/DeviantArtBundle"
         },
         "classmap": [
             "app/AppKernel.php",
@@ -19,6 +20,7 @@
     },
     "require": {
         "php": ">=7.0",
+        "benkle/deviantart": "^1.0",
         "benkle/doctrine-adoption-bundle": "^1.0",
         "csa/guzzle-bundle": "2.2.*",
         "doctrine/doctrine-bundle": "^1.6",
