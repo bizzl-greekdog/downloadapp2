@@ -44,31 +44,17 @@ class RemoteFileFileDownloadService implements FileDownloadServiceInterface
 {
     use SafeFilenameTrait;
 
-    /**
-     * @var Client
-     */
+    /** @var Client */
     private $client;
 
     /**
-     * Get the guzzle client.
-     *
-     * @return Client
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
-    }
-
-    /**
-     * Set the guzzle client.
+     * RemoteFileFileDownloadService constructor.
      *
      * @param Client $client
-     * @return $this
      */
-    public function setClient($client): RemoteFileFileDownloadService
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        return $this;
     }
 
     /**

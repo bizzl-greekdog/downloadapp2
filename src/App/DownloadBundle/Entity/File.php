@@ -41,7 +41,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *     "file" = "Benkle\DownloadApp\DownloadBundle\Entity\File"
+ *     "file" = "DownloadApp\App\DownloadBundle\Entity\File"
  * })
  * @Serializer\AccessType("public_method")
  */

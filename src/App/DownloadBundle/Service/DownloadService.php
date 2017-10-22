@@ -54,25 +54,31 @@ class DownloadService
     /** @var  EntityManager */
     private $entityManager;
 
+    /** @var  FilesystemInterface */
+    private $filesystem;
+
     /**
-     * Get the entity manager.
+     * DownloadService constructor.
      *
-     * @return EntityManager
+     * @param EntityManager $entityManager
+     * @param FilesystemInterface $filesystem
      */
-    public function getEntityManager(): EntityManager
+    public function __construct(EntityManager $entityManager, FilesystemInterface $filesystem = null)
     {
-        return $this->entityManager;
+        $this->entityManager = $entityManager;
+        $this->filesystem = $filesystem;
     }
 
     /**
-     * Set the entity manager.
+     * Set the download service for a given File subclass.
      *
-     * @param EntityManager $entityManager
-     * @return $this
+     * @param string $forClass
+     * @param FileDownloadServiceInterface $service
+     * @return DownloadService
      */
-    public function setEntityManager(EntityManager $entityManager): DownloadService
+    public function setFileDownloadService(string $forClass, FileDownloadServiceInterface $service): DownloadService
     {
-        $this->entityManager = $entityManager;
+        $this->fileDownloadServices[$forClass] = $service;
         return $this;
     }
 
@@ -95,19 +101,6 @@ class DownloadService
             ->getRepository(get_class($file))
             ->find($file->getId());
         return $file;
-    }
-
-    /**
-     * Set the download service for a given File subclass.
-     *
-     * @param string $forClass
-     * @param FileDownloadServiceInterface $service
-     * @return DownloadService
-     */
-    public function setFileDownloadService(string $forClass, FileDownloadServiceInterface $service): DownloadService
-    {
-        $this->fileDownloadServices[$forClass] = $service;
-        return $this;
     }
 
     /**
@@ -149,9 +142,8 @@ class DownloadService
     public function download(Download $download)
     {
         try {
-            $fs = new Filesystem(new Local('/home/bizzl'));
-            $filename = $this->fetchFile($download->getFile(), $fs);
-            $fs->put("$filename.txt", $download);
+            $filename = $this->fetchFile($download->getFile(), $this->filesystem);
+            $this->filesystem->put("$filename.txt", $download);
             $download->setDownloaded(true);
         } catch (Exception $e) {
             $this->failDownload($download, $e);
@@ -163,5 +155,26 @@ class DownloadService
             $this->failDownload($download, $e);
         }
         $this->entityManager->persist($download);
+    }
+
+    /**
+     * PHP 5 introduces a destructor concept similar to that of other object-oriented languages, such as C++.
+     * The destructor method will be called as soon as all references to a particular object are removed or
+     * when the object is explicitly destroyed or in any order in shutdown sequence.
+     *
+     * Like constructors, parent destructors will not be called implicitly by the engine.
+     * In order to run a parent destructor, one would have to explicitly call parent::__destruct() in the destructor body.
+     *
+     * Note: Destructors called during the script shutdown have HTTP headers already sent.
+     * The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).
+     *
+     * Note: Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.
+     *
+     * @return void
+     * @link http://php.net/manual/en/language.oop5.decon.php
+     */
+    function __destruct()
+    {
+        $this->entityManager->flush();
     }
 }

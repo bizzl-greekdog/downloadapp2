@@ -61,7 +61,7 @@ class Download
      * @var \DateTime
      * @ORM\Column(type="datetime", options={"default" = "CURRENT_TIMESTAMP"})
      */
-    private $created = null;
+    private $created;
 
     /**
      * @var bool
@@ -83,13 +83,13 @@ class Download
 
     /**
      * @var File
-     * @ORM\OneToOne(targetEntity="Benkle\DownloadApp\DownloadBundle\Entity\File", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity="DownloadApp\App\DownloadBundle\Entity\File", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $file;
 
     /**
      * @var string
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $error;
 
@@ -100,6 +100,7 @@ class Download
     public function __construct($guid = null)
     {
         $this->guid = $guid;
+        $this->created = new \DateTime();
     }
 
     /**

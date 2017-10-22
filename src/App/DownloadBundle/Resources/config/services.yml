@@ -24,14 +24,11 @@ services:
         tags:
             - name: downloadapp.file_download_service
               for: DownloadApp\App\DownloadBundle\Entity\RemoteFile
-        calls:
-          - method: setClient
-            arguments:
-                - "@csa_guzzle.client.general"
+        arguments:
+            - "@csa_guzzle.client.general"
 
     downloadapp.download:
       class: DownloadApp\App\DownloadBundle\Service\DownloadService
-      calls:
-        - method: setEntityManager
-          arguments:
-              - "@doctrine.orm.entity_manager"
+      arguments:
+          - "@doctrine.orm.entity_manager"
+          - ~
