@@ -26,6 +26,7 @@
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
         "incenteev/composer-parameter-handler": "^2.0",
+        "jms/job-queue-bundle": "^1.4",
         "jms/serializer-bundle": "2.2.*",
         "league/flysystem": "^1.0",
         "sensio/distribution-bundle": "^5.0.19",

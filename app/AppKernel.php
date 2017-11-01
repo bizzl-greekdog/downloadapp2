@@ -16,11 +16,12 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             // External Bundles
-            new \Csa\Bundle\GuzzleBundle\CsaGuzzleBundle(),
-            new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
             new Benkle\DoctrineAdoptionBundle\BenkleDoctrineAdoptionBundle(),
+            new JMS\JobQueueBundle\JMSJobQueueBundle(),
             // Internal Bundles,
-            new \DownloadApp\App\DownloadBundle\DownloadBundle(),
+            new DownloadApp\App\DownloadBundle\DownloadBundle(),
             new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
         ];
 
