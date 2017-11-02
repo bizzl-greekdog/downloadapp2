@@ -15,6 +15,11 @@ parameters:
     mailer_user: ~
     mailer_password: ~
 
+    registration_mail: ~
+    registration_sender: ~
+
+    download_root: '%kernel.project_dir%/var/downloads'
+
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
 

@@ -1,0 +1,11 @@
+services:
+    downloadapp.user.current:
+        class: DownloadApp\App\UserBundle\Service\CurrentUserService
+        arguments:
+            - '@security.token_storage'
+
+    downloadapp.user.filesystem:
+        class: DownloadApp\App\UserBundle\Service\FilesystemService
+        arguments:
+            - '@downloadapp.user.current'
+            - '%download_root%'

@@ -76,3 +76,12 @@ deviantart:
         redirectUri: '%url_prefix%/deviantart/auth'
     simpleToken:
         filename: '%kernel.project_dir%/var/deviantart_token.json'
+
+fos_user:
+    db_driver: orm
+    firewall_name: main
+    user_class: DownloadApp\App\UserBundle\Entity\User
+    from_email:
+      address: '%registration_mail%'
+      sender_name: '%registration_sender%'
+
