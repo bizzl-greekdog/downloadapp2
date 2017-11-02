@@ -84,7 +84,7 @@ class CurrentUserService
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user)
+    public function setUser(User $user): CurrentUserService
     {
         $this->user = $user;
         return $this;
@@ -95,7 +95,7 @@ class CurrentUserService
      *
      * @return $this
      */
-    public function clearUser()
+    public function clearUser(): CurrentUserService
     {
         $this->user = null;
         return $this;
