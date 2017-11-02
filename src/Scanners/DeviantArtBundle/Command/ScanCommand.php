@@ -22,7 +22,9 @@ class ScanCommand extends ContainerAwareCommand
         $this
             ->setName('deviantart:deviation:scan')
             ->setDescription('Scan a deviation')
-            ->addArgument('url', InputArgument::REQUIRED);
+            ->addArgument('user', InputArgument::REQUIRED)
+            ->addArgument('url', InputArgument::REQUIRED)
+        ;
     }
 
     /**
@@ -33,11 +35,19 @@ class ScanCommand extends ContainerAwareCommand
         $fetchingService = $this
             ->getContainer()
             ->get('downloadapp.scanners.deviantart.fetching');
+        $currentUserService = $this
+            ->getContainer()
+            ->get('downloadapp.user.current');
+        $user = $this
+            ->getContainer()
+            ->get('fos_user.user_provider.username')
+            ->loadUserByUsername($input->getArgument('user'));
+        $currentUserService->setUser($user);
         $url = $input->getArgument('url');
         try {
             $appUrl = $fetchingService->getAppUrl($url);
             $parts = explode('/', $appUrl);
-            $fetchingService->getDownloadForDeviation(end($parts));
+            $fetchingService->fetchDeviation(end($parts));
         } catch (UnauthorizedException $e) {
             $output->writeln($e->__toString());
         }

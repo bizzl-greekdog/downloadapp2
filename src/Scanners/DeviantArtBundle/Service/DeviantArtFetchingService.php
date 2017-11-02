@@ -29,18 +29,23 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 
 use Benkle\Deviantart\Exceptions\ApiException;
+use Doctrine\DBAL\Driver\PDOException;
 use Doctrine\ORM\EntityManager;
+use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\ContentFile;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
+use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
+use DownloadApp\App\UserBundle\Service\CurrentUserService;
 use GuzzleHttp\Client;
+use JMS\JobQueueBundle\Entity\Job;
 
 /**
- * Class DeviationFetchingService
+ * Class DeviantArtFetchingService
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class DeviationFetchingService
+class DeviantArtFetchingService
 {
     /** @var  ApiService */
     private $api;
@@ -51,8 +56,11 @@ class DeviationFetchingService
     /** @var  EntityManager */
     private $entityManager;
 
+    /** @var  CurrentUserService */
+    private $currentUserService;
+
     /**
-     * DeviationFetchingService constructor.
+     * DeviantArtFetchingService constructor.
      *
      * @param ApiService $api
      * @param Client $client
@@ -60,12 +68,14 @@ class DeviationFetchingService
     public function __construct(
         ApiService $api,
         Client $client,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        CurrentUserService $currentUserService
     )
     {
         $this->api = $api;
         $this->client = $client;
         $this->entityManager = $entityManager;
+        $this->currentUserService = $currentUserService;
     }
 
     /**
@@ -76,7 +86,7 @@ class DeviationFetchingService
      */
     public function getAppUrl(string $url): string
     {
-        if (substr($url, 13) == 'DeviantArt://') {
+        if (strtolower(substr($url, 0, 13)) == 'deviantart://') {
             return $url;
         }
         $response = $this->client->get($url);
@@ -130,9 +140,12 @@ class DeviationFetchingService
     }
 
     /**
+     * Fetch a deviation.
+     *
      * @param string $deviationId
+     * @throws DownloadAlreadyExistsException
      */
-    public function getDownloadForDeviation(string $deviationId)
+    public function fetchDeviation(string $deviationId)
     {
         $download = new Download("deviantart:deviation:$deviationId");
         $origFilename = '';
@@ -141,16 +154,15 @@ class DeviationFetchingService
         $deviation = $this->api->getApi()->deviation();
         $deviationBaseData = $deviation->getDeviation($deviationId);
         $deviationMetaData = $deviation
-            ->getMetadata(
-                [$deviationId],
-                null,
-                null,
-                null,
-                null,
-                true
-            )
-            ->metadata[0]
-        ;
+                                 ->getMetadata(
+                                     [$deviationId],
+                                     null,
+                                     null,
+                                     null,
+                                     null,
+                                     true
+                                 )
+                                 ->metadata[0];
 
         $username = $deviationMetaData->author->username;
 
@@ -195,9 +207,27 @@ class DeviationFetchingService
                 ]
             )
             ->setFile($file)
-        ;
+            ->setUser($this->currentUserService->getUser());
 
-        $this->entityManager->persist($download);
+        if (
+        $this
+            ->entityManager
+            ->getRepository(Download::class)
+            ->findOneBy(['guid' => $download->getGuid()])
+        ) {
+            throw new DownloadAlreadyExistsException($download->getGuid());
+        } else {
+            $this->entityManager->persist($download);
+
+            $job = new Job(
+                'app:download',
+                [$download->getGuid()],
+                true,
+                DownloadCommand::QUEUE
+            );
+
+            $this->entityManager->persist($job);
+        }
     }
 
     /**
