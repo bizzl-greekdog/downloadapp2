@@ -28,6 +28,7 @@
 namespace DownloadApp\App\DownloadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DownloadApp\App\UserBundle\Entity\User;
 
 /**
  * Class Download
@@ -50,6 +51,12 @@ class Download
      * @ORM\Column(type="string", length=1024, unique=true)
      */
     private $guid;
+
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="DownloadApp\App\UserBundle\Entity\User", cascade={"persist", "remove"})
+     */
+    private $user;
 
     /**
      * @var string
@@ -83,7 +90,7 @@ class Download
 
     /**
      * @var File
-     * @ORM\OneToOne(targetEntity="DownloadApp\App\DownloadBundle\Entity\File", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity="DownloadApp\App\DownloadBundle\Entity\File", cascade={"persist", "remove", "merge"}, orphanRemoval=true, fetch="EAGER")
      */
     private $file;
 
@@ -263,5 +270,27 @@ class Download
         $result[] = '======================================';
         $result[] = $this->getComment();
         return implode(PHP_EOL, $result);
+    }
+
+    /**
+     * Set the user.
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Get the user.
+     *
+     * @param User $user
+     * @return $this
+     */
+    public function setUser(User $user): Download
+    {
+        $this->user = $user;
+        return $this;
     }
 }

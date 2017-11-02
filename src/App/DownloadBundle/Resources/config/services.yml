@@ -28,7 +28,7 @@ services:
             - "@csa_guzzle.client.general"
 
     downloadapp.download:
-      class: DownloadApp\App\DownloadBundle\Service\DownloadService
-      arguments:
-          - "@doctrine.orm.entity_manager"
-          - ~
+        class: DownloadApp\App\DownloadBundle\Service\DownloadService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@downloadapp.user.filesystem"

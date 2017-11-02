@@ -27,26 +27,25 @@
 
 namespace DownloadApp\App\DownloadBundle\Exceptions;
 
-
 use Throwable;
 
 /**
- * Class MissingDownloadServiceException
- * @package Benkle\DownloadApp\DownloadBundle\Exceptions
+ * Class DownloadAlreadyExistsException
+ * @package DownloadApp\App\DownloadBundle\Exceptions
  */
-class MissingDownloadServiceException extends \Exception
+class DownloadAlreadyExistsException extends \Exception
 {
-    const CODE = 0xf8de6600;
+    const CODE = 0xd3926bb9;
 
     /**
-     * MissingDownloadServiceException constructor.
-     * @param string $class
+     * DownloadAlreadyExistsException constructor.
+     * @param string $guid
      * @param Throwable|null $previous
      */
-    public function __construct($class = "", Throwable $previous = null)
+    public function __construct($guid = "", Throwable $previous = null)
     {
         parent::__construct(
-            sprintf('No download service found for class "%s"', $class),
+            sprintf('Download "%s" already exists', $guid),
             self::CODE,
             $previous
         );

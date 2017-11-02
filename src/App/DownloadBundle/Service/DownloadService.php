@@ -32,11 +32,10 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Exceptions\MissingDownloadServiceException;
 use Doctrine\ORM\EntityManager;
+use DownloadApp\App\UserBundle\Service\FilesystemService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Exception;
-use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 
 /**
@@ -54,8 +53,8 @@ class DownloadService
     /** @var  EntityManager */
     private $entityManager;
 
-    /** @var  FilesystemInterface */
-    private $filesystem;
+    /** @var  FilesystemService */
+    private $filesystemService;
 
     /**
      * DownloadService constructor.
@@ -63,10 +62,10 @@ class DownloadService
      * @param EntityManager $entityManager
      * @param FilesystemInterface $filesystem
      */
-    public function __construct(EntityManager $entityManager, FilesystemInterface $filesystem = null)
+    public function __construct(EntityManager $entityManager, FilesystemService $filesystemService)
     {
         $this->entityManager = $entityManager;
-        $this->filesystem = $filesystem;
+        $this->filesystemService = $filesystemService;
     }
 
     /**
@@ -83,24 +82,25 @@ class DownloadService
     }
 
     /**
-     * Expand a file entity.
+     * Find a Download by id.
      *
-     * Doctrine inheritance only fetches data according to the class requested, and don't expand when we actually
-     * get a child class.
-     *
-     * @TODO Move this to my adoption bundles.
-     *
-     * @param File $file
-     * @return File
+     * @param int $id
+     * @return Download
      */
-    private function expandFileEntity(File $file): File
+    public function findById(int $id): Download
     {
-        $this->entityManager->detach($file);
-        /** @var File $file */
-        $file = $this->entityManager
-            ->getRepository(get_class($file))
-            ->find($file->getId());
-        return $file;
+        return $this->entityManager->getRepository(Download::class)->find($id);
+    }
+
+    /**
+     * Find a Download by GUID.
+     *
+     * @param string $guid
+     * @return Download
+     */
+    public function findByGUID(string $guid): Download
+    {
+        return $this->entityManager->getRepository(Download::class)->findOneBy(['guid' => $guid]);
     }
 
     /**
@@ -117,7 +117,7 @@ class DownloadService
         if (!isset($this->fileDownloadServices[$class])) {
             throw new MissingDownloadServiceException($class);
         }
-        $file = $this->expandFileEntity($file);
+        $this->entityManager->refresh($file);
         return $this->fileDownloadServices[$class]->download($file, $fs);
     }
 
@@ -131,7 +131,7 @@ class DownloadService
     {
         $download
             ->setFailed(true)
-            ->setError($e);
+            ->setError(sprintf('[%s:%d] %s', $e->getFile(), $e->getLine(), $e->getMessage()));
     }
 
     /**
@@ -142,8 +142,11 @@ class DownloadService
     public function download(Download $download)
     {
         try {
-            $filename = $this->fetchFile($download->getFile(), $this->filesystem);
-            $this->filesystem->put("$filename.txt", $download);
+            $user = $download->getUser();
+            $fs = $this->filesystemService->getUserFilesystem($user);
+            $filename = $this->fetchFile($download->getFile(), $fs);
+            $download->setFile($this->entityManager->find(File::class, $download->getFile()->getId()));
+            $fs->put("$filename.txt", $download);
             $download->setDownloaded(true);
         } catch (Exception $e) {
             $this->failDownload($download, $e);
