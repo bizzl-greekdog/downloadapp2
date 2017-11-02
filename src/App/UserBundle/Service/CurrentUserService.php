@@ -28,8 +28,8 @@
 namespace DownloadApp\App\UserBundle\Service;
 
 
+use DownloadApp\App\UserBundle\Entity\User;
 use DownloadApp\App\UserBundle\Exception\NoLoggedInUserException;
-use FOS\UserBundle\Model\User as AbstractUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -44,7 +44,7 @@ class CurrentUserService
     private $tokenStorage;
 
     /**
-     * @var AbstractUser
+     * @var User
      */
     private $user;
 
@@ -61,10 +61,10 @@ class CurrentUserService
     /**
      * Get the user, from either preset or token.
      *
-     * @return AbstractUser
+     * @return User
      * @throws NoLoggedInUserException
      */
-    public function getUser(): AbstractUser
+    public function getUser(): User
     {
         if (isset($this->user)) {
             return $this->user;
@@ -81,10 +81,10 @@ class CurrentUserService
     /**
      * Preset a user to use instead of the token storage.
      *
-     * @param AbstractUser $user
+     * @param User $user
      * @return $this
      */
-    public function setUser(AbstractUser $user)
+    public function setUser(User $user)
     {
         $this->user = $user;
         return $this;
