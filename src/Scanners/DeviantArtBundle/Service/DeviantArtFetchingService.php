@@ -29,7 +29,6 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 
 use Benkle\Deviantart\Exceptions\ApiException;
-use Doctrine\DBAL\Driver\PDOException;
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\ContentFile;
@@ -38,8 +37,10 @@ use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
 use GuzzleHttp\Client;
 use JMS\JobQueueBundle\Entity\Job;
+use League\Uri\Uri;
 
 /**
  * Class DeviantArtFetchingService
@@ -47,6 +48,8 @@ use JMS\JobQueueBundle\Entity\Job;
  */
 class DeviantArtFetchingService
 {
+    const QUEUE = 'scanners.deviantart';
+
     /** @var  ApiService */
     private $api;
 
@@ -83,6 +86,7 @@ class DeviantArtFetchingService
      *
      * @param string $url
      * @return string
+     * @throws NotADeviantArtPageException
      */
     public function getAppUrl(string $url): string
     {
@@ -96,11 +100,21 @@ class DeviantArtFetchingService
             $response->getBody()->getContents(),
             $matches
         );
+
+        if (empty($matches)) {
+            throw new NotADeviantArtPageException($url);
+        }
+
         preg_match(
-            '/app-argument=.*?(?="|, )/',
+            '/app-argument=DeviantArt.*?(?="|, )/i',
             $matches[0],
             $matches
         );
+
+        if (empty($matches)) {
+            throw new NotADeviantArtPageException($url);
+        }
+
         return substr($matches[0], 13);
     }
 
@@ -227,6 +241,134 @@ class DeviantArtFetchingService
             );
 
             $this->entityManager->persist($job);
+        }
+    }
+
+    /**
+     * Fetch a collection and schedule scans of it's deviations.
+     *
+     * @param string $collectionId
+     * @param string|null $username
+     * @param int $offset
+     * @throws ApiException
+     */
+    public function fetchCollection(string $collectionId, string $username = null, int $offset = 0)
+    {
+        $collection = $this->api->getApi()->collections();
+        try {
+            do {
+                $response = $collection->getFolder($collectionId, $username, $offset, 20, true);
+                foreach ($response->results as $result) {
+                    $job = new Job(
+                        'deviantart:scan',
+                        ["DeviantArt://deviation/{$result->deviationid}"],
+                        true,
+                        self::QUEUE
+                    );
+                    $this->entityManager->persist($job);
+                }
+                $offset = $response->next_offset;
+                if ($offset % 100 === 0) {
+                    sleep(4);
+                }
+            } while ($response->has_more);
+        } catch (ApiException $e) {
+            if ($e->getCode() == 403) {
+                sleep(10);
+                $this->fetchCollection($collectionId, $username, $offset);
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Fetch a gallery and schedule scans for it's deviations.
+     *
+     * @param string $galleryId
+     * @param string|null $username
+     * @param int $offset
+     * @throws ApiException
+     */
+    public function fetchGallery(string $galleryId, string $username = null, int $offset = 0)
+    {
+        $gallery = $this->api->getApi()->gallery();
+        try {
+            do {
+                $response = $gallery->getFolder($galleryId, $username, $offset, 20, true);
+                foreach ($response->results as $result) {
+                    $job = new Job(
+                        'deviantart:scan',
+                        ["DeviantArt://deviation/{$result->deviationid}"],
+                        true,
+                        self::QUEUE
+                    );
+                    $this->entityManager->persist($job);
+                }
+                $offset = $response->next_offset;
+                if ($offset % 100 === 0) {
+                    sleep(4);
+                }
+            } while ($response->has_more);
+        } catch (ApiException $e) {
+            if ($e->getCode() == 403) {
+                sleep(10);
+                $this->fetchGallery($galleryId, $username, $offset);
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Fetch a user profile and schedule scans for it's galleries.
+     *
+     * @param string $username
+     */
+    public function fetchProfile(string $username)
+    {
+        $response = $this->api->getApi()->user()->getProfile($username, true, true, true);
+        foreach ($response->galleries as $gallery) {
+            $job = new Job(
+                'deviantart:scan',
+                ["DeviantArt://gallery/{$username}/{$gallery->folderid}"],
+                true,
+                self::QUEUE
+            );
+            $this->entityManager->persist($job);
+        }
+    }
+
+    /**
+     * Fetch data from an app url.
+     *
+     * @param string $appUrl
+     * @throws \Exception
+     */
+    public function fetchFromAppUrl(string $appUrl)
+    {
+        $uri = Uri::createFromString($this->getAppUrl($appUrl));
+        switch ($uri->getHost()) {
+            case 'deviation':
+                $this->fetchDeviation($uri->getPath());
+                break;
+            case 'collection':
+                list($username, $id) = array_values(
+                    array_filter(explode('/', $uri->getPath()))
+                );
+                $this->fetchCollection($id, $username);
+                break;
+            case 'gallery':
+                list($username, $id) = array_values(
+                    array_filter(explode('/', $uri->getPath()))
+                );
+                $this->fetchGallery($id, $username);
+                break;
+            case 'profile':
+                $this->fetchProfile($uri->getPath());
+                break;
+            default:
+                throw new NotADeviantArtPageException($appUrl);
         }
     }
 

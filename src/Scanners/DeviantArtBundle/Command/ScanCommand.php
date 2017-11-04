@@ -20,7 +20,7 @@ class ScanCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('deviantart:deviation:scan')
+            ->setName('deviantart:scan')
             ->setDescription('Scan a deviation')
             ->addArgument('user', InputArgument::REQUIRED)
             ->addArgument('url', InputArgument::REQUIRED)
@@ -45,9 +45,7 @@ class ScanCommand extends ContainerAwareCommand
         $currentUserService->setUser($user);
         $url = $input->getArgument('url');
         try {
-            $appUrl = $fetchingService->getAppUrl($url);
-            $parts = explode('/', $appUrl);
-            $fetchingService->fetchDeviation(end($parts));
+            $fetchingService->fetchFromAppUrl($url);
         } catch (UnauthorizedException $e) {
             $output->writeln($e->__toString());
         }

@@ -85,3 +85,9 @@ fos_user:
       address: '%registration_mail%'
       sender_name: '%registration_sender%'
 
+jms_job_queue:
+    queue_options_defaults:
+        max_concurrent_jobs: 3
+    queue_options:
+        scanners.deviantart:
+            max_concurrent_jobs: 1
