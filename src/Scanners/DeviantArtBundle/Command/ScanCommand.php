@@ -2,7 +2,9 @@
 
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
+use Benkle\Deviantart\Exceptions\ApiException;
 use Benkle\Deviantart\Exceptions\UnauthorizedException;
+use JMS\JobQueueBundle\Entity\Job;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,17 +16,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ScanCommand extends ContainerAwareCommand
 {
+    const NAME = 'deviantart:scan';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('deviantart:scan')
-            ->setDescription('Scan a deviation')
+            ->setName(self::NAME)
+            ->setDescription('Scan a deviantart url')
             ->addArgument('user', InputArgument::REQUIRED)
-            ->addArgument('url', InputArgument::REQUIRED)
-        ;
+            ->addArgument('url', InputArgument::REQUIRED);
     }
 
     /**
@@ -46,8 +49,10 @@ class ScanCommand extends ContainerAwareCommand
         $url = $input->getArgument('url');
         try {
             $fetchingService->fetchFromAppUrl($url);
-        } catch (UnauthorizedException $e) {
-            $output->writeln($e->__toString());
+        } catch (ApiException $e) {
+            sleep(60);
+            throw $e;
         }
+        sleep(5); // Cooldown
     }
 }

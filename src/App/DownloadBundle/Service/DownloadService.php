@@ -87,7 +87,7 @@ class DownloadService
      * @param int $id
      * @return Download
      */
-    public function findById(int $id): Download
+    public function findById(int $id)
     {
         return $this->entityManager->getRepository(Download::class)->find($id);
     }
@@ -98,7 +98,7 @@ class DownloadService
      * @param string $guid
      * @return Download
      */
-    public function findByGUID(string $guid): Download
+    public function findByGUID(string $guid)
     {
         return $this->entityManager->getRepository(Download::class)->findOneBy(['guid' => $guid]);
     }

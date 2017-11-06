@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DownloadCommand extends ContainerAwareCommand
 {
     const QUEUE = 'download';
+    const NAME  = 'download:start';
 
     /**
      * {@inheritdoc}
@@ -21,7 +22,7 @@ class DownloadCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('download:start')
+            ->setName(self::NAME)
             ->setDescription('Start a download')
             ->addArgument('key', InputArgument::REQUIRED);
     }

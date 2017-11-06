@@ -60,6 +60,7 @@ csa_guzzle:
             config:
                 headers:
                     User-Agent: '%user_agent%'
+                    Accept-Encoding: "*"
 
 # Swiftmailer Configuration
 swiftmailer:

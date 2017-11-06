@@ -28,6 +28,7 @@
 namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 
+use Benkle\Deviantart\Api;
 use Benkle\Deviantart\Exceptions\ApiException;
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
@@ -36,7 +37,9 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
+use DownloadApp\App\DownloadBundle\Service\DownloadService;
 use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
 use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
 use GuzzleHttp\Client;
 use JMS\JobQueueBundle\Entity\Job;
@@ -62,23 +65,31 @@ class DeviantArtFetchingService
     /** @var  CurrentUserService */
     private $currentUserService;
 
+    /** @var  DownloadService */
+    private $downloadService;
+
     /**
      * DeviantArtFetchingService constructor.
      *
      * @param ApiService $api
      * @param Client $client
+     * @param EntityManager $entityManager
+     * @param CurrentUserService $currentUserService
+     * @param DownloadService $downloadService
      */
     public function __construct(
         ApiService $api,
         Client $client,
         EntityManager $entityManager,
-        CurrentUserService $currentUserService
+        CurrentUserService $currentUserService,
+        DownloadService $downloadService
     )
     {
         $this->api = $api;
         $this->client = $client;
         $this->entityManager = $entityManager;
         $this->currentUserService = $currentUserService;
+        $this->downloadService = $downloadService;
     }
 
     /**
@@ -154,6 +165,24 @@ class DeviantArtFetchingService
     }
 
     /**
+     * Schedule a scan.
+     *
+     * @param string $command
+     * @param string $url
+     */
+    private function scheduleScan(string $command, string $url)
+    {
+        $job = new Job(
+            $command,
+            [$this->currentUserService->getUser()->getUsernameCanonical(), $url],
+            true,
+            self::QUEUE
+        );
+        $job->setMaxRetries(1024);
+        $this->entityManager->persist($job);
+    }
+
+    /**
      * Fetch a deviation.
      *
      * @param string $deviationId
@@ -161,7 +190,20 @@ class DeviantArtFetchingService
      */
     public function fetchDeviation(string $deviationId)
     {
-        $download = new Download("deviantart:deviation:$deviationId");
+        $guid = implode(
+            ':', [
+                   'deviantart',
+                   'deviation',
+                   $this->currentUserService->getUser()->getUsernameCanonical(),
+                   $deviationId,
+               ]
+        );
+
+        if ($this->downloadService->findByGUID($guid)) {
+            return;
+        }
+
+        $download = new Download($guid);
         $origFilename = '';
         $file = null;
 
@@ -234,7 +276,7 @@ class DeviantArtFetchingService
             $this->entityManager->persist($download);
 
             $job = new Job(
-                'app:download',
+                DownloadCommand::NAME,
                 [$download->getGuid()],
                 true,
                 DownloadCommand::QUEUE
@@ -259,13 +301,10 @@ class DeviantArtFetchingService
             do {
                 $response = $collection->getFolder($collectionId, $username, $offset, 20, true);
                 foreach ($response->results as $result) {
-                    $job = new Job(
-                        'deviantart:scan',
-                        ["DeviantArt://deviation/{$result->deviationid}"],
-                        true,
-                        self::QUEUE
+                    $this->scheduleScan(
+                        ScanCommand::NAME,
+                        "DeviantArt://deviation/{$result->deviationid}"
                     );
-                    $this->entityManager->persist($job);
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
@@ -295,15 +334,19 @@ class DeviantArtFetchingService
         $gallery = $this->api->getApi()->gallery();
         try {
             do {
-                $response = $gallery->getFolder($galleryId, $username, $offset, 20, true);
+                $response = $gallery->getFolder(
+                    $galleryId,
+                    $username,
+                    Api::FOLDER_MODE_NEWEST,
+                    $offset,
+                    20,
+                    true
+                );
                 foreach ($response->results as $result) {
-                    $job = new Job(
-                        'deviantart:scan',
-                        ["DeviantArt://deviation/{$result->deviationid}"],
-                        true,
-                        self::QUEUE
+                    $this->scheduleScan(
+                        ScanCommand::NAME,
+                        "DeviantArt://deviation/{$result->deviationid}"
                     );
-                    $this->entityManager->persist($job);
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
@@ -329,13 +372,10 @@ class DeviantArtFetchingService
     {
         $response = $this->api->getApi()->user()->getProfile($username, true, true, true);
         foreach ($response->galleries as $gallery) {
-            $job = new Job(
-                'deviantart:scan',
-                ["DeviantArt://gallery/{$username}/{$gallery->folderid}"],
-                true,
-                self::QUEUE
+            $this->scheduleScan(
+                ScanCommand::NAME,
+                "DeviantArt://gallery/{$username}/{$gallery->folderid}"
             );
-            $this->entityManager->persist($job);
         }
     }
 
@@ -350,7 +390,7 @@ class DeviantArtFetchingService
         $uri = Uri::createFromString($this->getAppUrl($appUrl));
         switch ($uri->getHost()) {
             case 'deviation':
-                $this->fetchDeviation($uri->getPath());
+                $this->fetchDeviation(substr($uri->getPath(), 1));
                 break;
             case 'collection':
                 list($username, $id) = array_values(
@@ -365,7 +405,7 @@ class DeviantArtFetchingService
                 $this->fetchGallery($id, $username);
                 break;
             case 'profile':
-                $this->fetchProfile($uri->getPath());
+                $this->fetchProfile(substr($uri->getPath(), 1));
                 break;
             default:
                 throw new NotADeviantArtPageException($appUrl);
