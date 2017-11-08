@@ -81,7 +81,7 @@ class ApiService
         if (!isset($this->api)) {
             $this->api = new Api($this->provider, $this->tokenService->getToken());
             $this->api->authorize(
-                [Api::SCOPE_STASH, Api::SCOPE_BROWSE],
+                [Api::SCOPE_STASH, Api::SCOPE_BROWSE, Api::SCOPE_FEED],
                 $authCode
             );
         }

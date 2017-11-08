@@ -433,5 +433,42 @@ class DeviantArtFetchingService
         $this->entityManager->flush();
     }
 
-
+    /**
+     * Fetch the users watch list and schedule scans for deviantions.
+     *
+     * @param string|null $cursor
+     * @throws ApiException
+     */
+    public function fetchWatchlist(string $cursor = null)
+    {
+        $feed = $this->api->getApi()->feed();
+        $iteration = 0;
+        try {
+            do {
+                $response = $feed->getHome($cursor, true);
+                $iteration++;
+                $cursor = $response->cursor;
+                foreach ($response->items as $item) {
+                    if ($item->type === 'deviation_submitted') {
+                        foreach ($item->deviations as $deviation) {
+                            $this->scheduleScan(
+                                ScanCommand::NAME,
+                                "DeviantArt://deviation/{$deviation->deviationid}"
+                            );
+                        }
+                    }
+                }
+                if ($iteration % 4 === 0) {
+                    sleep(4);
+                }
+            } while ($response->has_more);
+        } catch (ApiException $e) {
+            if ($e->getCode() == 403) {
+                sleep(10);
+                $this->fetchWatchlist($cursor);
+            } else {
+                throw $e;
+            }
+        }
+    }
 }

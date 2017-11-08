@@ -2,21 +2,18 @@
 
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
-use Benkle\Deviantart\Exceptions\ApiException;
-use Benkle\Deviantart\Exceptions\UnauthorizedException;
-use JMS\JobQueueBundle\Entity\Job;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ScanCommand
+ * Class WatchlistCommand
  * @package DownloadApp\Scanners\DeviantArtBundle\Command
  */
-class ScanCommand extends ContainerAwareCommand
+class WatchlistCommand extends ContainerAwareCommand
 {
-    const NAME = 'deviantart:scan';
+    const NAME = 'deviantart:watchlist';
 
     /**
      * {@inheritdoc}
@@ -25,9 +22,8 @@ class ScanCommand extends ContainerAwareCommand
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Scan a deviantart url')
-            ->addArgument('user', InputArgument::REQUIRED)
-            ->addArgument('url', InputArgument::REQUIRED);
+            ->setDescription('Fetch a users watchlist')
+            ->addArgument('user', InputArgument::REQUIRED);
     }
 
     /**
@@ -46,13 +42,7 @@ class ScanCommand extends ContainerAwareCommand
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
         $currentUserService->setUser($user);
-        $url = $input->getArgument('url');
-        try {
-            $fetchingService->fetchFromAppUrl($url);
-        } catch (ApiException $e) {
-            sleep(60); // More cooldown
-            throw $e;
-        }
+        $fetchingService->fetchWatchlist();
         sleep(5); // Cooldown
     }
 }
