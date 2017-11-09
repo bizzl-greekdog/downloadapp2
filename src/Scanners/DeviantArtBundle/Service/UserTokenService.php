@@ -25,33 +25,78 @@
  */
 
 
-namespace DownloadApp\App\UserBundle\Service;
-use DownloadApp\App\UserBundle\Entity\User;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
-use League\Flysystem\FilesystemInterface;
+namespace DownloadApp\Scanners\DeviantArtBundle\Service;
+
+
+use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use League\OAuth2\Client\Token\AccessToken;
 
 /**
- * Class FilesystemService
- * @package DownloadApp\App\UserBundle\Service
+ * Class UserTokenService
+ * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class FilesystemService
+class UserTokenService implements TokenServiceInterface
 {
+    /** @var  string */
+    private $tokenDir;
+
     /** @var  CurrentUserService */
     private $currentUserService;
 
-    /** @var  string */
-    private $baseDir;
+    /**
+     * UserTokenService constructor.
+     * @param string $tokenDir
+     * @param CurrentUserService $currentUserService
+     */
+    public function __construct($tokenDir, CurrentUserService $currentUserService)
+    {
+        $this->tokenDir = $tokenDir;
+        $this->currentUserService = $currentUserService;
+    }
 
     /**
-     * FilesystemService constructor.
-     * @param CurrentUserService $currentUserService
-     * @param string $baseDir
+     * Get an access token.
+     *
+     * @return AccessToken|null
      */
-    public function __construct(CurrentUserService $currentUserService, string $baseDir)
+    public function getToken()
     {
-        $this->currentUserService = $currentUserService;
-        $this->baseDir = $baseDir;
+        $tokenFilePath = $this->createTokenFilePath();
+        if (file_exists($tokenFilePath)) {
+            $tokenFileContent = json_decode(file_get_contents($tokenFilePath), true);
+            return new AccessToken($tokenFileContent);
+        }
+        return null;
+    }
+
+    /**
+     * Save an access token.
+     *
+     * @param AccessToken $token
+     * @return $this
+     */
+    public function setToken(AccessToken $token): TokenServiceInterface
+    {
+        $tokenFilename = $this->createTokenFilePath();
+        $tokenDirectory = dirname($tokenFilename);
+        if (!is_dir($tokenDirectory)) {
+            mkdir($tokenDirectory, 0755, true);
+        }
+        file_put_contents($tokenFilename, \GuzzleHttp\json_encode($token));
+        return $this;
+    }
+
+    /**
+     * Create the absolute token path.
+     *
+     * @return string
+     */
+    private function createTokenFilePath(): string
+    {
+        return $this->join(
+            $this->tokenDir,
+            $this->currentUserService->getUser()->getUsernameCanonical() . '.json'
+        );
     }
 
     /**
@@ -70,18 +115,5 @@ class FilesystemService
             $result .= ($lastChar === '/' ? '' : '/') . $part;
         }
         return $result;
-    }
-
-    /**
-     * Get a filesystem that we can download the users files to.
-     *
-     * @param User|null $user
-     * @return FilesystemInterface
-     */
-    public function getUserFilesystem(User $user = null): FilesystemInterface
-    {
-        $user = $user ?? $this->currentUserService->getUser();
-        $path = $this->join($this->baseDir,$user->getUsernameCanonical());
-        return new Filesystem(new Local($path));
     }
 }

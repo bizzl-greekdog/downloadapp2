@@ -74,9 +74,11 @@ deviantart:
     authentication:
         id: '%deviantart_id%'
         secret: '%deviantart_secret%'
-        redirectUri: '%url_prefix%/deviantart/auth'
+        redirectUri: '%base_url%/deviantart/authorize'
     simpleToken:
         filename: '%kernel.project_dir%/var/deviantart_token.json'
+    userToken:
+        directory: '%kernel.project_dir%/var/tokens/deviantart'
 
 fos_user:
     db_driver: orm

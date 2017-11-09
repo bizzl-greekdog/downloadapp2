@@ -14,9 +14,15 @@ services:
             - '%deviantart.authentication.id%'
             - '%deviantart.authentication.secret%'
             - '%deviantart.authentication.redirectUri%'
-            - '@downloadapp.scanners.deviantart.simple_token_service'
+            - '@downloadapp.scanners.deviantart.user_token_service'
 
     downloadapp.scanners.deviantart.simple_token_service:
         class: DownloadApp\Scanners\DeviantArtBundle\Service\SimpleFileTokenService
         arguments:
             - '%deviantart.simpleToken.filename%'
+
+    downloadapp.scanners.deviantart.user_token_service:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\UserTokenService
+        arguments:
+            - '%deviantart.userToken.directory%'
+            - '@downloadapp.user.current'

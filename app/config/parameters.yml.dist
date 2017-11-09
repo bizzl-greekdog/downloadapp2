@@ -27,4 +27,4 @@ parameters:
 
     deviantart_secret: ~
     deviantart_id: ~
-    url_prefix: ~
+    base_url: ~

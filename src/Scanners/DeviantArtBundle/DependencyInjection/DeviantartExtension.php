@@ -29,5 +29,6 @@ class DeviantartExtension extends Extension
         $container->setParameter('deviantart.authentication.secret', $config['authentication']['secret']);
         $container->setParameter('deviantart.authentication.redirectUri', $config['authentication']['redirectUri']);
         $container->setParameter('deviantart.simpleToken.filename', $config['simpleToken']['filename']);
+        $container->setParameter('deviantart.userToken.directory', $config['userToken']['directory']);
     }
 }
