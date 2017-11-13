@@ -8,4 +8,5 @@ services:
         class: DownloadApp\App\UserBundle\Service\FilesystemService
         arguments:
             - '@downloadapp.user.current'
+            - '@downloadapp.utils.path'
             - '%download_root%'

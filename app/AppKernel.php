@@ -22,9 +22,11 @@ class AppKernel extends Kernel
             new JMS\JobQueueBundle\JMSJobQueueBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             // Internal Bundles,
-            new DownloadApp\App\DownloadBundle\DownloadBundle(),
-            new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
+            new DownloadApp\App\UtilsBundle\UtilsBundle(),
             new DownloadApp\App\UserBundle\UserBundle(),
+            new DownloadApp\App\DownloadBundle\DownloadBundle(),
+            new DownloadApp\Scanners\CoreBundle\CoreBundle(),
+            new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

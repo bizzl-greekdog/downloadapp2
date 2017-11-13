@@ -26,3 +26,4 @@ services:
         arguments:
             - '%deviantart.userToken.directory%'
             - '@downloadapp.user.current'
+            - '@downloadapp.utils.path'

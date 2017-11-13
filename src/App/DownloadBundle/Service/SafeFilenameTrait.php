@@ -26,6 +26,8 @@
 
 
 namespace DownloadApp\App\DownloadBundle\Service;
+
+use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
 use League\Flysystem\FilesystemInterface;
 
 /**
@@ -37,6 +39,21 @@ use League\Flysystem\FilesystemInterface;
  */
 trait SafeFilenameTrait
 {
+    /** @var  PathUtilsService */
+    private $pathUtilsService;
+
+    /**
+     * Set the PathUtilsService;
+     *
+     * @param PathUtilsService $pathUtilsService
+     * @return $this
+     */
+    public function setPathUtilsService($pathUtilsService)
+    {
+        $this->pathUtilsService = $pathUtilsService;
+        return $this;
+    }
+
     /**
      * Extend a filename, so it won't clash with an existing file.
      *
@@ -47,6 +64,9 @@ trait SafeFilenameTrait
     protected function findSafeFilename(string $filename, FilesystemInterface $fs): string
     {
         $i = 1;
+        $filename = isset($this->pathUtilsService)
+            ? $this->pathUtilsService->cleanFilename($filename)
+            : $filename;
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         $basename = pathinfo($filename, PATHINFO_FILENAME);
         while ($fs->has($filename)) {

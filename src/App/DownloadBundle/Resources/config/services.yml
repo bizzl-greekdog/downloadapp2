@@ -18,6 +18,10 @@ services:
         tags:
             - name: downloadapp.file_download_service
               for: DownloadApp\App\DownloadBundle\Entity\ContentFile
+        calls:
+            - method: setPathUtilsService
+              arguments:
+                  - '@downloadapp.utils.path'
 
     downloadapp.download.remote_file_download_service:
         class: DownloadApp\App\DownloadBundle\Service\RemoteFileFileDownloadService
@@ -26,6 +30,10 @@ services:
               for: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         arguments:
             - "@csa_guzzle.client.general"
+        calls:
+            - method: setPathUtilsService
+              arguments:
+                  - '@downloadapp.utils.path'
 
     downloadapp.download:
         class: DownloadApp\App\DownloadBundle\Service\DownloadService

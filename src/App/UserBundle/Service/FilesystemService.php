@@ -27,6 +27,7 @@
 
 namespace DownloadApp\App\UserBundle\Service;
 use DownloadApp\App\UserBundle\Entity\User;
+use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
@@ -43,33 +44,24 @@ class FilesystemService
     /** @var  string */
     private $baseDir;
 
+    /** @var  PathUtilsService */
+    private $pathUtilsService;
+
     /**
      * FilesystemService constructor.
      * @param CurrentUserService $currentUserService
+     * @param PathUtilsService $pathUtilsService
      * @param string $baseDir
      */
-    public function __construct(CurrentUserService $currentUserService, string $baseDir)
+    public function __construct(
+        CurrentUserService $currentUserService,
+        PathUtilsService $pathUtilsService,
+        string $baseDir
+    )
     {
         $this->currentUserService = $currentUserService;
+        $this->pathUtilsService = $pathUtilsService;
         $this->baseDir = $baseDir;
-    }
-
-    /**
-     * Join elements into a coherent path.
-     *
-     * @param \string[] ...$parts
-     * @return string
-     *
-     * TODO Move to it's own service (PathUtilService?)
-     */
-    private function join(string ...$parts): string
-    {
-        $result = array_shift($parts);
-        foreach ($parts as $part) {
-            $lastChar = substr($result, -1);
-            $result .= ($lastChar === '/' ? '' : '/') . $part;
-        }
-        return $result;
     }
 
     /**
@@ -81,7 +73,7 @@ class FilesystemService
     public function getUserFilesystem(User $user = null): FilesystemInterface
     {
         $user = $user ?? $this->currentUserService->getUser();
-        $path = $this->join($this->baseDir,$user->getUsernameCanonical());
+        $path = $this->pathUtilsService->join($this->baseDir, $user->getUsernameCanonical());
         return new Filesystem(new Local($path));
     }
 }

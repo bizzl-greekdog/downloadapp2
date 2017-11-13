@@ -29,6 +29,7 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 
 use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
@@ -43,15 +44,23 @@ class UserTokenService implements TokenServiceInterface
     /** @var  CurrentUserService */
     private $currentUserService;
 
+    /** @var  PathUtilsService */
+    private $pathUtilsService;
+
     /**
      * UserTokenService constructor.
      * @param string $tokenDir
      * @param CurrentUserService $currentUserService
      */
-    public function __construct($tokenDir, CurrentUserService $currentUserService)
+    public function __construct(
+        string $tokenDir,
+        CurrentUserService $currentUserService,
+        PathUtilsService $pathUtilsService
+    )
     {
         $this->tokenDir = $tokenDir;
         $this->currentUserService = $currentUserService;
+        $this->pathUtilsService = $pathUtilsService;
     }
 
     /**
@@ -93,27 +102,9 @@ class UserTokenService implements TokenServiceInterface
      */
     private function createTokenFilePath(): string
     {
-        return $this->join(
+        return $this->pathUtilsService->join(
             $this->tokenDir,
             $this->currentUserService->getUser()->getUsernameCanonical() . '.json'
         );
-    }
-
-    /**
-     * Join elements into a coherent path.
-     *
-     * @param \string[] ...$parts
-     * @return string
-     *
-     * TODO Move to it's own service (PathUtilService?)
-     */
-    private function join(string ...$parts): string
-    {
-        $result = array_shift($parts);
-        foreach ($parts as $part) {
-            $lastChar = substr($result, -1);
-            $result .= ($lastChar === '/' ? '' : '/') . $part;
-        }
-        return $result;
     }
 }

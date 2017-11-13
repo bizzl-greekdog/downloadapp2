@@ -1,0 +1,3 @@
+services:
+    downloadapp.utils.path:
+        class: DownloadApp\App\UtilsBundle\Service\PathUtilsService
