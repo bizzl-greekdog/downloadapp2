@@ -1,3 +1,8 @@
 services:
     downloadapp.utils.path:
         class: DownloadApp\App\UtilsBundle\Service\PathUtilsService
+
+    downloadapp.utils.jobs:
+        class: DownloadApp\App\UtilsBundle\Service\JobService
+        arguments:
+            - '@doctrine.orm.entity_manager'

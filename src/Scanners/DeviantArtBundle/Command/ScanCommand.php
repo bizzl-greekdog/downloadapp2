@@ -3,8 +3,7 @@
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
 use Benkle\Deviantart\Exceptions\ApiException;
-use Benkle\Deviantart\Exceptions\UnauthorizedException;
-use JMS\JobQueueBundle\Entity\Job;
+use DownloadApp\Scanners\DeviantArtBundle\Service\DeviantArtFetchingService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,9 +34,6 @@ class ScanCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $fetchingService = $this
-            ->getContainer()
-            ->get('downloadapp.scanners.deviantart.fetching');
         $currentUserService = $this
             ->getContainer()
             ->get('downloadapp.user.current');
@@ -45,13 +41,23 @@ class ScanCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
+        $jobService = $this
+            ->getContainer()
+            ->get('downloadapp.utils.jobs');
         $currentUserService->setUser($user);
         $url = $input->getArgument('url');
         try {
-            $fetchingService->fetchFromAppUrl($url);
+            //$fetchingService->fetchFromAppUrl($url);
+            throw new ApiException(403, '');
         } catch (ApiException $e) {
-            sleep(60); // More cooldown
-            throw $e;
+            if (in_array($e->getCode(), [403, 429]) && $input->hasOption('jms-job-id')) {
+                $thisJob = $jobService->find($input->getOption('jms-job-id'));
+                $jobService->reschedule($thisJob, '+1 minutes', true);
+                $jobService->pauseQueue(DeviantArtFetchingService::QUEUE, 60, true);
+                $output->writeln($e->__toString());
+            } else {
+                throw $e;
+            }
         }
         sleep(5); // Cooldown
     }
