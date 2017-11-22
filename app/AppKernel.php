@@ -1,7 +1,7 @@
 <?php
 
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new DownloadApp\App\DownloadBundle\DownloadBundle(),
             new DownloadApp\Scanners\CoreBundle\CoreBundle(),
             new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
+            new DownloadApp\Scanners\FurAffinityBundle\FurAffinityBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

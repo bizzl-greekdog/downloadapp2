@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "900730edcd9e5872affaea8679fdbcea",
+    "content-hash": "900730edcd9e5872affaea8679fdbcea",
     "packages": [
         {
             "name": "benkle/deviantart",
-          "version": "1.0.2",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/benkle-libs/deviantart.git",
-              "reference": "bfa53b8708320a5b90a1b596948cb1d2402ebf77"
+                "reference": "bfa53b8708320a5b90a1b596948cb1d2402ebf77"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/benkle-libs/deviantart/zipball/bfa53b8708320a5b90a1b596948cb1d2402ebf77",
-              "reference": "bfa53b8708320a5b90a1b596948cb1d2402ebf77",
+                "url": "https://api.github.com/repos/benkle-libs/deviantart/zipball/bfa53b8708320a5b90a1b596948cb1d2402ebf77",
+                "reference": "bfa53b8708320a5b90a1b596948cb1d2402ebf77",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 }
             ],
             "description": "Access to DeviantARTs oAuth2 API",
-          "time": "2017-11-09T18:35:10+00:00"
+            "time": "2017-11-09T18:35:10+00:00"
         },
         {
             "name": "benkle/doctrine-adoption",
@@ -131,16 +131,16 @@
         },
         {
             "name": "composer/ca-bundle",
-          "version": "1.0.9",
+            "version": "1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-              "reference": "36344aeffdc37711335563e6108cda86566432a6"
+                "reference": "36344aeffdc37711335563e6108cda86566432a6"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/composer/ca-bundle/zipball/36344aeffdc37711335563e6108cda86566432a6",
-              "reference": "36344aeffdc37711335563e6108cda86566432a6",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/36344aeffdc37711335563e6108cda86566432a6",
+                "reference": "36344aeffdc37711335563e6108cda86566432a6",
                 "shasum": ""
             },
             "require": {
@@ -186,7 +186,7 @@
                 "ssl",
                 "tls"
             ],
-          "time": "2017-11-13T15:51:25+00:00"
+            "time": "2017-11-13T15:51:25+00:00"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -600,23 +600,23 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.6.13",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "8cd4c2921b6cef14a78d98cd3f0fb81ba6a976f9"
+                "reference": "8b462d952fbd386637a85d642d242a16891e0d32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/8cd4c2921b6cef14a78d98cd3f0fb81ba6a976f9",
-                "reference": "8cd4c2921b6cef14a78d98cd3f0fb81ba6a976f9",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/8b462d952fbd386637a85d642d242a16891e0d32",
+                "reference": "8b462d952fbd386637a85d642d242a16891e0d32",
                 "shasum": ""
             },
             "require": {
-                "doctrine/dbal": "~2.3",
+                "doctrine/dbal": "^2.5.12",
                 "doctrine/doctrine-cache-bundle": "~1.2",
                 "jdorn/sql-formatter": "~1.1",
-                "php": ">=5.5.9",
+                "php": "^5.5.9|^7.0",
                 "symfony/console": "~2.7|~3.0|~4.0",
                 "symfony/dependency-injection": "~2.7|~3.0|~4.0",
                 "symfony/doctrine-bridge": "~2.7|~3.0|~4.0",
@@ -624,7 +624,7 @@
             },
             "require-dev": {
                 "doctrine/orm": "~2.3",
-                "phpunit/phpunit": "~4",
+                "phpunit/phpunit": "^4.8.36|^5.7|^6.4",
                 "satooshi/php-coveralls": "^1.0",
                 "symfony/phpunit-bridge": "~2.7|~3.0|~4.0",
                 "symfony/property-info": "~2.8|~3.0|~4.0",
@@ -639,7 +639,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.8.x-dev"
                 }
             },
             "autoload": {
@@ -677,7 +677,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2017-10-11T19:48:03+00:00"
+            "time": "2017-11-05T23:21:03+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -1432,68 +1432,6 @@
             "time": "2014-01-12T16:20:24+00:00"
         },
         {
-          "name": "jeremykendall/php-domain-parser",
-          "version": "3.0.0",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/jeremykendall/php-domain-parser.git",
-            "reference": "896e7e70f02bd4fd77190052799bc61e4d779672"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/jeremykendall/php-domain-parser/zipball/896e7e70f02bd4fd77190052799bc61e4d779672",
-            "reference": "896e7e70f02bd4fd77190052799bc61e4d779672",
-            "shasum": ""
-          },
-          "require": {
-            "ext-curl": "*",
-            "ext-intl": "*",
-            "ext-mbstring": "*",
-            "php": ">=5.3.0"
-          },
-          "require-dev": {
-            "jeremykendall/debug-die": "0.0.1.*",
-            "mikey179/vfsstream": "~1.4",
-            "phpunit/phpunit": "~4.4"
-          },
-          "bin": [
-            "bin/parse",
-            "bin/update-psl"
-          ],
-          "type": "library",
-          "autoload": {
-            "psr-0": {
-              "Pdp\\": "src/"
-            },
-            "files": [
-              "src/pdp-parse-url.php"
-            ]
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Jeremy Kendall",
-              "homepage": "http://about.me/jeremykendall",
-              "role": "Developer"
-            },
-            {
-              "name": "Contributors",
-              "homepage": "https://github.com/jeremykendall/php-domain-parser/graphs/contributors"
-            }
-          ],
-          "description": "Public Suffix List based URL parsing implemented in PHP.",
-          "homepage": "https://github.com/jeremykendall/php-domain-parser",
-          "keywords": [
-            "Public Suffix List",
-            "domain parsing",
-            "url parsing"
-          ],
-          "time": "2015-03-30T12:49:45+00:00"
-        },
-      {
             "name": "jms/aop-bundle",
             "version": "1.2.0",
             "source": {
@@ -2133,386 +2071,460 @@
             "time": "2017-04-25T14:43:14+00:00"
         },
         {
-          "name": "league/uri",
-          "version": "5.0.0",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/thephpleague/uri.git",
-            "reference": "ef6f413061bd4a9926c4c4394a5f5d384bfd8487"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/uri/zipball/ef6f413061bd4a9926c4c4394a5f5d384bfd8487",
-            "reference": "ef6f413061bd4a9926c4c4394a5f5d384bfd8487",
-            "shasum": ""
-          },
-          "require": {
-            "ext-fileinfo": "*",
-            "ext-intl": "*",
-            "ext-mbstring": "*",
-            "league/uri-manipulations": "^1.0",
-            "league/uri-schemes": "^1.0",
-            "php": ">=7.0"
-          },
-          "type": "metapackage",
-          "extra": {
-            "branch-alias": {
-              "dev-master": "5.0.x-dev"
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Ignace Nyamagana Butera",
-              "email": "nyamsprod@gmail.com",
-              "homepage": "https://nyamsprod.com"
-            }
-          ],
-          "description": "URI manipulation library",
-          "homepage": "http://uri.thephpleague.com",
-          "keywords": [
-            "data-uri",
-            "file-uri",
-            "ftp",
-            "http",
-            "https",
-            "middleware",
-            "parse_url",
-            "psr-7",
-            "rfc3986",
-            "rfc3987",
-            "uri",
-            "url",
-            "ws"
-          ],
-          "time": "2017-02-06T08:50:02+00:00"
+            "name": "league/uri",
+            "version": "5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri.git",
+                "reference": "ef6f413061bd4a9926c4c4394a5f5d384bfd8487"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/ef6f413061bd4a9926c4c4394a5f5d384bfd8487",
+                "reference": "ef6f413061bd4a9926c4c4394a5f5d384bfd8487",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "league/uri-manipulations": "^1.0",
+                "league/uri-schemes": "^1.0",
+                "php": ">=7.0"
+            },
+            "type": "metapackage",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "URI manipulation library",
+            "homepage": "http://uri.thephpleague.com",
+            "keywords": [
+                "data-uri",
+                "file-uri",
+                "ftp",
+                "http",
+                "https",
+                "middleware",
+                "parse_url",
+                "psr-7",
+                "rfc3986",
+                "rfc3987",
+                "uri",
+                "url",
+                "ws"
+            ],
+            "time": "2017-02-06T08:50:02+00:00"
         },
-      {
-        "name": "league/uri-components",
-        "version": "1.0.4",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/thephpleague/uri-components.git",
-          "reference": "268c971e9ddeb079adc083d74556f14ddb54e4ca"
+        {
+            "name": "league/uri-components",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-components.git",
+                "reference": "87127f72bb73c5d30c4b2a9773d2ee81b71dd524"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-components/zipball/87127f72bb73c5d30c4b2a9773d2ee81b71dd524",
+                "reference": "87127f72bb73c5d30c4b2a9773d2ee81b71dd524",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-fileinfo": "*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "league/uri-hostname-parser": "^1.0.0",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.3",
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "URI components manipulation library",
+            "homepage": "http://uri.thephpleague.com",
+            "keywords": [
+                "authority",
+                "components",
+                "fragment",
+                "host",
+                "path",
+                "port",
+                "query",
+                "rfc3986",
+                "scheme",
+                "uri",
+                "url",
+                "userinfo"
+            ],
+            "time": "2017-11-22T12:02:25+00:00"
         },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/thephpleague/uri-components/zipball/268c971e9ddeb079adc083d74556f14ddb54e4ca",
-          "reference": "268c971e9ddeb079adc083d74556f14ddb54e4ca",
-          "shasum": ""
+        {
+            "name": "league/uri-hostname-parser",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-hostname-parser.git",
+                "reference": "e8d579d0349f5898f26eff379da202d1db2b00f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-hostname-parser/zipball/e8d579d0349f5898f26eff379da202d1db2b00f5",
+                "reference": "e8d579d0349f5898f26eff379da202d1db2b00f5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "php": ">=7.0",
+                "psr/simple-cache": "^1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.7",
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^6.3"
+            },
+            "suggest": {
+                "ext-curl": "To use the bundle cURL HTTP client",
+                "psr/simple-cache-implementation": "To enable using other cache providers"
+            },
+            "bin": [
+                "bin/update-psl-icann-section"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Kendall",
+                    "homepage": "http://about.me/jeremykendall",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "homepage": "http://nyamsprod.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/phpleague/uri-hostname-parser/graphs/contributors"
+                }
+            ],
+            "description": "ICANN base hostname parsing implemented in PHP.",
+            "homepage": "https://github.com/thephphleague/uri-hostname-parser",
+            "keywords": [
+                "Public Suffix List",
+                "domain parsing",
+                "icann"
+            ],
+            "time": "2017-11-22T11:45:37+00:00"
         },
-        "require": {
-          "ext-fileinfo": "*",
-          "ext-intl": "*",
-          "ext-mbstring": "*",
-          "jeremykendall/php-domain-parser": "^3.0",
-          "php": ">=7.0"
+        {
+            "name": "league/uri-interfaces",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-interfaces.git",
+                "reference": "dcc0be58e8b35a726274249e5eee053be1a56b66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/dcc0be58e8b35a726274249e5eee053be1a56b66",
+                "reference": "dcc0be58e8b35a726274249e5eee053be1a56b66",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\Interfaces\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "Common interface for URI representation",
+            "homepage": "http://github.com/thephpleague/uri-interfaces",
+            "keywords": [
+                "rfc3986",
+                "rfc3987",
+                "uri",
+                "url"
+            ],
+            "time": "2017-01-04T08:02:42+00:00"
         },
-        "require-dev": {
-          "friendsofphp/php-cs-fixer": "^2.3",
-          "phpunit/phpunit": "^6.0"
+        {
+            "name": "league/uri-manipulations",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-manipulations.git",
+                "reference": "03cf5bc525611c3cb37b31b3845a91bf01725b31"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-manipulations/zipball/03cf5bc525611c3cb37b31b3845a91bf01725b31",
+                "reference": "03cf5bc525611c3cb37b31b3845a91bf01725b31",
+                "shasum": ""
+            },
+            "require": {
+                "league/uri-components": "^1.4",
+                "league/uri-interfaces": "^1.0",
+                "php": ">=7.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "guzzlehttp/psr7": "^1.2",
+                "league/uri-schemes": "^1.0",
+                "phpunit/phpunit": "^6.0",
+                "zendframework/zend-diactoros": "1.4.0"
+            },
+            "suggest": {
+                "league/uri-schemes": "Allow manipulating URI objects"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "URI manipulation library",
+            "homepage": "http://url.thephpleague.com",
+            "keywords": [
+                "formatter",
+                "manipulation",
+                "manipulations",
+                "middlewares",
+                "modifiers",
+                "psr-7",
+                "references",
+                "rfc3986",
+                "rfc3987",
+                "uri",
+                "url"
+            ],
+            "time": "2017-11-22T12:09:07+00:00"
         },
-        "type": "library",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "1.0.x-dev"
-          }
+        {
+            "name": "league/uri-parser",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-parser.git",
+                "reference": "5d0beab08f29079fac1bb76dbcb2336ef10af8b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-parser/zipball/5d0beab08f29079fac1bb76dbcb2336ef10af8b8",
+                "reference": "5d0beab08f29079fac1bb76dbcb2336ef10af8b8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "phpunit/phpunit": "^6.0"
+            },
+            "suggest": {
+                "league/uri-schemes": "Allow validating and normalizing URI parsing results"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "userland URI parser RFC 3986 compliant",
+            "homepage": "https://github.com/thephpleague/uri-parser",
+            "keywords": [
+                "parse_url",
+                "parser",
+                "rfc3986",
+                "uri",
+                "url"
+            ],
+            "time": "2017-10-20T10:37:29+00:00"
         },
-        "autoload": {
-          "psr-4": {
-            "League\\Uri\\Components\\": "src"
-          }
+        {
+            "name": "league/uri-schemes",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-schemes.git",
+                "reference": "ffb93d46db6315fc2320b9332f2ada94751f7556"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-schemes/zipball/ffb93d46db6315fc2320b9332f2ada94751f7556",
+                "reference": "ffb93d46db6315fc2320b9332f2ada94751f7556",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "league/uri-interfaces": "^1.0",
+                "league/uri-parser": "^1.2",
+                "php": ">=7.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "phpunit/phpunit": "^6.0"
+            },
+            "suggest": {
+                "league/uri-manipulations": "Needed to easily manipulate URI objects"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Uri\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://nyamsprod.com"
+                }
+            ],
+            "description": "URI manipulation library",
+            "homepage": "http://uri.thephpleague.com",
+            "keywords": [
+                "data-uri",
+                "file",
+                "ftp",
+                "http",
+                "https",
+                "parse_url",
+                "psr-7",
+                "rfc3986",
+                "uri",
+                "url",
+                "ws",
+                "wss"
+            ],
+            "time": "2017-11-02T12:48:27+00:00"
         },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Ignace Nyamagana Butera",
-            "email": "nyamsprod@gmail.com",
-            "homepage": "https://nyamsprod.com"
-          }
-        ],
-        "description": "URI components manipulation library",
-        "homepage": "http://uri.thephpleague.com",
-        "keywords": [
-          "authority",
-          "components",
-          "fragment",
-          "host",
-          "path",
-          "port",
-          "query",
-          "rfc3986",
-          "scheme",
-          "uri",
-          "url",
-          "userinfo"
-        ],
-        "time": "2017-08-10T13:35:19+00:00"
-      },
-      {
-        "name": "league/uri-interfaces",
-        "version": "1.0.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/thephpleague/uri-interfaces.git",
-          "reference": "dcc0be58e8b35a726274249e5eee053be1a56b66"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/dcc0be58e8b35a726274249e5eee053be1a56b66",
-          "reference": "dcc0be58e8b35a726274249e5eee053be1a56b66",
-          "shasum": ""
-        },
-        "require": {
-          "php": ">=5.3.0"
-        },
-        "require-dev": {
-          "friendsofphp/php-cs-fixer": "^1.0.0"
-        },
-        "type": "library",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "1.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "League\\Uri\\Interfaces\\": "src/"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Ignace Nyamagana Butera",
-            "email": "nyamsprod@gmail.com",
-            "homepage": "https://nyamsprod.com"
-          }
-        ],
-        "description": "Common interface for URI representation",
-        "homepage": "http://github.com/thephpleague/uri-interfaces",
-        "keywords": [
-          "rfc3986",
-          "rfc3987",
-          "uri",
-          "url"
-        ],
-        "time": "2017-01-04T08:02:42+00:00"
-      },
-      {
-        "name": "league/uri-manipulations",
-        "version": "1.0.1",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/thephpleague/uri-manipulations.git",
-          "reference": "3db42474cb68546ec9180d76dbf9807a8e1bcf98"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/thephpleague/uri-manipulations/zipball/3db42474cb68546ec9180d76dbf9807a8e1bcf98",
-          "reference": "3db42474cb68546ec9180d76dbf9807a8e1bcf98",
-          "shasum": ""
-        },
-        "require": {
-          "league/uri-components": "^1.0",
-          "league/uri-interfaces": "^1.0",
-          "php": ">=7.0",
-          "psr/http-message": "^1.0"
-        },
-        "require-dev": {
-          "friendsofphp/php-cs-fixer": "^1.9",
-          "guzzlehttp/psr7": "^1.2",
-          "league/uri-schemes": "^1.0",
-          "phpunit/phpunit": "^6.0"
-        },
-        "suggest": {
-          "league/uri-schemes": "Allow manipulating URI objects"
-        },
-        "type": "library",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "1.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "League\\Uri\\Modifiers\\": "src"
-          },
-          "files": [
-            "src/functions_include.php"
-          ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Ignace Nyamagana Butera",
-            "email": "nyamsprod@gmail.com",
-            "homepage": "https://nyamsprod.com"
-          }
-        ],
-        "description": "URI manipulation library",
-        "homepage": "http://url.thephpleague.com",
-        "keywords": [
-          "formatter",
-          "manipulation",
-          "manipulations",
-          "middlewares",
-          "modifiers",
-          "psr-7",
-          "references",
-          "rfc3986",
-          "rfc3987",
-          "uri",
-          "url"
-        ],
-        "time": "2017-02-06T07:57:03+00:00"
-      },
-      {
-        "name": "league/uri-parser",
-        "version": "1.2.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/thephpleague/uri-parser.git",
-          "reference": "5d0beab08f29079fac1bb76dbcb2336ef10af8b8"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/thephpleague/uri-parser/zipball/5d0beab08f29079fac1bb76dbcb2336ef10af8b8",
-          "reference": "5d0beab08f29079fac1bb76dbcb2336ef10af8b8",
-          "shasum": ""
-        },
-        "require": {
-          "ext-intl": "*",
-          "php": ">=7.0.0"
-        },
-        "require-dev": {
-          "friendsofphp/php-cs-fixer": "^2.0",
-          "phpunit/phpunit": "^6.0"
-        },
-        "suggest": {
-          "league/uri-schemes": "Allow validating and normalizing URI parsing results"
-        },
-        "type": "library",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "1.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "League\\Uri\\": "src"
-          },
-          "files": [
-            "src/functions_include.php"
-          ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Ignace Nyamagana Butera",
-            "email": "nyamsprod@gmail.com",
-            "homepage": "https://nyamsprod.com"
-          }
-        ],
-        "description": "userland URI parser RFC 3986 compliant",
-        "homepage": "https://github.com/thephpleague/uri-parser",
-        "keywords": [
-          "parse_url",
-          "parser",
-          "rfc3986",
-          "uri",
-          "url"
-        ],
-        "time": "2017-10-20T10:37:29+00:00"
-      },
-      {
-        "name": "league/uri-schemes",
-        "version": "1.1.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/thephpleague/uri-schemes.git",
-          "reference": "ffb93d46db6315fc2320b9332f2ada94751f7556"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/thephpleague/uri-schemes/zipball/ffb93d46db6315fc2320b9332f2ada94751f7556",
-          "reference": "ffb93d46db6315fc2320b9332f2ada94751f7556",
-          "shasum": ""
-        },
-        "require": {
-          "ext-fileinfo": "*",
-          "ext-intl": "*",
-          "ext-mbstring": "*",
-          "league/uri-interfaces": "^1.0",
-          "league/uri-parser": "^1.2",
-          "php": ">=7.0",
-          "psr/http-message": "^1.0"
-        },
-        "require-dev": {
-          "friendsofphp/php-cs-fixer": "^2.0",
-          "phpunit/phpunit": "^6.0"
-        },
-        "suggest": {
-          "league/uri-manipulations": "Needed to easily manipulate URI objects"
-        },
-        "type": "library",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "1.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "League\\Uri\\": "src"
-          },
-          "files": [
-            "src/functions_include.php"
-          ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Ignace Nyamagana Butera",
-            "email": "nyamsprod@gmail.com",
-            "homepage": "https://nyamsprod.com"
-          }
-        ],
-        "description": "URI manipulation library",
-        "homepage": "http://uri.thephpleague.com",
-        "keywords": [
-          "data-uri",
-          "file",
-          "ftp",
-          "http",
-          "https",
-          "parse_url",
-          "psr-7",
-          "rfc3986",
-          "uri",
-          "url",
-          "ws",
-          "wss"
-        ],
-        "time": "2017-11-02T12:48:27+00:00"
-      },
-      {
+        {
             "name": "monolog/monolog",
             "version": "1.23.0",
             "source": {
@@ -3290,16 +3302,16 @@
         },
         {
             "name": "symfony/monolog-bundle",
-          "version": "v3.1.2",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/monolog-bundle.git",
-              "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784"
+                "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
-              "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
+                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
+                "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
                 "shasum": ""
             },
             "require": {
@@ -3312,7 +3324,7 @@
             },
             "require-dev": {
                 "symfony/console": "~2.3|~3.0|~4.0",
-              "symfony/phpunit-bridge": "^3.3|^4.0",
+                "symfony/phpunit-bridge": "^3.3|^4.0",
                 "symfony/yaml": "~2.3|~3.0|~4.0"
             },
             "type": "symfony-bundle",
@@ -3325,9 +3337,9 @@
                 "psr-4": {
                     "Symfony\\Bundle\\MonologBundle\\": ""
                 },
-              "exclude-from-classmap": [
-                "/Tests/"
-              ]
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3349,7 +3361,7 @@
                 "log",
                 "logging"
             ],
-          "time": "2017-11-06T16:02:17+00:00"
+            "time": "2017-11-06T16:02:17+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -3752,16 +3764,16 @@
         },
         {
             "name": "symfony/symfony",
-          "version": "v3.3.12",
+            "version": "v3.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-              "reference": "1452970fc29131776505f684bd81d7a33cbaada4"
+                "reference": "9b0226340705f75fd0cebd220746a36050ead8a9"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/symfony/symfony/zipball/1452970fc29131776505f684bd81d7a33cbaada4",
-              "reference": "1452970fc29131776505f684bd81d7a33cbaada4",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/9b0226340705f75fd0cebd220746a36050ead8a9",
+                "reference": "9b0226340705f75fd0cebd220746a36050ead8a9",
                 "shasum": ""
             },
             "require": {
@@ -3784,7 +3796,7 @@
             },
             "conflict": {
                 "phpdocumentor/reflection-docblock": "<3.0||>=3.2.0,<3.2.2",
-              "phpdocumentor/type-resolver": "<0.2.1",
+                "phpdocumentor/type-resolver": "<0.2.1",
                 "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0"
             },
             "provide": {
@@ -3846,7 +3858,7 @@
             },
             "require-dev": {
                 "cache/integration-tests": "dev-master",
-              "doctrine/annotations": "~1.0",
+                "doctrine/annotations": "~1.0",
                 "doctrine/cache": "~1.6",
                 "doctrine/data-fixtures": "1.0.*",
                 "doctrine/dbal": "~2.4",
@@ -3902,7 +3914,7 @@
             "keywords": [
                 "framework"
             ],
-          "time": "2017-11-13T19:37:31+00:00"
+            "time": "2017-11-16T18:15:01+00:00"
         },
         {
             "name": "twig/twig",
@@ -4330,16 +4342,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-          "version": "5.2.3",
+            "version": "5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-              "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d"
+                "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
-              "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
+                "reference": "8e1d2397d8adf59a3f12b2878a3aaa66d1ab189d",
                 "shasum": ""
             },
             "require": {
@@ -4348,7 +4360,7 @@
                 "php": "^7.0",
                 "phpunit/php-file-iterator": "^1.4.2",
                 "phpunit/php-text-template": "^1.2.1",
-              "phpunit/php-token-stream": "^2.0",
+                "phpunit/php-token-stream": "^2.0",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
                 "sebastian/environment": "^3.0",
                 "sebastian/version": "^2.0.1",
@@ -4390,7 +4402,7 @@
                 "testing",
                 "xunit"
             ],
-          "time": "2017-11-03T13:47:33+00:00"
+            "time": "2017-11-03T13:47:33+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -4580,16 +4592,16 @@
         },
         {
             "name": "phpunit/phpunit",
-          "version": "6.4.4",
+            "version": "6.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-              "reference": "562f7dc75d46510a4ed5d16189ae57fbe45a9932"
+                "reference": "562f7dc75d46510a4ed5d16189ae57fbe45a9932"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/562f7dc75d46510a4ed5d16189ae57fbe45a9932",
-              "reference": "562f7dc75d46510a4ed5d16189ae57fbe45a9932",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/562f7dc75d46510a4ed5d16189ae57fbe45a9932",
+                "reference": "562f7dc75d46510a4ed5d16189ae57fbe45a9932",
                 "shasum": ""
             },
             "require": {
@@ -4660,7 +4672,7 @@
                 "testing",
                 "xunit"
             ],
-          "time": "2017-11-08T11:26:09+00:00"
+            "time": "2017-11-08T11:26:09+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4768,30 +4780,30 @@
         },
         {
             "name": "sebastian/comparator",
-          "version": "2.1.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-              "reference": "1174d9018191e93cb9d719edec01257fc05f8158"
+                "reference": "1174d9018191e93cb9d719edec01257fc05f8158"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/1174d9018191e93cb9d719edec01257fc05f8158",
-              "reference": "1174d9018191e93cb9d719edec01257fc05f8158",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/1174d9018191e93cb9d719edec01257fc05f8158",
+                "reference": "1174d9018191e93cb9d719edec01257fc05f8158",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0",
                 "sebastian/diff": "^2.0",
-              "sebastian/exporter": "^3.1"
+                "sebastian/exporter": "^3.1"
             },
             "require-dev": {
-              "phpunit/phpunit": "^6.4"
+                "phpunit/phpunit": "^6.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                  "dev-master": "2.1.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
@@ -4822,13 +4834,13 @@
                 }
             ],
             "description": "Provides the functionality to compare PHP values for equality",
-          "homepage": "https://github.com/sebastianbergmann/comparator",
+            "homepage": "https://github.com/sebastianbergmann/comparator",
             "keywords": [
                 "comparator",
                 "compare",
                 "equality"
             ],
-          "time": "2017-11-03T07:16:52+00:00"
+            "time": "2017-11-03T07:16:52+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -5336,16 +5348,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-          "version": "v3.3.12",
+            "version": "v3.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-              "reference": "0cbc5e0f8af23dadf270371b9627f1f264cf6021"
+                "reference": "0cbc5e0f8af23dadf270371b9627f1f264cf6021"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/0cbc5e0f8af23dadf270371b9627f1f264cf6021",
-              "reference": "0cbc5e0f8af23dadf270371b9627f1f264cf6021",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/0cbc5e0f8af23dadf270371b9627f1f264cf6021",
+                "reference": "0cbc5e0f8af23dadf270371b9627f1f264cf6021",
                 "shasum": ""
             },
             "require": {
@@ -5394,7 +5406,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-          "time": "2017-11-07T14:16:22+00:00"
+            "time": "2017-11-07T14:16:22+00:00"
         },
         {
             "name": "theseer/tokenizer",

@@ -57,7 +57,7 @@ doctrine:
 user:
     cookiejars:
         furaffinity:
-            directory: '%kernel.project_dir%/cookies/furaffinity'
+            directory: '%kernel.project_dir%/var/cookies/furaffinity'
 
 csa_guzzle:
     clients:
