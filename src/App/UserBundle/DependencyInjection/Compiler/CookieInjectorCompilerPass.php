@@ -24,21 +24,31 @@
  * THE SOFTWARE.
  */
 
-namespace DownloadApp\App\UserBundle;
+namespace DownloadApp\App\UserBundle\DependencyInjection\Compiler;
 
-use DownloadApp\App\UserBundle\DependencyInjection\Compiler\CookieInjectorCompilerPass;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class UserBundle
- * @package DownloadApp\App\UserBundle
+ * Class CookieInjectorCompilerPass
+ * @package DownloadApp\App\UserBundle\DependencyInjection\Compiler
  */
-class UserBundle extends Bundle
+class CookieInjectorCompilerPass implements CompilerPassInterface
 {
-    public function build(ContainerBuilder $container)
+    public function process(ContainerBuilder $container)
     {
-        parent::build($container);
-        $container->addCompilerPass(new CookieInjectorCompilerPass());
+        $prefix = 'csa_guzzle.client.';
+        $prefixLength = strlen($prefix);
+        $definitions = $container->getDefinitions();
+        foreach ($definitions as $name => $definition) {
+            if (substr($name, 0, $prefixLength) == $prefix) {
+                $options = $definition->getArgument(0);
+                if (isset($options['cookies']) && substr($options['cookies'], 0, 1) == '@') {
+                    $options['cookies'] = new Reference(substr($options['cookies'], 1));
+                }
+                $definition->setArgument(0, $options);
+            }
+        }
     }
 }

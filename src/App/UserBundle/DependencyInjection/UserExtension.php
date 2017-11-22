@@ -26,10 +26,13 @@
 
 namespace DownloadApp\App\UserBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use DownloadApp\App\UserBundle\Service\UserCookieJar;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -48,5 +51,25 @@ class UserExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $this->processJarsConfiguration($config['cookiejars'], $container);
+    }
+
+    private function processJarsConfiguration(array $cookieJars, ContainerBuilder $container)
+    {
+        foreach ($cookieJars as $name => $cookieJar) {
+            $jarDefinition = new Definition(UserCookieJar::class);
+
+            $jarDefinition
+                ->addArgument(new Reference('downloadapp.user.current'))
+                ->addArgument($cookieJar['directory'])
+                ->addArgument(new Reference('downloadapp.utils.path'));
+
+            $serviceName = "downloadapp.user.cookiejars.{$name}";
+            $container->setDefinition($serviceName, $jarDefinition);
+            if (isset($cookieJar['alias'])) {
+                $container->setAlias($cookieJar['alias'], $serviceName);
+            }
+        }
     }
 }

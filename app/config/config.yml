@@ -54,13 +54,24 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
+user:
+    cookiejars:
+        furaffinity:
+            directory: '%kernel.project_dir%/cookies/furaffinity'
+
 csa_guzzle:
     clients:
         general:
             config:
                 headers:
                     User-Agent: '%user_agent%'
-                    Accept-Encoding: "*"
+                    Accept-Encoding: '*'
+        furaffinity:
+            config:
+                cookies: '@downloadapp.user.cookiejars.furaffinity'
+                headers:
+                    User-Agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.89 Chrome/62.0.3202.89 Safari/537.36'
+                    Accept-Encoding: '*'
 
 # Swiftmailer Configuration
 swiftmailer:
