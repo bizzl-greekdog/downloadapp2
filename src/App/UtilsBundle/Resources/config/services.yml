@@ -6,3 +6,6 @@ services:
         class: DownloadApp\App\UtilsBundle\Service\JobService
         arguments:
             - '@doctrine.orm.entity_manager'
+
+    downloadapp.utils.cookies:
+        class: DownloadApp\App\UtilsBundle\Service\CookieUtilsService
