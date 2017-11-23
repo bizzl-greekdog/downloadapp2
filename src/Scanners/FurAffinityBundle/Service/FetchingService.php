@@ -34,7 +34,10 @@ use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Service\DownloadService;
 use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand;
 use GuzzleHttp\Client;
+use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 use PHPHtmlParser\Dom;
 
@@ -44,6 +47,8 @@ use PHPHtmlParser\Dom;
  */
 class FetchingService
 {
+    const QUEUE = 'scanners.furaffinity';
+
     /** @var  Client */
     private $client;
 
@@ -56,19 +61,43 @@ class FetchingService
     /** @var  DownloadService */
     private $downloadService;
 
+    /** @var  PathUtilsService */
+    private $pathUtilsService;
+
     /**
      * FetchingService constructor.
+     *
      * @param Client $client
      * @param EntityManager $entityManager
      * @param CurrentUserService $currentUserService
      * @param DownloadService $downloadService
+     * @param PathUtilsService $pathUtilsService
      */
-    public function __construct(Client $client, EntityManager $entityManager, CurrentUserService $currentUserService, DownloadService $downloadService)
+    public function __construct(Client $client, EntityManager $entityManager, CurrentUserService $currentUserService, DownloadService $downloadService, PathUtilsService $pathUtilsService)
     {
         $this->client = $client;
         $this->entityManager = $entityManager;
         $this->currentUserService = $currentUserService;
         $this->downloadService = $downloadService;
+        $this->pathUtilsService = $pathUtilsService;
+    }
+
+    /**
+     * Schedule a scan.
+     *
+     * @param string $command
+     * @param string $url
+     */
+    private function scheduleScan(string $url)
+    {
+        $job = new Job(
+            ScanCommand::NAME,
+            [$this->currentUserService->getUser()->getUsernameCanonical(), $url],
+            true,
+            self::QUEUE
+        );
+        $job->setMaxRetries(1024);
+        $this->entityManager->persist($job);
     }
 
     /**
@@ -125,6 +154,29 @@ class FetchingService
             ->setUser($this->currentUserService->getUser());
 
         $this->downloadService->scheduleDownload($download);
+    }
+
+    /**
+     * Fetch a gallery, scraps or favourites.
+     *
+     * @param string $url
+     */
+    public function fetchGallery(string $url)
+    {
+        $i = 1;
+        $dom = new Dom();
+        $submissionsUrls = [];
+        do {
+            $response = $this->client->get($this->pathUtilsService->join($url, $i++));
+            $dom->load($response->getBody()->getContents());
+            $submissions = $dom->find('.submission-list a[href*="/view/"]');
+            /** @var Dom\AbstractNode $submission */
+            foreach ($submissions as $submission) {
+                $submissionsUrls[] = $this->pathUtilsService->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
+            }
+        } while (count($submissions));
+        $submissionsUrls = array_unique($submissionsUrls);
+        array_map([$this, 'scheduleScan'], $submissionsUrls);
     }
 
     /**

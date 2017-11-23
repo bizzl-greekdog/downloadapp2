@@ -105,3 +105,5 @@ jms_job_queue:
     queue_options:
         scanners.deviantart:
             max_concurrent_jobs: 1
+        scanners.furaffinity:
+            max_concurrent_jobs: 4

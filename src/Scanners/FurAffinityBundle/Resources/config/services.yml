@@ -6,3 +6,4 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
             - '@downloadapp.download'
+            - '@downloadapp.utils.path'
