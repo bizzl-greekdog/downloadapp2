@@ -1,0 +1,8 @@
+services:
+    downloadapp.scanners.furaffinity.fetching:
+        class: DownloadApp\Scanners\FurAffinityBundle\Service\FetchingService
+        arguments:
+            - '@csa_guzzle.client.furaffinity'
+            - '@doctrine.orm.entity_manager'
+            - '@downloadapp.user.current'
+            - '@downloadapp.download'

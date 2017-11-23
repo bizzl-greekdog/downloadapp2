@@ -28,13 +28,16 @@
 namespace DownloadApp\App\DownloadBundle\Service;
 
 
+use Doctrine\ORM\EntityManager;
+use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
+use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Exceptions\MissingDownloadServiceException;
-use Doctrine\ORM\EntityManager;
 use DownloadApp\App\UserBundle\Service\FilesystemService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use JMS\JobQueueBundle\Entity\Job;
 use League\Flysystem\Exception;
 use League\Flysystem\FilesystemInterface;
 
@@ -158,6 +161,35 @@ class DownloadService
             $this->failDownload($download, $e);
         }
         $this->entityManager->persist($download);
+    }
+
+    /**
+     * Persist and schedule a download.
+     *
+     * @param Download $download
+     * @throws DownloadAlreadyExistsException
+     */
+    public function scheduleDownload(Download $download)
+    {
+        if (
+        $this
+            ->entityManager
+            ->getRepository(Download::class)
+            ->findOneBy(['guid' => $download->getGuid()])
+        ) {
+            throw new DownloadAlreadyExistsException($download->getGuid());
+        } else {
+            $this->entityManager->persist($download);
+
+            $job = new Job(
+                DownloadCommand::NAME,
+                [$download->getGuid()],
+                true,
+                DownloadCommand::QUEUE
+            );
+
+            $this->entityManager->persist($job);
+        }
     }
 
     /**

@@ -31,7 +31,6 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 use Benkle\Deviantart\Api;
 use Benkle\Deviantart\Exceptions\ApiException;
 use Doctrine\ORM\EntityManager;
-use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\ContentFile;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
@@ -265,25 +264,7 @@ class DeviantArtFetchingService
             ->setFile($file)
             ->setUser($this->currentUserService->getUser());
 
-        if (
-        $this
-            ->entityManager
-            ->getRepository(Download::class)
-            ->findOneBy(['guid' => $download->getGuid()])
-        ) {
-            throw new DownloadAlreadyExistsException($download->getGuid());
-        } else {
-            $this->entityManager->persist($download);
-
-            $job = new Job(
-                DownloadCommand::NAME,
-                [$download->getGuid()],
-                true,
-                DownloadCommand::QUEUE
-            );
-
-            $this->entityManager->persist($job);
-        }
+        $this->downloadService->scheduleDownload($download);
     }
 
     /**
