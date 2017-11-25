@@ -28,6 +28,7 @@
 namespace DownloadApp\App\UserBundle\Service;
 
 use DownloadApp\App\UserBundle\Entity\User;
+use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
 use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -45,7 +46,7 @@ class FilesystemServiceTest extends TestCase
             ->method('getUser')
             ->willReturn($userMock);
 
-        $service = new FilesystemService($currentUserServiceMock, 'Root');
+        $service = new FilesystemService($currentUserServiceMock, new PathUtilsService(), 'Root');
 
         $this->assertInstanceOf(FilesystemInterface::class, $service->getUserFilesystem());
     }
