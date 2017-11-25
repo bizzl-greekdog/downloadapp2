@@ -7,3 +7,4 @@ services:
             - '@downloadapp.user.current'
             - '@downloadapp.download'
             - '@downloadapp.utils.path'
+            - '@event_dispatcher'

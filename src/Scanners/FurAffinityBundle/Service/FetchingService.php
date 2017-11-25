@@ -28,6 +28,7 @@
 namespace DownloadApp\Scanners\FurAffinityBundle\Service;
 
 
+use Benkle\NotificationBundle\Event\NotificationEvent;
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
@@ -40,6 +41,8 @@ use GuzzleHttp\Client;
 use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 use PHPHtmlParser\Dom;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class FetchingService
@@ -64,6 +67,9 @@ class FetchingService
     /** @var  PathUtilsService */
     private $pathUtilsService;
 
+    /** @var  EventDispatcherInterface */
+    private $dispatcher;
+
     /**
      * FetchingService constructor.
      *
@@ -72,14 +78,22 @@ class FetchingService
      * @param CurrentUserService $currentUserService
      * @param DownloadService $downloadService
      * @param PathUtilsService $pathUtilsService
+     * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Client $client, EntityManager $entityManager, CurrentUserService $currentUserService, DownloadService $downloadService, PathUtilsService $pathUtilsService)
+    public function __construct(Client $client, EntityManager $entityManager, CurrentUserService $currentUserService, DownloadService $downloadService, PathUtilsService $pathUtilsService, EventDispatcherInterface $dispatcher)
     {
         $this->client = $client;
         $this->entityManager = $entityManager;
         $this->currentUserService = $currentUserService;
         $this->downloadService = $downloadService;
         $this->pathUtilsService = $pathUtilsService;
+        $this->dispatcher = $dispatcher;
+    }
+
+    private function sendNotification(string $message): Event
+    {
+        $notification = new NotificationEvent($this->currentUserService->getUser(), $message);
+        return $notification->dispatchTo($this->dispatcher);
     }
 
     /**
@@ -154,6 +168,7 @@ class FetchingService
             ->setUser($this->currentUserService->getUser());
 
         $this->downloadService->scheduleDownload($download);
+        $this->sendNotification("{$title} by {$artist} scanned and download scheduled");
     }
 
     /**
@@ -174,9 +189,52 @@ class FetchingService
             foreach ($submissions as $submission) {
                 $submissionsUrls[] = $this->pathUtilsService->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
             }
+            $this->sendNotification("page {$i} of {$url} scanned");
         } while (count($submissions));
         $submissionsUrls = array_unique($submissionsUrls);
         array_map([$this, 'scheduleScan'], $submissionsUrls);
+        $total = count($submissionsUrls);
+        $this->sendNotification("Gallery contained a total of {$total} submissions, scans scheduled");
+    }
+
+    public function fetchWatchlist()
+    {
+        $url = 'http://www.furaffinity.net/msg/submissions/';
+        $dom = new Dom();
+        $submissionsUrls = [];
+        do {
+            $added = 0;
+            $response = $this->client->get($url);
+            $dom->load($response->getBody()->getContents());
+            $submissions = $dom->find('#messages-form .t-image a');
+            /** @var Dom\AbstractNode $submission */
+            foreach ($submissions as $submission) {
+                $submissionsUrl = $submission->getAttribute('href');
+                if (substr($submissionsUrl, 0, 6) == '/view/') {
+                    $submissionsUrl = $this->pathUtilsService->join('http://www.furaffinity.net/', $submissionsUrl);
+                    if (!isset($submissionsUrls[$submissionsUrl])) {
+                        $submissionsUrls[$submissionsUrl] = true;
+                        $added++;
+                    }
+                }
+            }
+            if ($added) {
+                $this->sendNotification("Another {$added} submissions found in watchlist, proceed to next page");
+                $nextButtons = $dom->find('a.more, a.more-half')->toArray();
+                $nextButtons = array_filter($nextButtons, function (Dom\AbstractNode $node) {
+                    return strpos($node->getAttribute('class'), 'prev') === false;
+                });
+                if ($nextButtons) {
+                    $url = $this->pathUtilsService->join('http://www.furaffinity.net', $nextButtons[0]->getAttribute('href'));
+                } else {
+                    break;
+                }
+            }
+        } while ($added);
+        $submissionsUrls = array_keys($submissionsUrls);
+        array_map([$this, 'scheduleScan'], $submissionsUrls);
+        $total = count($submissionsUrls);
+        $this->sendNotification("Watchlist contained a total of {$total} submissions, scans scheduled");
     }
 
     /**
