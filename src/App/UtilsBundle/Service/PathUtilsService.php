@@ -34,16 +34,16 @@ namespace DownloadApp\App\UtilsBundle\Service;
 class PathUtilsService
 {
     private $cleanFilenamePatterns = [
-        '/[<]/'         => '(',
-        '/[>]/'         => ')',
-        '/[ ]?:[ ]?/'   => ' - ',
-        '/"/'           => '',
-        '/[ ]?\/[ ]?/'  => ' - ',
-        '/[ ]?\\[ ]?/'  => ' - ',
-        '/[ ]?\|[ ]?/'  => ' - ',
-        '/[?]/'         => '',
-        '/[*]/'         => '',
-        '/[\x00-\x1f]/' => '',
+        '/[<]/'           => '(',
+        '/[>]/'           => ')',
+        '/[ ]?:[ ]?/'     => ' - ',
+        '/"/'             => '',
+        '/[ ]?\/[ ]?/'    => ' - ',
+        '/[ ]?\\\\[ ]?/'  => ' - ',
+        '/[ ]?\|[ ]?/'    => ' - ',
+        '/[?]/'           => '',
+        '/[*]/'           => '',
+        '/[\x00-\x1f]/'   => '',
     ];
 
     /**
@@ -71,8 +71,9 @@ class PathUtilsService
     {
         $result = array_shift($parts);
         foreach ($parts as $part) {
-            $lastChar = substr($result, -1);
-            $result .= ($lastChar === '/' ? '' : '/') . $part;
+            $result = rtrim($result, '/');
+            $part = ltrim($part, '/');
+            $result .= '/' . $part;
         }
         return $result;
     }
