@@ -5,6 +5,7 @@
     "autoload": {
         "psr-4": {
             "DownloadApp\\App\\UserBundle\\": "src/App/UserBundle",
+            "DownloadApp\\App\\FrontendBundle\\": "src/App/FrontendBundle",
             "DownloadApp\\App\\UtilsBundle\\": "src/App/UtilsBundle",
             "DownloadApp\\App\\DownloadBundle\\": "src/App/DownloadBundle",
             "DownloadApp\\Scanners\\CoreBundle\\": "src/Scanners/CoreBundle",
@@ -22,10 +23,17 @@
             "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
         ]
     },
+    "repositories": [
+        {
+            "url": "git@github.com:benkle-libs/notification-bundle.git",
+            "type": "git"
+        }
+    ],
     "require": {
         "php": ">=7.0",
         "benkle/deviantart": "^1.0",
         "benkle/doctrine-adoption-bundle": "^1.0",
+        "benkle/notification-bundle": "dev-master",
         "csa/guzzle-bundle": "2.2.*",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
