@@ -1,3 +1,11 @@
+frontend:
+    resource: "@FrontendBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fur_affinity:
+    resource: "@FurAffinityBundle/Resources/config/routing.yml"
+    prefix:   /furaffinity
+
 deviantart:
     resource: '@DeviantArtBundle/Resources/config/routing.yml'
     prefix: /deviantart
