@@ -18,15 +18,15 @@ class FileDownloadersCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $downloadServiceDefinition = $container->findDefinition('downloadapp.download');
+        $downloaderDefinition = $container->findDefinition('downloadapp.download');
 
-        $fileDownloadServices = $container->findTaggedServiceIds('downloadapp.file.downloader');
+        $fileDownloaders = $container->findTaggedServiceIds('downloadapp.file.downloader');
 
-        foreach ($fileDownloadServices as $id => $fileDownloadService) {
-            $downloadServiceDefinition->addMethodCall(
+        foreach ($fileDownloaders as $id => $fileDownloader) {
+            $downloaderDefinition->addMethodCall(
                 'setFileDownloader',
                 [
-                    $fileDownloadService[0]['for'],
+                    $fileDownloader[0]['for'],
                     $container->getDefinition($id),
                 ]
             );

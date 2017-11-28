@@ -46,9 +46,9 @@ class UserFilesystemTest extends TestCase
             ->method('get')
             ->willReturn($userMock);
 
-        $service = new UserFilesystem($currentUserMock, new PathUtils(), 'Root');
+        $userFilesystem = new UserFilesystem($currentUserMock, new PathUtils(), 'Root');
 
-        $this->assertInstanceOf(FilesystemInterface::class, $service->get());
+        $this->assertInstanceOf(FilesystemInterface::class, $userFilesystem->get());
     }
 }
 // @codeCoverageIgnoreEnd

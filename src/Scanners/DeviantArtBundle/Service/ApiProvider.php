@@ -41,7 +41,7 @@ class ApiProvider
     private $provider;
 
     /** @var  TokenProviderInterface */
-    private $tokenService;
+    private $tokenProvider;
 
     /** @var  Api */
     private $api;
@@ -52,13 +52,13 @@ class ApiProvider
      * @param string $id
      * @param string $secret
      * @param string $redirectUri
-     * @param TokenProviderInterface $tokenService
+     * @param TokenProviderInterface $tokenProvider
      */
     public function __construct(
         string $id,
         string $secret,
         string $redirectUri,
-        TokenProviderInterface $tokenService
+        TokenProviderInterface $tokenProvider
     )
     {
         $this->provider = new DeviantArtProvider(
@@ -68,7 +68,7 @@ class ApiProvider
                 'redirectUri'  => $redirectUri,
             ]
         );
-        $this->tokenService = $tokenService;
+        $this->tokenProvider = $tokenProvider;
     }
 
     /**
@@ -79,7 +79,7 @@ class ApiProvider
     public function initialize(string $authCode = null)
     {
         if (!isset($this->api)) {
-            $this->api = new Api($this->provider, $this->tokenService->getToken());
+            $this->api = new Api($this->provider, $this->tokenProvider->getToken());
             $this->api->authorize(
                 [Api::SCOPE_STASH, Api::SCOPE_BROWSE, Api::SCOPE_FEED],
                 $authCode
@@ -106,7 +106,7 @@ class ApiProvider
     function __destruct()
     {
         if (isset($this->api) && $this->api->hasAccessToken()) {
-            $this->tokenService->setToken($this->api->getAccessToken());
+            $this->tokenProvider->setToken($this->api->getAccessToken());
         }
     }
 

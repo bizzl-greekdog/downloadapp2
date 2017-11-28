@@ -42,25 +42,25 @@ class UserTokenProvider implements TokenProviderInterface
     private $tokenDir;
 
     /** @var  CurrentUser */
-    private $currentUserService;
+    private $currentUser;
 
     /** @var  PathUtils */
-    private $pathUtilsService;
+    private $pathUtils;
 
     /**
      * UserTokenProvider constructor.
      * @param string $tokenDir
-     * @param CurrentUser $currentUserService
+     * @param CurrentUser $currentUser
      */
     public function __construct(
         string $tokenDir,
-        CurrentUser $currentUserService,
-        PathUtils $pathUtilsService
+        CurrentUser $currentUser,
+        PathUtils $pathUtils
     )
     {
         $this->tokenDir = $tokenDir;
-        $this->currentUserService = $currentUserService;
-        $this->pathUtilsService = $pathUtilsService;
+        $this->currentUser = $currentUser;
+        $this->pathUtils = $pathUtils;
     }
 
     /**
@@ -102,9 +102,9 @@ class UserTokenProvider implements TokenProviderInterface
      */
     private function createTokenFilePath(): string
     {
-        return $this->pathUtilsService->join(
+        return $this->pathUtils->join(
             $this->tokenDir,
-            $this->currentUserService->get()->getUsernameCanonical() . '.json'
+            $this->currentUser->get()->getUsernameCanonical() . '.json'
         );
     }
 }

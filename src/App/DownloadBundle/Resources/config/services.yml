@@ -19,7 +19,7 @@ services:
             - name: downloadapp.file.downloader
               for: DownloadApp\App\DownloadBundle\Entity\ContentFile
         calls:
-            - method: setPathUtilsService
+            - method: setPathUtils
               arguments:
                   - '@downloadapp.utils.path'
 
@@ -31,7 +31,7 @@ services:
         arguments:
             - "@csa_guzzle.client.general"
         calls:
-            - method: setPathUtilsService
+            - method: setPathUtils
               arguments:
                   - '@downloadapp.utils.path'
 

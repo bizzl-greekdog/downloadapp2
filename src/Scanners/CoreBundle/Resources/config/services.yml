@@ -1,4 +1,1 @@
 services:
-#    core.example:
-#        class: DownloadApp\Scanners\CoreBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]

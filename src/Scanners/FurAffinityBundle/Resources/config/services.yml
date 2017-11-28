@@ -1,5 +1,5 @@
 services:
-    downloadapp.scanners.furaffinity.fetching:
+    downloadapp.scanners.furaffinity.scanner:
         class: DownloadApp\Scanners\FurAffinityBundle\Service\Scanner
         arguments:
             - '@csa_guzzle.client.furaffinity'

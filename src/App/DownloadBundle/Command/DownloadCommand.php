@@ -32,10 +32,10 @@ class DownloadCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $downloadService = $this
+        $downloader = $this
             ->getContainer()
             ->get('downloadapp.download');
-        $download = $downloadService->findByGUID($input->getArgument('key'));
-        $downloadService->download($download);
+        $download = $downloader->findByGUID($input->getArgument('key'));
+        $downloader->download($download);
     }
 }

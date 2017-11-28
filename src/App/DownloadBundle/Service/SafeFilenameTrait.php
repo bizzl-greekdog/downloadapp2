@@ -40,17 +40,17 @@ use League\Flysystem\FilesystemInterface;
 trait SafeFilenameTrait
 {
     /** @var  PathUtils */
-    private $pathUtilsService;
+    private $pathUtils;
 
     /**
      * Set the PathUtils;
      *
-     * @param PathUtils $pathUtilsService
+     * @param PathUtils $pathUtils
      * @return $this
      */
-    public function setPathUtilsService($pathUtilsService)
+    public function setPathUtils($pathUtils)
     {
-        $this->pathUtilsService = $pathUtilsService;
+        $this->pathUtils = $pathUtils;
         return $this;
     }
 
@@ -64,8 +64,8 @@ trait SafeFilenameTrait
     protected function findSafeFilename(string $filename, FilesystemInterface $fs): string
     {
         $i = 1;
-        $filename = isset($this->pathUtilsService)
-            ? $this->pathUtilsService->cleanFilename($filename)
+        $filename = isset($this->pathUtils)
+            ? $this->pathUtils->cleanFilename($filename)
             : $filename;
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         $basename = pathinfo($filename, PATHINFO_FILENAME);

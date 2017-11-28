@@ -56,23 +56,23 @@ class SetCookiesCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $currentUserService = $this
+        $currentUser = $this
             ->getContainer()
             ->get('downloadapp.user.current');
         $user = $this
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
-        $currentUserService->set($user);
+        $currentUser->set($user);
         $cookieJar = $this
             ->getContainer()
             ->get('downloadapp.user.cookiejars.furaffinity');
-        $cookieUtilService = $this
+        $cookieUtils = $this
             ->getContainer()
             ->get('downloadapp.utils.cookies');
 
         $cookies = json_decode(file_get_contents($input->getArgument('json')), true);
 
-        $cookieUtilService->import($cookies, $cookieJar);
+        $cookieUtils->import($cookies, $cookieJar);
     }
 }

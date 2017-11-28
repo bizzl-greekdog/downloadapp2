@@ -65,10 +65,10 @@ class UserExtension extends Extension
                 ->addArgument($cookieJar['directory'])
                 ->addArgument(new Reference('downloadapp.utils.path'));
 
-            $serviceName = "downloadapp.user.cookiejars.{$name}";
-            $container->setDefinition($serviceName, $jarDefinition);
+            $cookieJarName = "downloadapp.user.cookiejars.{$name}";
+            $container->setDefinition($cookieJarName, $jarDefinition);
             if (isset($cookieJar['alias'])) {
-                $container->setAlias($cookieJar['alias'], $serviceName);
+                $container->setAlias($cookieJar['alias'], $cookieJarName);
             }
         }
     }

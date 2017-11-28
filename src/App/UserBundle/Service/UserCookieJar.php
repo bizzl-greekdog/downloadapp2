@@ -43,7 +43,7 @@ use Traversable;
 class UserCookieJar implements CookieJarInterface
 {
     /** @var  CurrentUser */
-    private $currentUserService;
+    private $currentUser;
 
     /** @var  CookieJarInterface[] */
     private $loadedJars = [];
@@ -52,20 +52,20 @@ class UserCookieJar implements CookieJarInterface
     private $cookiesDir;
 
     /** @var  PathUtils */
-    private $pathUtilsService;
+    private $pathUtils;
 
     /**
      * UserCookieJar constructor.
      *
-     * @param CurrentUser $currentUserService
+     * @param CurrentUser $currentUser
      * @param string $cookiesDir
-     * @param PathUtils $pathUtilsService
+     * @param PathUtils $pathUtils
      */
-    public function __construct(CurrentUser $currentUserService, string $cookiesDir, PathUtils $pathUtilsService)
+    public function __construct(CurrentUser $currentUser, string $cookiesDir, PathUtils $pathUtils)
     {
-        $this->currentUserService = $currentUserService;
+        $this->currentUser = $currentUser;
         $this->cookiesDir = $cookiesDir;
-        $this->pathUtilsService = $pathUtilsService;
+        $this->pathUtils = $pathUtils;
 
         if (!is_dir($this->cookiesDir)) {
             mkdir($this->cookiesDir, 0755, true);
@@ -74,9 +74,9 @@ class UserCookieJar implements CookieJarInterface
 
     private function getUserJar(): CookieJarInterface
     {
-        $username = $this->currentUserService->get()->getUsernameCanonical();
+        $username = $this->currentUser->get()->getUsernameCanonical();
         if (!isset($this->loadedJars[$username])) {
-            $this->loadedJars[$username] = new FileCookieJar($this->pathUtilsService->join($this->cookiesDir, "{$username}.cookiejar"), true);
+            $this->loadedJars[$username] = new FileCookieJar($this->pathUtils->join($this->cookiesDir, "{$username}.cookiejar"), true);
         }
         return $this->loadedJars[$username];
     }

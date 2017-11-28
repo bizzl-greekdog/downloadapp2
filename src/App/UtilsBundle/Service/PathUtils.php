@@ -77,4 +77,15 @@ class PathUtils
         }
         return $result;
     }
+
+    /**
+     * Split a path into elements.
+     *
+     * @param string $path
+     * @return string[]
+     */
+    public function split(string $path): array
+    {
+        return array_values(array_filter(explode('/', $path)));
+    }
 }

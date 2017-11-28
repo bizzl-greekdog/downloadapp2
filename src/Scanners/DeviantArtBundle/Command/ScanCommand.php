@@ -41,7 +41,7 @@ class ScanCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
-        $jobService = $this
+        $jobs = $this
             ->getContainer()
             ->get('downloadapp.utils.jobs');
         $scanner = $this
@@ -53,9 +53,9 @@ class ScanCommand extends ContainerAwareCommand
             $scanner->fetchFromAppUrl($url);
         } catch (ApiException $e) {
             if (in_array($e->getCode(), [403, 429]) && $input->hasOption('jms-job-id')) {
-                $thisJob = $jobService->find($input->getOption('jms-job-id'));
-                $jobService->reschedule($thisJob, '+1 minutes', true);
-                $jobService->pauseQueue(Scanner::QUEUE, 60, true);
+                $thisJob = $jobs->find($input->getOption('jms-job-id'));
+                $jobs->reschedule($thisJob, '+1 minutes', true);
+                $jobs->pauseQueue(Scanner::QUEUE, 60, true);
                 $output->writeln($e->__toString());
             } else {
                 throw $e;

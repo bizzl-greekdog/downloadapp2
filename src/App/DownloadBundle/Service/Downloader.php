@@ -57,7 +57,7 @@ class Downloader
     private $entityManager;
 
     /** @var  UserFilesystem */
-    private $filesystemService;
+    private $userFilesystem;
 
     /**
      * Downloader constructor.
@@ -65,22 +65,22 @@ class Downloader
      * @param EntityManager $entityManager
      * @param FilesystemInterface $filesystem
      */
-    public function __construct(EntityManager $entityManager, UserFilesystem $filesystemService)
+    public function __construct(EntityManager $entityManager, UserFilesystem $userFilesystem)
     {
         $this->entityManager = $entityManager;
-        $this->filesystemService = $filesystemService;
+        $this->userFilesystem = $userFilesystem;
     }
 
     /**
      * Set the download service for a given File subclass.
      *
      * @param string $forClass
-     * @param FileDownloaderInterface $service
+     * @param FileDownloaderInterface $fileDownloader
      * @return Downloader
      */
-    public function setFileDownloader(string $forClass, FileDownloaderInterface $service): Downloader
+    public function setFileDownloader(string $forClass, FileDownloaderInterface $fileDownloader): Downloader
     {
-        $this->fileDownloaders[$forClass] = $service;
+        $this->fileDownloaders[$forClass] = $fileDownloader;
         return $this;
     }
 
@@ -146,7 +146,7 @@ class Downloader
     {
         try {
             $user = $download->getUser();
-            $fs = $this->filesystemService->get($user);
+            $fs = $this->userFilesystem->get($user);
             $filename = $this->fetch($download->getFile(), $fs);
             $download->setFile($this->entityManager->find(File::class, $download->getFile()->getId()));
             $fs->put("$filename.txt", $download);

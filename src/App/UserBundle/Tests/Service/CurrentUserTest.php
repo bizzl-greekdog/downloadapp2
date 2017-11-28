@@ -48,9 +48,9 @@ class CurrentUserTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUser($tokenStorageMock);
+        $currentUser = new CurrentUser($tokenStorageMock);
 
-        $service->get();
+        $currentUser->get();
     }
 
     public function testLoggedIn()
@@ -64,9 +64,9 @@ class CurrentUserTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUser($tokenStorageMock);
+        $currentUser = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($userMock, $service->get());
+        $this->assertEquals($userMock, $currentUser->get());
     }
 
     public function testUserOverride()
@@ -81,10 +81,10 @@ class CurrentUserTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUser($tokenStorageMock);
+        $currentUser = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($service, $service->set($userMock2));
-        $this->assertEquals($userMock2, $service->get());
+        $this->assertEquals($currentUser, $currentUser->set($userMock2));
+        $this->assertEquals($userMock2, $currentUser->get());
     }
 
     public function testUserOverrideClearing()
@@ -99,11 +99,11 @@ class CurrentUserTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUser($tokenStorageMock);
+        $currentUser = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($service, $service->set($userMock2));
-        $this->assertEquals($service, $service->clear());
-        $this->assertEquals($userMock, $service->get());
+        $this->assertEquals($currentUser, $currentUser->set($userMock2));
+        $this->assertEquals($currentUser, $currentUser->clear());
+        $this->assertEquals($userMock, $currentUser->get());
     }
 }
 // @codeCoverageIgnoreEnd

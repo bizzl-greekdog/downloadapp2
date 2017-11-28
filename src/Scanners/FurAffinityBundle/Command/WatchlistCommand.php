@@ -28,21 +28,21 @@ class WatchlistCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $fetchingService = $this
+        $scanner = $this
             ->getContainer()
-            ->get('downloadapp.scanners.furaffinity.fetching');
+            ->get('downloadapp.scanners.furaffinity.scanner');
         $eventDispatcher = $this
             ->getContainer()
             ->get('event_dispatcher');
         $eventDispatcher->addSubscriber(new NotificationToOutputListener($output));
-        $currentUserService = $this
+        $currentUser = $this
             ->getContainer()
             ->get('downloadapp.user.current');
         $user = $this
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
-        $currentUserService->set($user);
-        $fetchingService->fetchWatchlist();
+        $currentUser->set($user);
+        $scanner->fetchWatchlist();
     }
 }
