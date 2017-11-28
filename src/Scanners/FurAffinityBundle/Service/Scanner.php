@@ -37,6 +37,7 @@ use DownloadApp\App\DownloadBundle\Service\Downloader;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand;
+use DownloadApp\Scanners\FurAffinityBundle\Exception\NotAFurAffinityPageException;
 use GuzzleHttp\Client;
 use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
@@ -123,7 +124,7 @@ class Scanner
     public function fetchSubmission(string $url)
     {
         $uri = Uri::createFromString($url);
-        $path = array_filter(explode('/', $uri->getPath()));
+        $path = $this->pathUtils->split($uri->getPath());
         $guid = implode(
             ':', [
                    'furaffinity',
@@ -235,6 +236,35 @@ class Scanner
         array_map([$this, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
         $this->sendNotification("Watchlist contained a total of {$total} submissions, scans scheduled");
+    }
+
+    /**
+     * Fetch a furaffinity page.
+     *
+     * @param string $url
+     * @throws NotAFurAffinityPageException
+     */
+    public function fetch(string $url)
+    {
+        $uri = Uri::createFromString($url);
+        $path = $this->pathUtils->split($uri->getPath());
+        switch (strtolower($path[0])) {
+            case 'gallery':
+            case 'scraps':
+            case 'favorites':
+                $this->fetchGallery($url);
+                break;
+            case 'view':
+            case 'full':
+                $this->fetchSubmission($url);
+                break;
+            case 'user':
+                $this->scheduleScan("http://www.furaffinity.net/gallery/{$path[1]}/");
+                $this->scheduleScan("http://www.furaffinity.net/scraps/{$path[1]}/");
+                break;
+            default:
+                throw new NotAFurAffinityPageException($url);
+        }
     }
 
     /**
