@@ -22,7 +22,7 @@ class WatchlistCommand extends ContainerAwareCommand
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Fetch a users watchlist')
+            ->setDescription('Scan a users watchlist')
             ->addArgument('user', InputArgument::REQUIRED);
     }
 
@@ -42,7 +42,7 @@ class WatchlistCommand extends ContainerAwareCommand
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
         $currentUser->set($user);
-        $scanner->fetchWatchlist();
+        $scanner->scanWatchlist();
         sleep(5); // Cooldown
     }
 }

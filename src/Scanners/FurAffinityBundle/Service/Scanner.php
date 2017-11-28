@@ -116,12 +116,12 @@ class Scanner
     }
 
     /**
-     * Fetch a single submission.
+     * Scan a single submission.
      *
      * @param string $url
      * @throws DownloadAlreadyExistsException
      */
-    public function fetchSubmission(string $url)
+    public function scanSubmission(string $url)
     {
         $uri = Uri::createFromString($url);
         $path = $this->pathUtils->split($uri->getPath());
@@ -177,7 +177,7 @@ class Scanner
      *
      * @param string $url
      */
-    public function fetchGallery(string $url)
+    public function scanGallery(string $url)
     {
         $i = 1;
         $dom = new Dom();
@@ -239,12 +239,12 @@ class Scanner
     }
 
     /**
-     * Fetch a furaffinity page.
+     * Scan a furaffinity page.
      *
      * @param string $url
      * @throws NotAFurAffinityPageException
      */
-    public function fetch(string $url)
+    public function scan(string $url)
     {
         $uri = Uri::createFromString($url);
         $path = $this->pathUtils->split($uri->getPath());
@@ -252,11 +252,11 @@ class Scanner
             case 'gallery':
             case 'scraps':
             case 'favorites':
-                $this->fetchGallery($url);
+                $this->scanGallery($url);
                 break;
             case 'view':
             case 'full':
-                $this->fetchSubmission($url);
+                $this->scanSubmission($url);
                 break;
             case 'user':
                 $this->scheduleScan("http://www.furaffinity.net/gallery/{$path[1]}/");

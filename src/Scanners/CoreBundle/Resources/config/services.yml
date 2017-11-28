@@ -1,1 +1,6 @@
 services:
+    downloadapp.scanners.generic.scanner:
+        class: DownloadApp\Scanners\CoreBundle\Service\Scanner
+        arguments:
+            - '@downloadapp.user.current'
+            - '@doctrine.orm.entity_manager'

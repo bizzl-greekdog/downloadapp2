@@ -70,6 +70,6 @@ class ScanCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('downloadapp.scanners.furaffinity.scanner');
 
-        $scanner->fetch($input->getArgument('url'));
+        $scanner->scan($input->getArgument('url'));
     }
 }

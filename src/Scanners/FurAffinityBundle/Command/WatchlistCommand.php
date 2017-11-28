@@ -19,7 +19,7 @@ class WatchlistCommand extends ContainerAwareCommand
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Fetch a users watchlist')
+            ->setDescription('Scan a users watchlist')
             ->addArgument('user', InputArgument::REQUIRED);
     }
 

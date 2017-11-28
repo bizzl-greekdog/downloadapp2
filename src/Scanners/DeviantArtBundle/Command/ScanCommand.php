@@ -50,7 +50,7 @@ class ScanCommand extends ContainerAwareCommand
         $currentUser->set($user);
         $url = $input->getArgument('url');
         try {
-            $scanner->fetchFromAppUrl($url);
+            $scanner->scan($url);
         } catch (ApiException $e) {
             if (in_array($e->getCode(), [403, 429]) && $input->hasOption('jms-job-id')) {
                 $thisJob = $jobs->find($input->getOption('jms-job-id'));

@@ -182,12 +182,12 @@ class Scanner
     }
 
     /**
-     * Fetch a deviation.
+     * Scan a deviation.
      *
      * @param string $deviationId
      * @throws DownloadAlreadyExistsException
      */
-    public function fetchDeviation(string $deviationId)
+    public function ScanDeviation(string $deviationId)
     {
         $guid = implode(
             ':', [
@@ -275,7 +275,7 @@ class Scanner
      * @param int $offset
      * @throws ApiException
      */
-    public function fetchCollection(string $collectionId, string $username = null, int $offset = 0)
+    public function scanCollection(string $collectionId, string $username = null, int $offset = 0)
     {
         $collection = $this->apiProvider->getApi()->collections();
         try {
@@ -295,7 +295,7 @@ class Scanner
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
-                $this->fetchCollection($collectionId, $username, $offset);
+                $this->scanCollection($collectionId, $username, $offset);
             } else {
                 throw $e;
             }
@@ -310,7 +310,7 @@ class Scanner
      * @param int $offset
      * @throws ApiException
      */
-    public function fetchGallery(string $galleryId, string $username = null, int $offset = 0)
+    public function scanGallery(string $galleryId, string $username = null, int $offset = 0)
     {
         $gallery = $this->apiProvider->getApi()->gallery();
         try {
@@ -337,7 +337,7 @@ class Scanner
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
-                $this->fetchGallery($galleryId, $username, $offset);
+                $this->scanGallery($galleryId, $username, $offset);
             } else {
                 throw $e;
             }
@@ -345,11 +345,11 @@ class Scanner
     }
 
     /**
-     * Fetch a user profile and schedule scans for it's galleries.
+     * Scan a user profile and schedule scans for it's galleries.
      *
      * @param string $username
      */
-    public function fetchProfile(string $username)
+    public function scanProfile(string $username)
     {
         $response = $this->apiProvider->getApi()->user()->getProfile($username, true, true, true);
         foreach ($response->galleries as $gallery) {
@@ -366,27 +366,27 @@ class Scanner
      * @param string $appUrl
      * @throws \Exception
      */
-    public function fetchFromAppUrl(string $appUrl)
+    public function scan(string $appUrl)
     {
         $uri = Uri::createFromString($this->getAppUrl($appUrl));
         switch ($uri->getHost()) {
             case 'deviation':
-                $this->fetchDeviation(substr($uri->getPath(), 1));
+                $this->ScanDeviation(substr($uri->getPath(), 1));
                 break;
             case 'collection':
                 list($username, $id) = array_values(
                     array_filter(explode('/', $uri->getPath()))
                 );
-                $this->fetchCollection($id, $username);
+                $this->scanCollection($id, $username);
                 break;
             case 'gallery':
                 list($username, $id) = array_values(
                     array_filter(explode('/', $uri->getPath()))
                 );
-                $this->fetchGallery($id, $username);
+                $this->scanGallery($id, $username);
                 break;
             case 'profile':
-                $this->fetchProfile(substr($uri->getPath(), 1));
+                $this->scanProfile(substr($uri->getPath(), 1));
                 break;
             default:
                 throw new NotADeviantArtPageException($appUrl);
@@ -420,7 +420,7 @@ class Scanner
      * @param string|null $cursor
      * @throws ApiException
      */
-    public function fetchWatchlist(string $cursor = null)
+    public function scanWatchlist(string $cursor = null)
     {
         $feed = $this->apiProvider->getApi()->feed();
         $iteration = 0;
@@ -446,7 +446,7 @@ class Scanner
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
-                $this->fetchWatchlist($cursor);
+                $this->scanWatchlist($cursor);
             } else {
                 throw $e;
             }
