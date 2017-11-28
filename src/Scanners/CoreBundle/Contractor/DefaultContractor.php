@@ -24,36 +24,56 @@
  * THE SOFTWARE.
  */
 
-namespace DownloadApp\App\DownloadBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+namespace DownloadApp\Scanners\CoreBundle\Contractor;
+
+use DownloadApp\App\UserBundle\Service\CurrentUser;
+use DownloadApp\App\UtilsBundle\Service\Jobs;
+use DownloadApp\Scanners\CoreBundle\Command\DefaultScanCommand;
+use JMS\JobQueueBundle\Entity\Job;
 
 /**
- * Class FileDownloadersCompilerPass
- * @package Benkle\DownloadApp\DownloadBundle\DependencyInjection\Compiler
+ * Class DefaultContractor
+ * @package DownloadApp\Scanners\CoreBundle\Contractor
  */
-class FileDownloadersCompilerPass implements CompilerPassInterface
+class DefaultContractor implements ContractorInterface
 {
+    /** @var  Jobs */
+    private $jobs;
+
+    /** @var  CurrentUser */
+    private $currentUser;
+
     /**
-     * You can modify the container here before it is dumped to PHP code.
-     *
-     * @param ContainerBuilder $container
+     * DefaultContractor constructor.
+     * @param Jobs $jobs
+     * @param CurrentUser $currentUser
      */
-    public function process(ContainerBuilder $container)
+    public function __construct(Jobs $jobs, CurrentUser $currentUser)
     {
-        $downloaderDefinition = $container->findDefinition('downloadapp.download');
+        $this->jobs = $jobs;
+        $this->currentUser = $currentUser;
+    }
 
-        $fileDownloaders = $container->findTaggedServiceIds('downloadapp.file.downloader');
+    /**
+     * Contract a scan job.
+     *
+     * @param string $url
+     * @param string|null $referer
+     * @return bool
+     */
+    public function contract(string $url, string $referer = null): bool
+    {
+        $job = new Job(DefaultScanCommand::NAME, [$url, $referer]);
+        $this->jobs->persist($job);
+        return true;
+    }
 
-        foreach ($fileDownloaders as $id => $fileDownloader) {
-            $downloaderDefinition->addMethodCall(
-                'setFileDownloader',
-                [
-                    $fileDownloader[0]['for'],
-                    $container->getDefinition($id),
-                ]
-            );
-        }
+    /**
+     * Contract a watchlist scan.
+     */
+    public function contractWatchlist()
+    {
+        return;
     }
 }

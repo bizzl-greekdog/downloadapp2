@@ -4,3 +4,15 @@ services:
         arguments:
             - '@downloadapp.user.current'
             - '@doctrine.orm.entity_manager'
+
+    downloadapp.contractors:
+        class: DownloadApp\Scanners\CoreBundle\Service\Contractors
+
+    downloadapp.contractor.generic:
+        class: DownloadApp\Scanners\CoreBundle\Contractor\DefaultContractor
+        arguments:
+            - '@downloadapp.utils.jobs'
+            - '@downloadapp.user.current'
+        tags:
+            - name: downloadapp.contractor
+              priority: 100000

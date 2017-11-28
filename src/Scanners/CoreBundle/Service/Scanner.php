@@ -29,9 +29,11 @@ namespace DownloadApp\Scanners\CoreBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
+use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
+use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 
 /**
@@ -80,8 +82,11 @@ class Scanner
             ->setMetadatum('Found at', $referer ?? '')
             ->setComment('')
             ->setFile($file);
-
         $this->em->persist($download);
+
+        $job = new Job(DownloadCommand::NAME, [$download->getGuid()], DownloadCommand::QUEUE);
+        $this->em->persist($job);
+
     }
 
     /**

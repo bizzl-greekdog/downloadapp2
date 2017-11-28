@@ -32,12 +32,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ScanCommand
+ * Class DefaultScanCommand
  * @package DownloadApp\Scanners\CoreBundle\Command
  */
-class ScanCommand extends ContainerAwareCommand
+class DefaultScanCommand extends ContainerAwareCommand
 {
-    const NAME = 'scanner:generic';
+    const NAME = 'scanner:default';
 
     /**
      * {@inheritdoc}
@@ -46,10 +46,10 @@ class ScanCommand extends ContainerAwareCommand
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Scan any url')
+            ->setDescription('Start a generic download scan')
             ->addArgument('user', InputArgument::REQUIRED)
             ->addArgument('url', InputArgument::REQUIRED)
-            ->addArgument('referer', InputArgument::REQUIRED);
+            ->addArgument('referer', InputArgument::OPTIONAL);
     }
 
     /**
@@ -57,6 +57,9 @@ class ScanCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $genericScanner = $this
+            ->getContainer()
+            ->get('downloadapp.scanners.generic.scanner');
         $currentUser = $this
             ->getContainer()
             ->get('downloadapp.user.current');
@@ -65,11 +68,6 @@ class ScanCommand extends ContainerAwareCommand
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
         $currentUser->set($user);
-        $url = $input->getArgument('url');
-        $referer = $input->getArgument('referer');
-        $this
-            ->getContainer()
-            ->get('downloadapp.contractors')
-            ->contract($url, $referer);
+        $genericScanner->scan($input->getArgument('url'), $input->getArgument('referer'));
     }
 }

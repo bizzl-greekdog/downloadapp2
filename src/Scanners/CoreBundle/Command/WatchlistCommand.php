@@ -31,25 +31,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class ScanCommand
- * @package DownloadApp\Scanners\CoreBundle\Command
- */
-class ScanCommand extends ContainerAwareCommand
+class WatchlistCommand extends ContainerAwareCommand
 {
-    const NAME = 'scanner:generic';
-
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName(self::NAME)
-            ->setDescription('Scan any url')
-            ->addArgument('user', InputArgument::REQUIRED)
-            ->addArgument('url', InputArgument::REQUIRED)
-            ->addArgument('referer', InputArgument::REQUIRED);
+            ->setName('watchlist:all')
+            ->setDescription('Scan all watchlists')
+            ->addArgument('user', InputArgument::REQUIRED);
     }
 
     /**
@@ -65,11 +57,9 @@ class ScanCommand extends ContainerAwareCommand
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
         $currentUser->set($user);
-        $url = $input->getArgument('url');
-        $referer = $input->getArgument('referer');
         $this
             ->getContainer()
             ->get('downloadapp.contractors')
-            ->contract($url, $referer);
+            ->contractWatchlist();
     }
 }

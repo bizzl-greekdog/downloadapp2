@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace DownloadApp\App\DownloadBundle\DependencyInjection\Compiler;
+namespace DownloadApp\Scanners\CoreBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * Class FileDownloadersCompilerPass
- * @package Benkle\DownloadApp\DownloadBundle\DependencyInjection\Compiler
+ * Class ContractorsCompilerPass
+ * @package DownloadApp\Scanners\CoreBundle\DependencyInjection\Compiler
  */
-class FileDownloadersCompilerPass implements CompilerPassInterface
+class ContractorsCompilerPass implements CompilerPassInterface
 {
     /**
      * You can modify the container here before it is dumped to PHP code.
@@ -42,16 +42,16 @@ class FileDownloadersCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $downloaderDefinition = $container->findDefinition('downloadapp.download');
+        $contractorsDefinition = $container->findDefinition('downloadapp.contractors');
 
-        $fileDownloaders = $container->findTaggedServiceIds('downloadapp.file.downloader');
+        $contractors = $container->findTaggedServiceIds('downloadapp.contractor');
 
-        foreach ($fileDownloaders as $id => $fileDownloader) {
-            $downloaderDefinition->addMethodCall(
-                'setFileDownloader',
+        foreach ($contractors as $id => $contractor) {
+            $contractorsDefinition->addMethodCall(
+                'add',
                 [
-                    $fileDownloader[0]['for'],
                     $container->getDefinition($id),
+                    $contractor[0]['priority'],
                 ]
             );
         }

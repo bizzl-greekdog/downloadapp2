@@ -24,36 +24,26 @@
  * THE SOFTWARE.
  */
 
-namespace DownloadApp\App\DownloadBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+namespace DownloadApp\Scanners\CoreBundle\Contractor;
 
 /**
- * Class FileDownloadersCompilerPass
- * @package Benkle\DownloadApp\DownloadBundle\DependencyInjection\Compiler
+ * Interface ContractorInterface
+ * @package DownloadApp\Scanners\CoreBundle\Contractor
  */
-class FileDownloadersCompilerPass implements CompilerPassInterface
+interface ContractorInterface
 {
     /**
-     * You can modify the container here before it is dumped to PHP code.
+     * Contract a scan job.
      *
-     * @param ContainerBuilder $container
+     * @param string $url
+     * @param string|null $referer
+     * @return bool
      */
-    public function process(ContainerBuilder $container)
-    {
-        $downloaderDefinition = $container->findDefinition('downloadapp.download');
+    public function contract(string $url, string $referer = null): bool;
 
-        $fileDownloaders = $container->findTaggedServiceIds('downloadapp.file.downloader');
-
-        foreach ($fileDownloaders as $id => $fileDownloader) {
-            $downloaderDefinition->addMethodCall(
-                'setFileDownloader',
-                [
-                    $fileDownloader[0]['for'],
-                    $container->getDefinition($id),
-                ]
-            );
-        }
-    }
+    /**
+     * Contract a watchlist scan.
+     */
+    public function contractWatchlist();
 }
