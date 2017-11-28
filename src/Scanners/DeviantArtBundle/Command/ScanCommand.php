@@ -3,7 +3,7 @@
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
 use Benkle\Deviantart\Exceptions\ApiException;
-use DownloadApp\Scanners\DeviantArtBundle\Service\DeviantArtFetchingService;
+use DownloadApp\Scanners\DeviantArtBundle\Service\Scanner;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,7 +34,7 @@ class ScanCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $currentUserService = $this
+        $currentUser = $this
             ->getContainer()
             ->get('downloadapp.user.current');
         $user = $this
@@ -44,15 +44,18 @@ class ScanCommand extends ContainerAwareCommand
         $jobService = $this
             ->getContainer()
             ->get('downloadapp.utils.jobs');
-        $currentUserService->setUser($user);
+        $scanner = $this
+            ->getContainer()
+            ->get('downloadapp.scanners.deviantart.scanner');
+        $currentUser->set($user);
         $url = $input->getArgument('url');
         try {
-            $fetchingService->fetchFromAppUrl($url);
+            $scanner->fetchFromAppUrl($url);
         } catch (ApiException $e) {
             if (in_array($e->getCode(), [403, 429]) && $input->hasOption('jms-job-id')) {
                 $thisJob = $jobService->find($input->getOption('jms-job-id'));
                 $jobService->reschedule($thisJob, '+1 minutes', true);
-                $jobService->pauseQueue(DeviantArtFetchingService::QUEUE, 60, true);
+                $jobService->pauseQueue(Scanner::QUEUE, 60, true);
                 $output->writeln($e->__toString());
             } else {
                 throw $e;

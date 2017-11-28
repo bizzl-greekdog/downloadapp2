@@ -34,13 +34,13 @@ use GuzzleHttp\Client;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Class RemoteFileFileDownloadService
+ * Class RemoteFileFileDownloader
  *
  * Download a remote file.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class RemoteFileFileDownloadService implements FileDownloadServiceInterface
+class RemoteFileFileDownloader implements FileDownloaderInterface
 {
     use SafeFilenameTrait;
 
@@ -48,7 +48,7 @@ class RemoteFileFileDownloadService implements FileDownloadServiceInterface
     private $client;
 
     /**
-     * RemoteFileFileDownloadService constructor.
+     * RemoteFileFileDownloader constructor.
      *
      * @param Client $client
      */

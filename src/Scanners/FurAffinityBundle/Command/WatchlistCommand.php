@@ -42,7 +42,7 @@ class WatchlistCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
-        $currentUserService->setUser($user);
+        $currentUserService->set($user);
         $fetchingService->fetchWatchlist();
     }
 }

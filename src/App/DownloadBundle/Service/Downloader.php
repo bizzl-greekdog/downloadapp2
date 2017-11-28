@@ -34,7 +34,7 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Exceptions\MissingDownloadServiceException;
-use DownloadApp\App\UserBundle\Service\FilesystemService;
+use DownloadApp\App\UserBundle\Service\UserFilesystem;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use JMS\JobQueueBundle\Entity\Job;
@@ -42,30 +42,30 @@ use League\Flysystem\Exception;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Class DownloadService
+ * Class Downloader
  *
  * This service is called to download files, and write metadata files for them.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class DownloadService
+class Downloader
 {
-    /** @var FileDownloadServiceInterface[] */
-    private $fileDownloadServices = [];
+    /** @var FileDownloaderInterface[] */
+    private $fileDownloaders = [];
 
     /** @var  EntityManager */
     private $entityManager;
 
-    /** @var  FilesystemService */
+    /** @var  UserFilesystem */
     private $filesystemService;
 
     /**
-     * DownloadService constructor.
+     * Downloader constructor.
      *
      * @param EntityManager $entityManager
      * @param FilesystemInterface $filesystem
      */
-    public function __construct(EntityManager $entityManager, FilesystemService $filesystemService)
+    public function __construct(EntityManager $entityManager, UserFilesystem $filesystemService)
     {
         $this->entityManager = $entityManager;
         $this->filesystemService = $filesystemService;
@@ -75,12 +75,12 @@ class DownloadService
      * Set the download service for a given File subclass.
      *
      * @param string $forClass
-     * @param FileDownloadServiceInterface $service
-     * @return DownloadService
+     * @param FileDownloaderInterface $service
+     * @return Downloader
      */
-    public function setFileDownloadService(string $forClass, FileDownloadServiceInterface $service): DownloadService
+    public function setFileDownloader(string $forClass, FileDownloaderInterface $service): Downloader
     {
-        $this->fileDownloadServices[$forClass] = $service;
+        $this->fileDownloaders[$forClass] = $service;
         return $this;
     }
 
@@ -114,14 +114,14 @@ class DownloadService
      * @return string The final filename
      * @throws MissingDownloadServiceException
      */
-    public function fetchFile(File $file, FilesystemInterface $fs): string
+    public function fetch(File $file, FilesystemInterface $fs): string
     {
         $class = get_class($file);
-        if (!isset($this->fileDownloadServices[$class])) {
+        if (!isset($this->fileDownloaders[$class])) {
             throw new MissingDownloadServiceException($class);
         }
         $this->entityManager->refresh($file);
-        return $this->fileDownloadServices[$class]->download($file, $fs);
+        return $this->fileDownloaders[$class]->download($file, $fs);
     }
 
     /**
@@ -130,7 +130,7 @@ class DownloadService
      * @param Download $download
      * @param \Exception $e
      */
-    private function failDownload(Download $download, \Exception $e)
+    private function fail(Download $download, \Exception $e)
     {
         $download
             ->setFailed(true)
@@ -146,19 +146,19 @@ class DownloadService
     {
         try {
             $user = $download->getUser();
-            $fs = $this->filesystemService->getUserFilesystem($user);
-            $filename = $this->fetchFile($download->getFile(), $fs);
+            $fs = $this->filesystemService->get($user);
+            $filename = $this->fetch($download->getFile(), $fs);
             $download->setFile($this->entityManager->find(File::class, $download->getFile()->getId()));
             $fs->put("$filename.txt", $download);
             $download->setDownloaded(true);
         } catch (Exception $e) {
-            $this->failDownload($download, $e);
+            $this->fail($download, $e);
         } catch (MissingDownloadServiceException $e) {
-            $this->failDownload($download, $e);
+            $this->fail($download, $e);
         } catch (ClientException $e) {
-            $this->failDownload($download, $e);
+            $this->fail($download, $e);
         } catch (RequestException $e) {
-            $this->failDownload($download, $e);
+            $this->fail($download, $e);
         }
         $this->entityManager->persist($download);
     }
@@ -169,7 +169,7 @@ class DownloadService
      * @param Download $download
      * @throws DownloadAlreadyExistsException
      */
-    public function scheduleDownload(Download $download)
+    public function schedule(Download $download)
     {
         if (
         $this

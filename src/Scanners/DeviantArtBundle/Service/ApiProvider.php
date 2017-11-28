@@ -32,33 +32,33 @@ use Benkle\Deviantart\Api;
 use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 /**
- * Class ApiService
+ * Class ApiProvider
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class ApiService
+class ApiProvider
 {
     /** @var  DeviantArtProvider */
     private $provider;
 
-    /** @var  TokenServiceInterface */
+    /** @var  TokenProviderInterface */
     private $tokenService;
 
     /** @var  Api */
     private $api;
 
     /**
-     * ApiService constructor.
+     * ApiProvider constructor.
      *
      * @param string $id
      * @param string $secret
      * @param string $redirectUri
-     * @param TokenServiceInterface $tokenService
+     * @param TokenProviderInterface $tokenService
      */
     public function __construct(
         string $id,
         string $secret,
         string $redirectUri,
-        TokenServiceInterface $tokenService
+        TokenProviderInterface $tokenService
     )
     {
         $this->provider = new DeviantArtProvider(

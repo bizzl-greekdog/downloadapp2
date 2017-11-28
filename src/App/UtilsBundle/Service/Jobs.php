@@ -32,16 +32,16 @@ use DownloadApp\App\UtilsBundle\Command\IdleCommand;
 use JMS\JobQueueBundle\Entity\Job;
 
 /**
- * Class JobService
+ * Class Jobs
  * @package DownloadApp\App\UtilsBundle\Service
  */
-class JobService
+class Jobs
 {
     /** @var  EntityManager */
     private $em;
 
     /**
-     * JobService constructor.
+     * Jobs constructor.
      * @param EntityManager $em
      */
     public function __construct(EntityManager $em)
@@ -86,9 +86,9 @@ class JobService
      * Persist a given job.
      *
      * @param Job $job
-     * @return JobService
+     * @return Jobs
      */
-    public function persist(Job $job): JobService
+    public function persist(Job $job): Jobs
     {
         $this->em->persist($job);
         return $this;

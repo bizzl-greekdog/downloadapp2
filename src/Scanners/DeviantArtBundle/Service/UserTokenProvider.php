@@ -28,34 +28,34 @@
 namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 
-use DownloadApp\App\UserBundle\Service\CurrentUserService;
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\UserBundle\Service\CurrentUser;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
- * Class UserTokenService
+ * Class UserTokenProvider
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class UserTokenService implements TokenServiceInterface
+class UserTokenProvider implements TokenProviderInterface
 {
     /** @var  string */
     private $tokenDir;
 
-    /** @var  CurrentUserService */
+    /** @var  CurrentUser */
     private $currentUserService;
 
-    /** @var  PathUtilsService */
+    /** @var  PathUtils */
     private $pathUtilsService;
 
     /**
-     * UserTokenService constructor.
+     * UserTokenProvider constructor.
      * @param string $tokenDir
-     * @param CurrentUserService $currentUserService
+     * @param CurrentUser $currentUserService
      */
     public function __construct(
         string $tokenDir,
-        CurrentUserService $currentUserService,
-        PathUtilsService $pathUtilsService
+        CurrentUser $currentUserService,
+        PathUtils $pathUtilsService
     )
     {
         $this->tokenDir = $tokenDir;
@@ -84,7 +84,7 @@ class UserTokenService implements TokenServiceInterface
      * @param AccessToken $token
      * @return $this
      */
-    public function setToken(AccessToken $token): TokenServiceInterface
+    public function setToken(AccessToken $token): TokenProviderInterface
     {
         $tokenFilename = $this->createTokenFilePath();
         $tokenDirectory = dirname($tokenFilename);
@@ -104,7 +104,7 @@ class UserTokenService implements TokenServiceInterface
     {
         return $this->pathUtilsService->join(
             $this->tokenDir,
-            $this->currentUserService->getUser()->getUsernameCanonical() . '.json'
+            $this->currentUserService->get()->getUsernameCanonical() . '.json'
         );
     }
 }

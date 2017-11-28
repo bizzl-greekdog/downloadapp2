@@ -33,7 +33,7 @@ class WatchlistCommand extends ContainerAwareCommand
     {
         $fetchingService = $this
             ->getContainer()
-            ->get('downloadapp.scanners.deviantart.fetching');
+            ->get('downloadapp.scanners.deviantart.scanner');
         $currentUserService = $this
             ->getContainer()
             ->get('downloadapp.user.current');
@@ -41,7 +41,7 @@ class WatchlistCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
-        $currentUserService->setUser($user);
+        $currentUserService->set($user);
         $fetchingService->fetchWatchlist();
         sleep(5); // Cooldown
     }

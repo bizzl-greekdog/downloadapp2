@@ -26,7 +26,7 @@
 
 namespace DownloadApp\App\DownloadBundle;
 
-use DownloadApp\App\DownloadBundle\DependencyInjection\Compiler\FileDownloadServiceCompilerPass;
+use DownloadApp\App\DownloadBundle\DependencyInjection\Compiler\FileDownloadersCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -49,6 +49,6 @@ class DownloadBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-        $container->addCompilerPass(new FileDownloadServiceCompilerPass());
+        $container->addCompilerPass(new FileDownloadersCompilerPass());
     }
 }

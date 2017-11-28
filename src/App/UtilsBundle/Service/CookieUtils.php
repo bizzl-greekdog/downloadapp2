@@ -27,54 +27,36 @@
 
 namespace DownloadApp\App\UtilsBundle\Service;
 
+use GuzzleHttp\Cookie\CookieJarInterface;
+use GuzzleHttp\Cookie\SetCookie;
+
 /**
- * Class PathUtilsService
+ * Class CookieUtils
  * @package DownloadApp\App\UtilsBundle\Service
  */
-class PathUtilsService
+class CookieUtils
 {
-    private $cleanFilenamePatterns = [
-        '/[<]/'           => '(',
-        '/[>]/'           => ')',
-        '/[ ]?:[ ]?/'     => ' - ',
-        '/"/'             => '',
-        '/[ ]?\/[ ]?/'    => ' - ',
-        '/[ ]?\\\\[ ]?/'  => ' - ',
-        '/[ ]?\|[ ]?/'    => ' - ',
-        '/[?]/'           => '',
-        '/[*]/'           => '',
-        '/[\x00-\x1f]/'   => '',
-    ];
-
     /**
-     * Clean up a filename so it will be safe for windows.
+     * Import cookies created by a chromium extension.
      *
-     * @param string $filename
-     * @return string
+     * @param array $cookies
+     * @param CookieJarInterface $cookieJar
+     * @return CookieUtils
      */
-    public function cleanFilename(string $filename): string
+    public function import(array $cookies, CookieJarInterface $cookieJar): CookieUtils
     {
-        return preg_replace(
-            array_keys($this->cleanFilenamePatterns),
-            array_values($this->cleanFilenamePatterns),
-            $filename
-        );
-    }
-
-    /**
-     * Join elements into a coherent path.
-     *
-     * @param \string[] ...$parts
-     * @return string
-     */
-    public function join(string ...$parts): string
-    {
-        $result = array_shift($parts);
-        foreach ($parts as $part) {
-            $result = rtrim($result, '/');
-            $part = ltrim($part, '/');
-            $result .= '/' . $part;
+        $cookieJar->clear();
+        foreach ($cookies as $cookie) {
+            $setCookie = new SetCookie();
+            $setCookie->setDomain($cookie['domain']);
+            $setCookie->setExpires($cookie['expirationDate']);
+            $setCookie->setPath($cookie['path']);
+            $setCookie->setHttpOnly($cookie['httpOnly']);
+            $setCookie->setSecure($cookie['session']);
+            $setCookie->setName($cookie['name']);
+            $setCookie->setValue($cookie['value']);
+            $cookieJar->setCookie($setCookie);
         }
-        return $result;
+        return $this;
     }
 }

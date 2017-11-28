@@ -33,10 +33,10 @@ use DownloadApp\App\UserBundle\Exception\NoLoggedInUserException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class CurrentUserService
+ * Class CurrentUser
  * @package DownloadApp\App\UserBundle\Service
  */
-class CurrentUserService
+class CurrentUser
 {
     /**
      * @var TokenStorageInterface
@@ -49,7 +49,7 @@ class CurrentUserService
     private $user;
 
     /**
-     * CurrentUserService constructor.
+     * CurrentUser constructor.
      *
      * @param TokenStorageInterface $tokenStorage
      */
@@ -64,7 +64,7 @@ class CurrentUserService
      * @return User
      * @throws NoLoggedInUserException
      */
-    public function getUser(): User
+    public function get(): User
     {
         if (isset($this->user)) {
             return $this->user;
@@ -84,7 +84,7 @@ class CurrentUserService
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): CurrentUserService
+    public function set(User $user): CurrentUser
     {
         $this->user = $user;
         return $this;
@@ -95,7 +95,7 @@ class CurrentUserService
      *
      * @return $this
      */
-    public function clearUser(): CurrentUserService
+    public function clear(): CurrentUser
     {
         $this->user = null;
         return $this;

@@ -33,7 +33,7 @@ class PathUtilsServiceTest extends TestCase
 {
     public function testJoin()
     {
-        $pathUtilsService = new PathUtilsService();
+        $pathUtilsService = new PathUtils();
 
         $this->assertEquals('a', $pathUtilsService->join('a'));
         $this->assertEquals('a/b', $pathUtilsService->join('a', 'b'));
@@ -49,7 +49,7 @@ class PathUtilsServiceTest extends TestCase
 
     public function testCleanFilename()
     {
-        $pathUtilsService = new PathUtilsService();
+        $pathUtilsService = new PathUtils();
 
         $this->assertEquals('a', $pathUtilsService->cleanFilename('a'));
         $this->assertEquals('a(b)', $pathUtilsService->cleanFilename('a<b>'));

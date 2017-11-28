@@ -27,40 +27,40 @@
 
 namespace DownloadApp\App\UserBundle\Service;
 use DownloadApp\App\UserBundle\Entity\User;
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Class FilesystemService
+ * Class UserFilesystem
  * @package DownloadApp\App\UserBundle\Service
  */
-class FilesystemService
+class UserFilesystem
 {
-    /** @var  CurrentUserService */
-    private $currentUserService;
+    /** @var  CurrentUser */
+    private $currentUser;
 
     /** @var  string */
     private $baseDir;
 
-    /** @var  PathUtilsService */
-    private $pathUtilsService;
+    /** @var  PathUtils */
+    private $pathUtils;
 
     /**
-     * FilesystemService constructor.
-     * @param CurrentUserService $currentUserService
-     * @param PathUtilsService $pathUtilsService
+     * UserFilesystem constructor.
+     * @param CurrentUser $currentUser
+     * @param PathUtils $pathUtils
      * @param string $baseDir
      */
     public function __construct(
-        CurrentUserService $currentUserService,
-        PathUtilsService $pathUtilsService,
+        CurrentUser $currentUser,
+        PathUtils $pathUtils,
         string $baseDir
     )
     {
-        $this->currentUserService = $currentUserService;
-        $this->pathUtilsService = $pathUtilsService;
+        $this->currentUser = $currentUser;
+        $this->pathUtils = $pathUtils;
         $this->baseDir = $baseDir;
     }
 
@@ -70,10 +70,10 @@ class FilesystemService
      * @param User|null $user
      * @return FilesystemInterface
      */
-    public function getUserFilesystem(User $user = null): FilesystemInterface
+    public function get(User $user = null): FilesystemInterface
     {
-        $user = $user ?? $this->currentUserService->getUser();
-        $path = $this->pathUtilsService->join($this->baseDir, $user->getUsernameCanonical());
+        $user = $user ?? $this->currentUser->get();
+        $path = $this->pathUtils->join($this->baseDir, $user->getUsernameCanonical());
         return new Filesystem(new Local($path));
     }
 }

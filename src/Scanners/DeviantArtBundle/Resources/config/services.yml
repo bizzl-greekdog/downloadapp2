@@ -1,6 +1,6 @@
 services:
-    downloadapp.scanners.deviantart.fetching:
-        class: DownloadApp\Scanners\DeviantArtBundle\Service\DeviantArtFetchingService
+    downloadapp.scanners.deviantart.scanner:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\Scanner
         arguments:
             - '@downloadapp.scanners.deviantart.api'
             - '@csa_guzzle.client.general'
@@ -9,20 +9,20 @@ services:
             - '@downloadapp.download'
 
     downloadapp.scanners.deviantart.api:
-        class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiService
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiProvider
         arguments:
             - '%deviantart.authentication.id%'
             - '%deviantart.authentication.secret%'
             - '%deviantart.authentication.redirectUri%'
-            - '@downloadapp.scanners.deviantart.user_token_service'
+            - '@downloadapp.scanners.deviantart.tokens.user'
 
-    downloadapp.scanners.deviantart.simple_token_service:
-        class: DownloadApp\Scanners\DeviantArtBundle\Service\SimpleFileTokenService
+    downloadapp.scanners.deviantart.tokens.simple:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\SimpleFileTokenProvider
         arguments:
             - '%deviantart.simpleToken.filename%'
 
-    downloadapp.scanners.deviantart.user_token_service:
-        class: DownloadApp\Scanners\DeviantArtBundle\Service\UserTokenService
+    downloadapp.scanners.deviantart.tokens.user:
+        class: DownloadApp\Scanners\DeviantArtBundle\Service\UserTokenProvider
         arguments:
             - '%deviantart.userToken.directory%'
             - '@downloadapp.user.current'

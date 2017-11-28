@@ -28,7 +28,7 @@
 namespace DownloadApp\App\UserBundle\Service;
 
 use DownloadApp\App\UserBundle\Entity\User;
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -41,14 +41,14 @@ class FilesystemServiceTest extends TestCase
         $userMock
             ->method('getUsernameCanonical')
             ->willReturn('User');
-        $currentUserServiceMock = $this->createMock(CurrentUserService::class);
+        $currentUserServiceMock = $this->createMock(CurrentUser::class);
         $currentUserServiceMock
-            ->method('getUser')
+            ->method('get')
             ->willReturn($userMock);
 
-        $service = new FilesystemService($currentUserServiceMock, new PathUtilsService(), 'Root');
+        $service = new UserFilesystem($currentUserServiceMock, new PathUtils(), 'Root');
 
-        $this->assertInstanceOf(FilesystemInterface::class, $service->getUserFilesystem());
+        $this->assertInstanceOf(FilesystemInterface::class, $service->get());
     }
 }
 // @codeCoverageIgnoreEnd

@@ -1,11 +1,11 @@
 services:
     downloadapp.user.current:
-        class: DownloadApp\App\UserBundle\Service\CurrentUserService
+        class: DownloadApp\App\UserBundle\Service\CurrentUser
         arguments:
             - '@security.token_storage'
 
     downloadapp.user.filesystem:
-        class: DownloadApp\App\UserBundle\Service\FilesystemService
+        class: DownloadApp\App\UserBundle\Service\UserFilesystem
         arguments:
             - '@downloadapp.user.current'
             - '@downloadapp.utils.path'

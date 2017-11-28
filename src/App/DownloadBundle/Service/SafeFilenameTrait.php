@@ -27,7 +27,7 @@
 
 namespace DownloadApp\App\DownloadBundle\Service;
 
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use League\Flysystem\FilesystemInterface;
 
 /**
@@ -39,13 +39,13 @@ use League\Flysystem\FilesystemInterface;
  */
 trait SafeFilenameTrait
 {
-    /** @var  PathUtilsService */
+    /** @var  PathUtils */
     private $pathUtilsService;
 
     /**
-     * Set the PathUtilsService;
+     * Set the PathUtils;
      *
-     * @param PathUtilsService $pathUtilsService
+     * @param PathUtils $pathUtilsService
      * @return $this
      */
     public function setPathUtilsService($pathUtilsService)

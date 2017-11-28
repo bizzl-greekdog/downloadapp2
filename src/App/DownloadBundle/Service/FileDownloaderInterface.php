@@ -25,53 +25,24 @@
  */
 
 
-namespace DownloadApp\Scanners\DeviantArtBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Service;
 
 
-use League\OAuth2\Client\Token\AccessToken;
+use DownloadApp\App\DownloadBundle\Entity\File;
+use League\Flysystem\FilesystemInterface;
 
 /**
- * Class SimpleFileTokenService
- * @package DownloadApp\Scanners\DeviantArtBundle\Service
+ * Interface FileDownloaderInterface
+ * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class SimpleFileTokenService implements TokenServiceInterface
+interface FileDownloaderInterface
 {
-    /** @var string */
-    private $tokenFile;
-
     /**
-     * SimpleFileTokenService constructor.
+     * Download a file entity.
      *
-     * @param string $tokenFile
+     * @param File $file
+     * @param FilesystemInterface $fs
+     * @return string The final filename
      */
-    public function __construct($tokenFile)
-    {
-        $this->tokenFile = $tokenFile;
-    }
-
-    /**
-     * Get an access token.
-     *
-     * @return AccessToken|null
-     */
-    public function getToken()
-    {
-        if (file_exists($this->tokenFile)) {
-            $tokenFileContent = json_decode(file_get_contents($this->tokenFile), true);
-            return new AccessToken($tokenFileContent);
-        }
-        return null;
-    }
-
-    /**
-     * Save an access token.
-     *
-     * @param AccessToken $token
-     * @return $this
-     */
-    public function setToken(AccessToken $token): TokenServiceInterface
-    {
-        file_put_contents($this->tokenFile, \GuzzleHttp\json_encode($token));
-        return $this;
-    }
+    public function download(File $file, FilesystemInterface $fs): string;
 }

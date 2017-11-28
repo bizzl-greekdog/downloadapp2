@@ -25,38 +25,35 @@
  */
 
 
-namespace DownloadApp\App\UtilsBundle\Service;
+namespace DownloadApp\App\DownloadBundle\Service;
 
-use GuzzleHttp\Cookie\CookieJarInterface;
-use GuzzleHttp\Cookie\SetCookie;
+use DownloadApp\App\DownloadBundle\Entity\ContentFile;
+use DownloadApp\App\DownloadBundle\Entity\File;
+use League\Flysystem\FilesystemInterface;
 
 /**
- * Class CookieUtilsService
- * @package DownloadApp\App\UtilsBundle\Service
+ * Class ContentFileDownloader
+ *
+ * This service "downloads" content files.
+ *
+ * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class CookieUtilsService
+class ContentFileDownloader implements FileDownloaderInterface
 {
+    use SafeFilenameTrait;
+
     /**
-     * Import cookies created by a chromium extension.
+     * Download a file entity.
      *
-     * @param array $cookies
-     * @param CookieJarInterface $cookieJar
-     * @return CookieUtilsService
+     * @param File $file
+     * @param FilesystemInterface $fs
+     * @return string The final filename
      */
-    public function importCookies(array $cookies, CookieJarInterface $cookieJar): CookieUtilsService
+    public function download(File $file, FilesystemInterface $fs): string
     {
-        $cookieJar->clear();
-        foreach ($cookies as $cookie) {
-            $setCookie = new SetCookie();
-            $setCookie->setDomain($cookie['domain']);
-            $setCookie->setExpires($cookie['expirationDate']);
-            $setCookie->setPath($cookie['path']);
-            $setCookie->setHttpOnly($cookie['httpOnly']);
-            $setCookie->setSecure($cookie['session']);
-            $setCookie->setName($cookie['name']);
-            $setCookie->setValue($cookie['value']);
-            $cookieJar->setCookie($setCookie);
-        }
-        return $this;
+        /** @var ContentFile $file */
+        $filename = $this->findSafeFilename($file->getFilename(), $fs);
+        $fs->put($filename, $file->getContent());
+        return $filename;
     }
 }

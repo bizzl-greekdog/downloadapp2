@@ -48,9 +48,9 @@ class CurrentUserServiceTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUserService($tokenStorageMock);
+        $service = new CurrentUser($tokenStorageMock);
 
-        $service->getUser();
+        $service->get();
     }
 
     public function testLoggedIn()
@@ -64,9 +64,9 @@ class CurrentUserServiceTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUserService($tokenStorageMock);
+        $service = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($userMock, $service->getUser());
+        $this->assertEquals($userMock, $service->get());
     }
 
     public function testUserOverride()
@@ -81,10 +81,10 @@ class CurrentUserServiceTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUserService($tokenStorageMock);
+        $service = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($service, $service->setUser($userMock2));
-        $this->assertEquals($userMock2, $service->getUser());
+        $this->assertEquals($service, $service->set($userMock2));
+        $this->assertEquals($userMock2, $service->get());
     }
 
     public function testUserOverrideClearing()
@@ -99,11 +99,11 @@ class CurrentUserServiceTest extends TestCase
         $tokenStorageMock
             ->method('getToken')
             ->willReturn($tokenMock);
-        $service = new CurrentUserService($tokenStorageMock);
+        $service = new CurrentUser($tokenStorageMock);
 
-        $this->assertEquals($service, $service->setUser($userMock2));
-        $this->assertEquals($service, $service->clearUser());
-        $this->assertEquals($userMock, $service->getUser());
+        $this->assertEquals($service, $service->set($userMock2));
+        $this->assertEquals($service, $service->clear());
+        $this->assertEquals($userMock, $service->get());
     }
 }
 // @codeCoverageIgnoreEnd

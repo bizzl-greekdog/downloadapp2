@@ -1,32 +1,32 @@
 services:
-    downloadapp.download.remote_file:
+    downloadapp.download.file.remote:
         class: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         tags:
             - name: benkle.doctrine.adoption.child
               of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: remote_file
 
-    downloadapp.download.content_file:
+    downloadapp.download.file.content:
         class: DownloadApp\App\DownloadBundle\Entity\ContentFile
         tags:
             - name: benkle.doctrine.adoption.child
               of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: content_file
 
-    downloadapp.download.content_file_download_service:
-        class: DownloadApp\App\DownloadBundle\Service\ContentFileDownloadService
+    downloadapp.download.filedownloader.content:
+        class: DownloadApp\App\DownloadBundle\Service\ContentFileDownloader
         tags:
-            - name: downloadapp.file_download_service
+            - name: downloadapp.file.downloader
               for: DownloadApp\App\DownloadBundle\Entity\ContentFile
         calls:
             - method: setPathUtilsService
               arguments:
                   - '@downloadapp.utils.path'
 
-    downloadapp.download.remote_file_download_service:
-        class: DownloadApp\App\DownloadBundle\Service\RemoteFileFileDownloadService
+    downloadapp.download.file.downloader.remote:
+        class: DownloadApp\App\DownloadBundle\Service\RemoteFileFileDownloader
         tags:
-            - name: downloadapp.file_download_service
+            - name: downloadapp.file.downloader
               for: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         arguments:
             - "@csa_guzzle.client.general"
@@ -36,7 +36,7 @@ services:
                   - '@downloadapp.utils.path'
 
     downloadapp.download:
-        class: DownloadApp\App\DownloadBundle\Service\DownloadService
+        class: DownloadApp\App\DownloadBundle\Service\Downloader
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@downloadapp.user.filesystem"

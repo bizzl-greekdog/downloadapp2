@@ -28,7 +28,7 @@
 namespace DownloadApp\App\UserBundle\Service;
 
 
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use GuzzleHttp\Cookie\CookieJarInterface;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Cookie\SetCookie;
@@ -42,7 +42,7 @@ use Traversable;
  */
 class UserCookieJar implements CookieJarInterface
 {
-    /** @var  CurrentUserService */
+    /** @var  CurrentUser */
     private $currentUserService;
 
     /** @var  CookieJarInterface[] */
@@ -51,17 +51,17 @@ class UserCookieJar implements CookieJarInterface
     /** @var  string */
     private $cookiesDir;
 
-    /** @var  PathUtilsService */
+    /** @var  PathUtils */
     private $pathUtilsService;
 
     /**
      * UserCookieJar constructor.
      *
-     * @param CurrentUserService $currentUserService
+     * @param CurrentUser $currentUserService
      * @param string $cookiesDir
-     * @param PathUtilsService $pathUtilsService
+     * @param PathUtils $pathUtilsService
      */
-    public function __construct(CurrentUserService $currentUserService, string $cookiesDir, PathUtilsService $pathUtilsService)
+    public function __construct(CurrentUser $currentUserService, string $cookiesDir, PathUtils $pathUtilsService)
     {
         $this->currentUserService = $currentUserService;
         $this->cookiesDir = $cookiesDir;
@@ -74,7 +74,7 @@ class UserCookieJar implements CookieJarInterface
 
     private function getUserJar(): CookieJarInterface
     {
-        $username = $this->currentUserService->getUser()->getUsernameCanonical();
+        $username = $this->currentUserService->get()->getUsernameCanonical();
         if (!isset($this->loadedJars[$username])) {
             $this->loadedJars[$username] = new FileCookieJar($this->pathUtilsService->join($this->cookiesDir, "{$username}.cookiejar"), true);
         }

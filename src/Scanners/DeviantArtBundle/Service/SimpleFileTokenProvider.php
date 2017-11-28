@@ -31,17 +31,37 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
- * Interface TokenServiceInterface
+ * Class SimpleFileTokenProvider
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-interface TokenServiceInterface
+class SimpleFileTokenProvider implements TokenProviderInterface
 {
+    /** @var string */
+    private $tokenFile;
+
+    /**
+     * SimpleFileTokenProvider constructor.
+     *
+     * @param string $tokenFile
+     */
+    public function __construct($tokenFile)
+    {
+        $this->tokenFile = $tokenFile;
+    }
+
     /**
      * Get an access token.
      *
      * @return AccessToken|null
      */
-    public function getToken();
+    public function getToken()
+    {
+        if (file_exists($this->tokenFile)) {
+            $tokenFileContent = json_decode(file_get_contents($this->tokenFile), true);
+            return new AccessToken($tokenFileContent);
+        }
+        return null;
+    }
 
     /**
      * Save an access token.
@@ -49,5 +69,9 @@ interface TokenServiceInterface
      * @param AccessToken $token
      * @return $this
      */
-    public function setToken(AccessToken $token): TokenServiceInterface;
+    public function setToken(AccessToken $token): TokenProviderInterface
+    {
+        file_put_contents($this->tokenFile, \GuzzleHttp\json_encode($token));
+        return $this;
+    }
 }

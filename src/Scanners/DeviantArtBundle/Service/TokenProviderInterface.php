@@ -25,35 +25,29 @@
  */
 
 
-namespace DownloadApp\App\DownloadBundle\Service;
+namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
-use DownloadApp\App\DownloadBundle\Entity\ContentFile;
-use DownloadApp\App\DownloadBundle\Entity\File;
-use League\Flysystem\FilesystemInterface;
+
+use League\OAuth2\Client\Token\AccessToken;
 
 /**
- * Class ContentFileDownloadService
- *
- * This service "downloads" content files.
- *
- * @package Benkle\DownloadApp\DownloadBundle\Service
+ * Interface TokenProviderInterface
+ * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class ContentFileDownloadService implements FileDownloadServiceInterface
+interface TokenProviderInterface
 {
-    use SafeFilenameTrait;
+    /**
+     * Get an access token.
+     *
+     * @return AccessToken|null
+     */
+    public function getToken();
 
     /**
-     * Download a file entity.
+     * Save an access token.
      *
-     * @param File $file
-     * @param FilesystemInterface $fs
-     * @return string The final filename
+     * @param AccessToken $token
+     * @return $this
      */
-    public function download(File $file, FilesystemInterface $fs): string
-    {
-        /** @var ContentFile $file */
-        $filename = $this->findSafeFilename($file->getFilename(), $fs);
-        $fs->put($filename, $file->getContent());
-        return $filename;
-    }
+    public function setToken(AccessToken $token): TokenProviderInterface;
 }

@@ -1,11 +1,11 @@
 services:
     downloadapp.utils.path:
-        class: DownloadApp\App\UtilsBundle\Service\PathUtilsService
+        class: DownloadApp\App\UtilsBundle\Service\PathUtils
 
     downloadapp.utils.jobs:
-        class: DownloadApp\App\UtilsBundle\Service\JobService
+        class: DownloadApp\App\UtilsBundle\Service\Jobs
         arguments:
             - '@doctrine.orm.entity_manager'
 
     downloadapp.utils.cookies:
-        class: DownloadApp\App\UtilsBundle\Service\CookieUtilsService
+        class: DownloadApp\App\UtilsBundle\Service\CookieUtils

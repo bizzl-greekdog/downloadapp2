@@ -36,8 +36,8 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
-use DownloadApp\App\DownloadBundle\Service\DownloadService;
-use DownloadApp\App\UserBundle\Service\CurrentUserService;
+use DownloadApp\App\DownloadBundle\Service\Downloader;
+use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
 use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
 use GuzzleHttp\Client;
@@ -45,15 +45,15 @@ use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 
 /**
- * Class DeviantArtFetchingService
+ * Class Scanner
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
-class DeviantArtFetchingService
+class Scanner
 {
     const QUEUE = 'scanners.deviantart';
 
-    /** @var  ApiService */
-    private $api;
+    /** @var  ApiProvider */
+    private $apiProvider;
 
     /** @var  Client */
     private $client;
@@ -61,34 +61,34 @@ class DeviantArtFetchingService
     /** @var  EntityManager */
     private $entityManager;
 
-    /** @var  CurrentUserService */
-    private $currentUserService;
+    /** @var  CurrentUser */
+    private $currentUser;
 
-    /** @var  DownloadService */
-    private $downloadService;
+    /** @var  Downloader */
+    private $downloader;
 
     /**
-     * DeviantArtFetchingService constructor.
+     * Scanner constructor.
      *
-     * @param ApiService $api
+     * @param ApiProvider $apiProvider
      * @param Client $client
      * @param EntityManager $entityManager
-     * @param CurrentUserService $currentUserService
-     * @param DownloadService $downloadService
+     * @param CurrentUser $currentUser
+     * @param Downloader $downloader
      */
     public function __construct(
-        ApiService $api,
+        ApiProvider $apiProvider,
         Client $client,
         EntityManager $entityManager,
-        CurrentUserService $currentUserService,
-        DownloadService $downloadService
+        CurrentUser $currentUser,
+        Downloader $downloader
     )
     {
-        $this->api = $api;
+        $this->apiProvider = $apiProvider;
         $this->client = $client;
         $this->entityManager = $entityManager;
-        $this->currentUserService = $currentUserService;
-        $this->downloadService = $downloadService;
+        $this->currentUser = $currentUser;
+        $this->downloader = $downloader;
     }
 
     /**
@@ -173,7 +173,7 @@ class DeviantArtFetchingService
     {
         $job = new Job(
             $command,
-            [$this->currentUserService->getUser()->getUsernameCanonical(), $url],
+            [$this->currentUser->get()->getUsernameCanonical(), $url],
             true,
             self::QUEUE
         );
@@ -193,12 +193,12 @@ class DeviantArtFetchingService
             ':', [
                    'deviantart',
                    'deviation',
-                   $this->currentUserService->getUser()->getUsernameCanonical(),
+                   $this->currentUser->get()->getUsernameCanonical(),
                    $deviationId,
                ]
         );
 
-        if ($this->downloadService->findByGUID($guid)) {
+        if ($this->downloader->findByGUID($guid)) {
             return;
         }
 
@@ -206,7 +206,7 @@ class DeviantArtFetchingService
         $origFilename = '';
         $file = null;
 
-        $deviation = $this->api->getApi()->deviation();
+        $deviation = $this->apiProvider->getApi()->deviation();
         $deviationBaseData = $deviation->getDeviation($deviationId);
         $deviationMetaData = $deviation
                                  ->getMetadata(
@@ -262,9 +262,9 @@ class DeviantArtFetchingService
                 ]
             )
             ->setFile($file)
-            ->setUser($this->currentUserService->getUser());
+            ->setUser($this->currentUser->get());
 
-        $this->downloadService->scheduleDownload($download);
+        $this->downloader->schedule($download);
     }
 
     /**
@@ -277,7 +277,7 @@ class DeviantArtFetchingService
      */
     public function fetchCollection(string $collectionId, string $username = null, int $offset = 0)
     {
-        $collection = $this->api->getApi()->collections();
+        $collection = $this->apiProvider->getApi()->collections();
         try {
             do {
                 $response = $collection->getFolder($collectionId, $username, $offset, 20, true);
@@ -312,7 +312,7 @@ class DeviantArtFetchingService
      */
     public function fetchGallery(string $galleryId, string $username = null, int $offset = 0)
     {
-        $gallery = $this->api->getApi()->gallery();
+        $gallery = $this->apiProvider->getApi()->gallery();
         try {
             do {
                 $response = $gallery->getFolder(
@@ -351,7 +351,7 @@ class DeviantArtFetchingService
      */
     public function fetchProfile(string $username)
     {
-        $response = $this->api->getApi()->user()->getProfile($username, true, true, true);
+        $response = $this->apiProvider->getApi()->user()->getProfile($username, true, true, true);
         foreach ($response->galleries as $gallery) {
             $this->scheduleScan(
                 ScanCommand::NAME,
@@ -422,7 +422,7 @@ class DeviantArtFetchingService
      */
     public function fetchWatchlist(string $cursor = null)
     {
-        $feed = $this->api->getApi()->feed();
+        $feed = $this->apiProvider->getApi()->feed();
         $iteration = 0;
         try {
             do {

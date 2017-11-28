@@ -33,9 +33,9 @@ use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
-use DownloadApp\App\DownloadBundle\Service\DownloadService;
-use DownloadApp\App\UserBundle\Service\CurrentUserService;
-use DownloadApp\App\UtilsBundle\Service\PathUtilsService;
+use DownloadApp\App\DownloadBundle\Service\Downloader;
+use DownloadApp\App\UserBundle\Service\CurrentUser;
+use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand;
 use GuzzleHttp\Client;
 use JMS\JobQueueBundle\Entity\Job;
@@ -45,10 +45,10 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class FetchingService
+ * Class Scanner
  * @package DownloadApp\Scanners\FurAffinityBundle\Service
  */
-class FetchingService
+class Scanner
 {
     const QUEUE = 'scanners.furaffinity';
 
@@ -58,41 +58,41 @@ class FetchingService
     /** @var  EntityManager */
     private $entityManager;
 
-    /** @var  CurrentUserService */
-    private $currentUserService;
+    /** @var  CurrentUser */
+    private $currentUser;
 
-    /** @var  DownloadService */
-    private $downloadService;
+    /** @var  Downloader */
+    private $downloader;
 
-    /** @var  PathUtilsService */
-    private $pathUtilsService;
+    /** @var  PathUtils */
+    private $pathUtils;
 
     /** @var  EventDispatcherInterface */
     private $dispatcher;
 
     /**
-     * FetchingService constructor.
+     * Scanner constructor.
      *
      * @param Client $client
      * @param EntityManager $entityManager
-     * @param CurrentUserService $currentUserService
-     * @param DownloadService $downloadService
-     * @param PathUtilsService $pathUtilsService
+     * @param CurrentUser $currentUser
+     * @param Downloader $downloader
+     * @param PathUtils $pathUtils
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Client $client, EntityManager $entityManager, CurrentUserService $currentUserService, DownloadService $downloadService, PathUtilsService $pathUtilsService, EventDispatcherInterface $dispatcher)
+    public function __construct(Client $client, EntityManager $entityManager, CurrentUser $currentUser, Downloader $downloader, PathUtils $pathUtils, EventDispatcherInterface $dispatcher)
     {
         $this->client = $client;
         $this->entityManager = $entityManager;
-        $this->currentUserService = $currentUserService;
-        $this->downloadService = $downloadService;
-        $this->pathUtilsService = $pathUtilsService;
+        $this->currentUser = $currentUser;
+        $this->downloader = $downloader;
+        $this->pathUtils = $pathUtils;
         $this->dispatcher = $dispatcher;
     }
 
     private function sendNotification(string $message): Event
     {
-        $notification = new NotificationEvent($this->currentUserService->getUser(), $message);
+        $notification = new NotificationEvent($this->currentUser->get(), $message);
         return $notification->dispatchTo($this->dispatcher);
     }
 
@@ -106,7 +106,7 @@ class FetchingService
     {
         $job = new Job(
             ScanCommand::NAME,
-            [$this->currentUserService->getUser()->getUsernameCanonical(), $url],
+            [$this->currentUser->get()->getUsernameCanonical(), $url],
             true,
             self::QUEUE
         );
@@ -128,12 +128,12 @@ class FetchingService
             ':', [
                    'furaffinity',
                    'submission',
-                   $this->currentUserService->getUser()->getUsernameCanonical(),
+                   $this->currentUser->get()->getUsernameCanonical(),
                    $path[1],
                ]
         );
 
-        if ($this->downloadService->findByGUID($guid)) {
+        if ($this->downloader->findByGUID($guid)) {
             return;
         }
 
@@ -165,9 +165,9 @@ class FetchingService
                 ]
             )
             ->setFile($file)
-            ->setUser($this->currentUserService->getUser());
+            ->setUser($this->currentUser->get());
 
-        $this->downloadService->scheduleDownload($download);
+        $this->downloader->schedule($download);
         $this->sendNotification("{$title} by {$artist} scanned and download scheduled");
     }
 
@@ -182,12 +182,12 @@ class FetchingService
         $dom = new Dom();
         $submissionsUrls = [];
         do {
-            $response = $this->client->get($this->pathUtilsService->join($url, $i++));
+            $response = $this->client->get($this->pathUtils->join($url, $i++));
             $dom->load($response->getBody()->getContents());
             $submissions = $dom->find('.submission-list a[href*="/view/"]');
             /** @var Dom\AbstractNode $submission */
             foreach ($submissions as $submission) {
-                $submissionsUrls[] = $this->pathUtilsService->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
+                $submissionsUrls[] = $this->pathUtils->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
             }
             $this->sendNotification("page {$i} of {$url} scanned");
         } while (count($submissions));
@@ -211,7 +211,7 @@ class FetchingService
             foreach ($submissions as $submission) {
                 $submissionsUrl = $submission->getAttribute('href');
                 if (substr($submissionsUrl, 0, 6) == '/view/') {
-                    $submissionsUrl = $this->pathUtilsService->join('http://www.furaffinity.net/', $submissionsUrl);
+                    $submissionsUrl = $this->pathUtils->join('http://www.furaffinity.net/', $submissionsUrl);
                     if (!isset($submissionsUrls[$submissionsUrl])) {
                         $submissionsUrls[$submissionsUrl] = true;
                         $added++;
@@ -225,7 +225,7 @@ class FetchingService
                     return strpos($node->getAttribute('class'), 'prev') === false;
                 });
                 if ($nextButtons) {
-                    $url = $this->pathUtilsService->join('http://www.furaffinity.net', $nextButtons[0]->getAttribute('href'));
+                    $url = $this->pathUtils->join('http://www.furaffinity.net', $nextButtons[0]->getAttribute('href'));
                 } else {
                     break;
                 }
