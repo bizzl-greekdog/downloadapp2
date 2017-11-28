@@ -33,7 +33,7 @@ use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
 
 // @codeCoverageIgnoreStart
-class FilesystemServiceTest extends TestCase
+class UserFilesystemTest extends TestCase
 {
     public function testGetFilesystemForLoggedInUser()
     {
@@ -41,12 +41,12 @@ class FilesystemServiceTest extends TestCase
         $userMock
             ->method('getUsernameCanonical')
             ->willReturn('User');
-        $currentUserServiceMock = $this->createMock(CurrentUser::class);
-        $currentUserServiceMock
+        $currentUserMock = $this->createMock(CurrentUser::class);
+        $currentUserMock
             ->method('get')
             ->willReturn($userMock);
 
-        $service = new UserFilesystem($currentUserServiceMock, new PathUtils(), 'Root');
+        $service = new UserFilesystem($currentUserMock, new PathUtils(), 'Root');
 
         $this->assertInstanceOf(FilesystemInterface::class, $service->get());
     }

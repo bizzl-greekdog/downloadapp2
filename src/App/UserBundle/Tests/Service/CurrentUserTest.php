@@ -33,7 +33,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 // @codeCoverageIgnoreStart
-class CurrentUserServiceTest extends TestCase
+class CurrentUserTest extends TestCase
 {
     /**
      * @expectedException \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
