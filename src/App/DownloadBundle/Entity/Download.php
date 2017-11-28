@@ -182,7 +182,7 @@ class Download
         return $this;
     }
 
-    public function setMetadatum(string $key, mixed $value): Download
+    public function setMetadatum(string $key, $value): Download
     {
         $this->metadata[$key] = $value;
         return $this;

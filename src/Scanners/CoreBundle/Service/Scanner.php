@@ -74,10 +74,10 @@ class Scanner
             ->setUrl($url)
             ->setFilename(basename($uri->getPath()));
 
-        $download = new Download();
+        $download = new Download(md5("generic:{$url}@{$referer}"));
         $download
             ->setUser($this->currentUser->get())
-            ->setMetadatum('Found at', $referer)
+            ->setMetadatum('Found at', $referer ?? '')
             ->setComment('')
             ->setFile($file);
 
