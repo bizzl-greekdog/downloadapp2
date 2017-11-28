@@ -15,4 +15,4 @@ services:
             - '@downloadapp.user.current'
         tags:
             - name: downloadapp.contractor
-              priority: 100000
+              priority: 0

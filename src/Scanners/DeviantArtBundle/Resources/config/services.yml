@@ -27,3 +27,12 @@ services:
             - '%deviantart.userToken.directory%'
             - '@downloadapp.user.current'
             - '@downloadapp.utils.path'
+
+    downloadapp.scanners.deviantart.contractor:
+        class: DownloadApp\Scanners\DeviantArtBundle\Contractor\Contractor
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@downloadapp.user.current'
+        tags:
+            - name: downloadapp.contractor
+              priority: 25
