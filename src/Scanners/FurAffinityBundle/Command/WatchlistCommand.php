@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WatchlistCommand extends ContainerAwareCommand
 {
-    const NAME = 'furaffinity:watchlist';
+    const NAME = 'watchlist:furaffinity';
 
     /**
      * {@inheritdoc}

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class WatchlistCommand extends ContainerAwareCommand
 {
-    const NAME = 'deviantart:watchlist';
+    const NAME = 'watchlist:deviantart';
 
     /**
      * {@inheritdoc}

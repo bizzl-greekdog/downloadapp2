@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ScanCommand extends ContainerAwareCommand
 {
-    const NAME = 'generic:scan';
+    const NAME = 'scanner:generic';
 
     /**
      * {@inheritdoc}

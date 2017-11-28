@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ScanCommand extends ContainerAwareCommand
 {
-    const NAME = 'furaffinity:scan';
+    const NAME = 'scanner:furaffinity';
 
     /**
      * {@inheritdoc}

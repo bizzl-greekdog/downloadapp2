@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ScanCommand extends ContainerAwareCommand
 {
-    const NAME = 'deviantart:scan';
+    const NAME = 'scanner:deviantart';
 
     /**
      * {@inheritdoc}
