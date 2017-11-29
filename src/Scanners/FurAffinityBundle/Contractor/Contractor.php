@@ -25,21 +25,21 @@
  */
 
 
-namespace DownloadApp\Scanners\DeviantArtBundle\Contractor;
+namespace DownloadApp\Scanners\FurAffinityBundle\Contractor;
 
 
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\Scanners\CoreBundle\Contractor\ContractorInterface;
-use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
-use DownloadApp\Scanners\DeviantArtBundle\Command\WatchlistCommand;
-use DownloadApp\Scanners\DeviantArtBundle\Service\Scanner;
+use DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand;
+use DownloadApp\Scanners\FurAffinityBundle\Command\WatchlistCommand;
+use DownloadApp\Scanners\FurAffinityBundle\Service\Scanner;
 use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 
 /**
  * Class Contractor
- * @package DownloadApp\Scanners\DeviantArtBundle\Contractor
+ * @package DownloadApp\Scanners\FurAffinityBundle\Contractor
  */
 class Contractor implements ContractorInterface
 {
@@ -74,7 +74,7 @@ class Contractor implements ContractorInterface
 
         /** @var Uri $uri */
         foreach ([$sourceUri, $refererUri] as $uri) {
-            if (preg_match('/^([^.]+\.)?deviantart\.com$/', $uri->getHost())) {
+            if (preg_match('/^([^.]+\.)?furaffinity\.net$/', $uri->getHost())) {
                 $this->em->persist(new Job(ScanCommand::NAME, [$this->currentUser->get()->getUsernameCanonical(), "$uri"], true, Scanner::QUEUE));
                 return true;
             }

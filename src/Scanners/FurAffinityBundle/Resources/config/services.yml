@@ -8,3 +8,12 @@ services:
             - '@downloadapp.download'
             - '@downloadapp.utils.path'
             - '@event_dispatcher'
+
+    downloadapp.scanners.furaffinity.contractor:
+        class: DownloadApp\Scanners\FurAffinityBundle\Contractor\Contractor
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@downloadapp.user.current'
+        tags:
+            - name: downloadapp.contractor
+              priority: 25
