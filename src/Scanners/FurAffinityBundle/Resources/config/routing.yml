@@ -1,0 +1,3 @@
+fur_affinity_homepage:
+    path:     /cookies
+    defaults: { _controller: FurAffinityBundle:Default:cookie }
