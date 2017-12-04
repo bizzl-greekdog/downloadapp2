@@ -9,3 +9,9 @@ services:
 
     downloadapp.utils.cookies:
         class: DownloadApp\App\UtilsBundle\Service\CookieUtils
+
+    downloadapp.utils.notifications:
+        class: DownloadApp\App\UtilsBundle\Service\Notifications
+        arguments:
+            - '@downloadapp.user.current'
+            - '@event_dispatcher'
