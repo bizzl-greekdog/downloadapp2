@@ -10,7 +10,8 @@
             "DownloadApp\\App\\DownloadBundle\\": "src/App/DownloadBundle",
             "DownloadApp\\Scanners\\CoreBundle\\": "src/Scanners/CoreBundle",
             "DownloadApp\\Scanners\\DeviantArtBundle\\": "src/Scanners/DeviantArtBundle",
-            "DownloadApp\\Scanners\\FurAffinityBundle\\": "src/Scanners/FurAffinityBundle"
+            "DownloadApp\\Scanners\\FurAffinityBundle\\": "src/Scanners/FurAffinityBundle",
+            "DownloadApp\\Scanners\\WeasylBundle\\": "src/Scanners/WeasylBundle"
         },
         "classmap": [
             "app/AppKernel.php",

@@ -58,6 +58,17 @@ class NotificationToOutputListener extends AbstractNotificationListener
      */
     public function handleNotificationEvent(NotificationEvent $event)
     {
-        $this->output->writeln($event->getMessage());
+        switch ($event->getPriority()) {
+            case NotificationEvent::PRIORITY_VERY_HIGH:
+            case NotificationEvent::PRIORITY_HIGH:
+                $this->output->writeln(sprintf('<info>%s</info>', $event->getMessage()));
+                break;
+            case NotificationEvent::PRIORITY_LOW:
+            case NotificationEvent::PRIORITY_VERY_LOW:
+            $this->output->writeln(sprintf('<comment>%s</comment>', $event->getMessage()));
+                break;
+            default:
+                $this->output->writeln($event->getMessage());
+        }
     }
 }

@@ -25,8 +25,7 @@
  */
 
 
-namespace DownloadApp\Scanners\FurAffinityBundle\Service;
-
+namespace DownloadApp\Scanners\WeasylBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\Download;
@@ -37,18 +36,19 @@ use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\App\UtilsBundle\Service\Notifications;
 use DownloadApp\App\UtilsBundle\Service\PathUtils;
 use DownloadApp\Scanners\CoreBundle\Service\ScanScheduler;
-use DownloadApp\Scanners\FurAffinityBundle\Exception\NotAFurAffinityPageException;
+use DownloadApp\Scanners\WeasylBundle\Exception\NotAWeasylPageException;
 use GuzzleHttp\Client;
 use League\Uri\Uri;
 use PHPHtmlParser\Dom;
 
+
 /**
  * Class Scanner
- * @package DownloadApp\Scanners\FurAffinityBundle\Service
+ * @package DownloadApp\Scanners\WeasylBundle\Service
  */
 class Scanner
 {
-    const QUEUE = 'scanners.furaffinity';
+    const QUEUE = 'scanners.weasyl';
 
     /** @var  Client */
     private $client;
@@ -102,12 +102,16 @@ class Scanner
     {
         $uri = Uri::createFromString($url);
         $path = $this->pathUtils->split($uri->getPath());
+        while ($path[0] != 'submissions') {
+            array_shift($path);
+        }
+        $fileNr = $path[1];
         $guid = implode(
             ':', [
-                   'furaffinity',
+                   'weasyl',
                    'submission',
                    $this->currentUser->get()->getUsernameCanonical(),
-                   $path[1],
+                   $fileNr,
                ]
         );
 
@@ -120,15 +124,23 @@ class Scanner
         $dom = new Dom();
         $dom->load($response->getBody()->getContents());
 
-        $fileUrl = $uri->getScheme() . '//' . $dom->find('a[href*=facdn]', 0)->getAttribute('href');
-        $filename = basename($fileUrl);
-        $title = $dom->find('#page-submission td.cat b', 0)->innerHtml;
-        $artist = strip_tags($dom->find('#page-submission td.cat a[href*=user]', 0)->innerHtml);
-        $description = $dom->find('#page-submission td.alt1[width="70%"]', 0)->innerHtml;
+        $fileUrl = $uri->getScheme() . '//' . $dom->find('#detail-actions a[href*=submission], #detail-actions a[href*=submit]', 0)
+                                                  ->getAttribute('href');
+        $orgFilename = substr(basename($fileUrl), 0, -9);
+        $title = $dom->find('#detail-bar-title', 0)->innerHtml;
+        $artist = strip_tags($dom->find('#db-user .username', 0)->innerHtml);
+        $description = $dom->find('#detail-description .formatted-content', 0)->innerHtml;
+
+        $fileExt = pathinfo($orgFilename, PATHINFO_EXTENSION);
+        $fileTitle = pathinfo($orgFilename, PATHINFO_FILENAME);
+        $fileTitle = strtolower($fileTitle);
+        $fileTitle = preg_replace("/['\"\n]/", '', $fileTitle);
+        $fileTitle = preg_replace("/[ ]/", '_', $fileTitle);
+        $filename = "weasyl_{$fileNr}_{$fileTitle}_by_{$artist}.{$fileExt}";
 
         $file = new RemoteFile();
         $file
-            ->setFilename($filename)
+            ->setFilename($orgFilename)
             ->setUrl($fileUrl)
             ->setReferer($url);
         $download = new Download($guid);
@@ -139,7 +151,7 @@ class Scanner
                     'Artist'            => $artist,
                     'Title'             => $title,
                     'Source'            => $url,
-                    'Original Filename' => $filename,
+                    'Original Filename' => $orgFilename,
                 ]
             )
             ->setFile($file)
@@ -160,15 +172,19 @@ class Scanner
         $dom = new Dom();
         $submissionsUrls = [];
         do {
-            $response = $this->client->get($this->pathUtils->join($url, $i++));
+            $response = $this->client->get($url);
             $dom->load($response->getBody()->getContents());
-            $submissions = $dom->find('.submission-list a[href*="/view/"]');
+            $submissions = $dom->find('.thumbnail-grid .item .thumb a.thumb-bounds');
             /** @var Dom\AbstractNode $submission */
             foreach ($submissions as $submission) {
-                $submissionsUrls[] = $this->pathUtils->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
+                $submissionsUrls[] = $this->pathUtils->join('https://www.weasyl.com/', $submission->getAttribute('href'));
             }
             $this->notifications->log("page {$i} of {$url} scanned");
-        } while (count($submissions));
+            $nextLink = $dom->find('.sectioned-main a.button[href*=nextid=]', 0);
+            if ($nextLink) {
+                $url = $this->pathUtils->join('https://www.weasyl.com/', $nextLink->getAttribute('href'));
+            }
+        } while ($nextLink);
         $submissionsUrls = array_unique($submissionsUrls);
         array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
         $total = count($submissionsUrls);
@@ -180,33 +196,29 @@ class Scanner
      */
     public function fetchWatchlist()
     {
-        $url = 'http://www.furaffinity.net/msg/submissions/';
+        $url = 'https://www.weasyl.com/messages/submissions';
         $dom = new Dom();
         $submissionsUrls = [];
         do {
             $added = 0;
             $response = $this->client->get($url);
-            $dom->load($response->getBody()->getContents());
-            $submissions = $dom->find('#messages-form .t-image a');
+            $x = $response->getBody()->getContents();
+            $dom->load($x);
+            $submissions = $dom->find('.thumbnail-grid .item .thumb a.thumb-bounds');
             /** @var Dom\AbstractNode $submission */
             foreach ($submissions as $submission) {
                 $submissionsUrl = $submission->getAttribute('href');
-                if (substr($submissionsUrl, 0, 6) == '/view/') {
-                    $submissionsUrl = $this->pathUtils->join('http://www.furaffinity.net/', $submissionsUrl);
-                    if (!isset($submissionsUrls[$submissionsUrl])) {
-                        $submissionsUrls[$submissionsUrl] = true;
-                        $added++;
-                    }
+                $submissionsUrl = $this->pathUtils->join('https://www.weasyl.com/', $submissionsUrl);
+                if (!isset($submissionsUrls[$submissionsUrl])) {
+                    $submissionsUrls[$submissionsUrl] = true;
+                    $added++;
                 }
             }
             if ($added) {
                 $this->notifications->log("Another {$added} submissions found in watchlist, proceed to next page");
-                $nextButtons = $dom->find('a.more, a.more-half')->toArray();
-                $nextButtons = array_filter($nextButtons, function (Dom\AbstractNode $node) {
-                    return strpos($node->getAttribute('class'), 'prev') === false;
-                });
-                if ($nextButtons) {
-                    $url = $this->pathUtils->join('http://www.furaffinity.net', $nextButtons[0]->getAttribute('href'));
+                $nextButton = $dom->find('a.notifs-next', 0);
+                if ($nextButton) {
+                    $url = $this->pathUtils->join('https://www.weasyl.com/', $nextButton->getAttribute('href'));
                 } else {
                     break;
                 }
@@ -215,35 +227,52 @@ class Scanner
         $submissionsUrls = array_keys($submissionsUrls);
         array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
         $total = count($submissionsUrls);
-        $this->notifications->alert("Your FurAffinity watchlist contained a total of {$total} submissions, scans scheduled");
+        $this->notifications->alert("Your Weasyl watchlist contained a total of {$total} submissions, scans scheduled");
     }
 
+    public function scanFavorites(string $url)
+    {}
+
     /**
-     * Scan a furaffinity page.
+     * Scan a weasyl page.
      *
      * @param string $url
-     * @throws NotAFurAffinityPageException
+     * @throws NotAWeasylPageException
      */
     public function scan(string $url)
     {
         $uri = Uri::createFromString($url);
         $path = $this->pathUtils->split($uri->getPath());
+
+        if (substr($path[0], 0, 1) === '~') {
+            $username = substr($path[0], 1);
+            $path = array_slice($path, 1);
+            if (empty($path)) {
+                $path = ['user', $username];
+            } elseif ($path[0] == 'submissions') {
+                $path[0] = 'submission'; // Hack, because weasyl urls are weird
+            }
+        }
+
         switch (strtolower($path[0])) {
-            case 'gallery':
-            case 'scraps':
             case 'favorites':
+                $this->scanFavorites($url);
+                break;
+            case 'submissions':
+            case 'collections':
+            case 'characters':
                 $this->scanGallery($url);
                 break;
-            case 'view':
-            case 'full':
+            case 'character':
+            case 'submission':
                 $this->scanSubmission($url);
                 break;
             case 'user':
-                $this->scanScheduler->schedule("http://www.furaffinity.net/gallery/{$path[1]}/");
-                $this->scanScheduler->schedule("http://www.furaffinity.net/scraps/{$path[1]}/");
+                $this->scanScheduler->schedule("https://www.weasyl.com/submissions/{$path[1]}/");
+                $this->scanScheduler->schedule("https://www.weasyl.com/characters/{$path[1]}/");
                 break;
             default:
-                throw new NotAFurAffinityPageException($url);
+                throw new NotAWeasylPageException($url);
         }
     }
 

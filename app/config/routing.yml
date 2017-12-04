@@ -1,3 +1,7 @@
+weasyl:
+    resource: "@WeasylBundle/Resources/config/routing.yml"
+    prefix:   /weasyl
+
 frontend:
     resource: "@FrontendBundle/Resources/config/routing.yml"
     prefix:   /
@@ -7,8 +11,9 @@ fur_affinity:
     prefix:   /furaffinity
 
 deviantart:
-    resource: '@DeviantArtBundle/Resources/config/routing.yml'
-    prefix: /deviantart
+    resource: "@DeviantArtBundle/Resources/config/routing.yml"
+    prefix:   /deviantart
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+    prefix: /

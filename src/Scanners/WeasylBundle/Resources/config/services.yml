@@ -1,0 +1,19 @@
+services:
+    downloadapp.scanners.weasyl.scanner:
+        class: DownloadApp\Scanners\WeasylBundle\Service\Scanner
+        arguments:
+            - '@csa_guzzle.client.weasyl'
+            - '@doctrine.orm.entity_manager'
+            - '@downloadapp.user.current'
+            - '@downloadapp.download'
+            - '@downloadapp.utils.path'
+            - '@downloadapp.scanners.weasyl.scheduler'
+            - '@downloadapp.utils.notifications'
+
+    downloadapp.scanners.weasyl.scheduler:
+        class: DownloadApp\Scanners\CoreBundle\Service\ScanScheduler
+        arguments:
+            - '@downloadapp.user.current'
+            - '@doctrine.orm.entity_manager'
+            - !php/const:\DownloadApp\Scanners\WeasylBundle\Command\ScanCommand::NAME
+            - !php/const:\DownloadApp\Scanners\WeasylBundle\Service\Scanner::QUEUE

@@ -30,6 +30,7 @@ class AppKernel extends Kernel
             new DownloadApp\Scanners\CoreBundle\CoreBundle(),
             new DownloadApp\Scanners\DeviantArtBundle\DeviantArtBundle(),
             new DownloadApp\Scanners\FurAffinityBundle\FurAffinityBundle(),
+            new DownloadApp\Scanners\WeasylBundle\WeasylBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
