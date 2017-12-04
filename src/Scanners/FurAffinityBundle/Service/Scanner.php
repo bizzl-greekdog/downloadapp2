@@ -28,22 +28,19 @@
 namespace DownloadApp\Scanners\FurAffinityBundle\Service;
 
 
-use Benkle\NotificationBundle\Event\NotificationEvent;
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Service\Downloader;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
+use DownloadApp\App\UtilsBundle\Service\Notifications;
 use DownloadApp\App\UtilsBundle\Service\PathUtils;
-use DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand;
+use DownloadApp\Scanners\CoreBundle\Service\ScanScheduler;
 use DownloadApp\Scanners\FurAffinityBundle\Exception\NotAFurAffinityPageException;
 use GuzzleHttp\Client;
-use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 use PHPHtmlParser\Dom;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class Scanner
@@ -68,51 +65,31 @@ class Scanner
     /** @var  PathUtils */
     private $pathUtils;
 
-    /** @var  EventDispatcherInterface */
-    private $dispatcher;
+    /** @var  ScanScheduler */
+    private $scanScheduler;
+
+    /** @var  Notifications */
+    private $notifications;
 
     /**
      * Scanner constructor.
-     *
      * @param Client $client
      * @param EntityManager $entityManager
      * @param CurrentUser $currentUser
      * @param Downloader $downloader
      * @param PathUtils $pathUtils
-     * @param EventDispatcherInterface $dispatcher
+     * @param ScanScheduler $scanScheduler
+     * @param Notifications $notifications
      */
-    public function __construct(Client $client, EntityManager $entityManager, CurrentUser $currentUser, Downloader $downloader, PathUtils $pathUtils, EventDispatcherInterface $dispatcher)
+    public function __construct(Client $client, EntityManager $entityManager, CurrentUser $currentUser, Downloader $downloader, PathUtils $pathUtils, ScanScheduler $scanScheduler, Notifications $notifications)
     {
         $this->client = $client;
         $this->entityManager = $entityManager;
         $this->currentUser = $currentUser;
         $this->downloader = $downloader;
         $this->pathUtils = $pathUtils;
-        $this->dispatcher = $dispatcher;
-    }
-
-    private function sendNotification(string $message): Event
-    {
-        $notification = new NotificationEvent($this->currentUser->get(), $message);
-        return $notification->dispatchTo($this->dispatcher);
-    }
-
-    /**
-     * Schedule a scan.
-     *
-     * @param string $command
-     * @param string $url
-     */
-    private function scheduleScan(string $url)
-    {
-        $job = new Job(
-            ScanCommand::NAME,
-            [$this->currentUser->get()->getUsernameCanonical(), $url],
-            true,
-            self::QUEUE
-        );
-        $job->setMaxRetries(1024);
-        $this->entityManager->persist($job);
+        $this->scanScheduler = $scanScheduler;
+        $this->notifications = $notifications;
     }
 
     /**
@@ -169,7 +146,7 @@ class Scanner
             ->setUser($this->currentUser->get());
 
         $this->downloader->schedule($download);
-        $this->sendNotification("{$title} by {$artist} scanned and download scheduled");
+        $this->notifications->log("{$title} by {$artist} scanned and download scheduled");
     }
 
     /**
@@ -190,12 +167,12 @@ class Scanner
             foreach ($submissions as $submission) {
                 $submissionsUrls[] = $this->pathUtils->join('http://www.furaffinity.net/', $submission->getAttribute('href'));
             }
-            $this->sendNotification("page {$i} of {$url} scanned");
+            $this->notifications->log("page {$i} of {$url} scanned");
         } while (count($submissions));
         $submissionsUrls = array_unique($submissionsUrls);
         array_map([$this, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
-        $this->sendNotification("Gallery contained a total of {$total} submissions, scans scheduled");
+        $this->notifications->alert("Gallery contained a total of {$total} submissions, scans scheduled");
     }
 
     public function fetchWatchlist()
@@ -220,7 +197,7 @@ class Scanner
                 }
             }
             if ($added) {
-                $this->sendNotification("Another {$added} submissions found in watchlist, proceed to next page");
+                $this->notifications->log("Another {$added} submissions found in watchlist, proceed to next page");
                 $nextButtons = $dom->find('a.more, a.more-half')->toArray();
                 $nextButtons = array_filter($nextButtons, function (Dom\AbstractNode $node) {
                     return strpos($node->getAttribute('class'), 'prev') === false;
@@ -235,7 +212,7 @@ class Scanner
         $submissionsUrls = array_keys($submissionsUrls);
         array_map([$this, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
-        $this->sendNotification("Watchlist contained a total of {$total} submissions, scans scheduled");
+        $this->notifications->alert("Your FurAffinity watchlist contained a total of {$total} submissions, scans scheduled");
     }
 
     /**
@@ -259,8 +236,8 @@ class Scanner
                 $this->scanSubmission($url);
                 break;
             case 'user':
-                $this->scheduleScan("http://www.furaffinity.net/gallery/{$path[1]}/");
-                $this->scheduleScan("http://www.furaffinity.net/scraps/{$path[1]}/");
+                $this->scanScheduler->schedule("http://www.furaffinity.net/gallery/{$path[1]}/");
+                $this->scanScheduler->schedule("http://www.furaffinity.net/scraps/{$path[1]}/");
                 break;
             default:
                 throw new NotAFurAffinityPageException($url);
@@ -287,6 +264,4 @@ class Scanner
     {
         $this->entityManager->flush();
     }
-
-
 }

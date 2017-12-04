@@ -42,6 +42,9 @@ class DefaultController extends Controller
     public function cookieAction(Request $request)
     {
         $cookies = json_decode($request->getContent(), true);
+        if (!is_array($cookies)) {
+            return $this->json(['success' => false, 'error' => 'No cookies posted'], 526);
+        }
         try {
             $cookieUtils = $this->get('downloadapp.utils.cookies');
             $cookieJar = $this->get('downloadapp.user.cookiejars.furaffinity');

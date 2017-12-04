@@ -7,7 +7,8 @@ services:
             - '@downloadapp.user.current'
             - '@downloadapp.download'
             - '@downloadapp.utils.path'
-            - '@event_dispatcher'
+            - '@downloadapp.scanners.furaffinity.scheduler'
+            - '@downloadapp.utils.notifications'
 
     downloadapp.scanners.furaffinity.contractor:
         class: DownloadApp\Scanners\FurAffinityBundle\Contractor\Contractor
@@ -17,3 +18,11 @@ services:
         tags:
             - name: downloadapp.contractor
               priority: 25
+
+    downloadapp.scanners.furaffinity.scheduler:
+        class: DownloadApp\Scanners\CoreBundle\Service\ScanScheduler
+        arguments:
+            - '@downloadapp.user.current'
+            - '@doctrine.orm.entity_manager'
+            - !php/const:\DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand::NAME
+            - !php/const:\DownloadApp\Scanners\FurAffinityBundle\Service\Scanner::QUEUE

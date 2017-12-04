@@ -26,6 +26,7 @@
 
 namespace DownloadApp\Scanners\FurAffinityBundle\Command;
 
+use DownloadApp\App\UtilsBundle\Listener\NotificationToOutputListener;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -65,6 +66,10 @@ class ScanCommand extends ContainerAwareCommand
             ->get('fos_user.user_provider.username')
             ->loadUserByUsername($input->getArgument('user'));
         $currentUser->set($user);
+        $eventDispatcher = $this
+            ->getContainer()
+            ->get('event_dispatcher');
+        $eventDispatcher->addSubscriber(new NotificationToOutputListener($output));
 
         $scanner = $this
             ->getContainer()
