@@ -120,7 +120,7 @@ class Scanner
         $dom = new Dom();
         $dom->load($response->getBody()->getContents());
 
-        $fileUrl = $uri->getScheme() . '//' . $dom->find('a[href*=facdn]', 0)->getAttribute('href');
+        $fileUrl = $uri->getScheme() . '://' . preg_replace('#^//#', '', $dom->find('a[href*=facdn]', 0)->getAttribute('href'));
         $filename = basename($fileUrl);
         $title = $dom->find('#page-submission td.cat b', 0)->innerHtml;
         $artist = strip_tags($dom->find('#page-submission td.cat a[href*=user]', 0)->innerHtml);
