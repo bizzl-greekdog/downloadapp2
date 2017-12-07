@@ -27,7 +27,15 @@
 
 namespace DownloadApp\App\UtilsBundle\Service;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\TransactionRequiredException;
+use DownloadApp\App\UserBundle\Entity\User;
 use DownloadApp\App\UtilsBundle\Command\IdleCommand;
 use JMS\JobQueueBundle\Entity\Job;
 
@@ -54,10 +62,49 @@ class Jobs
      *
      * @param int $id
      * @return Job|null
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
+     * @throws ORMException
      */
     public function find(int $id)
     {
         return $this->em->find(Job::class, $id);
+    }
+
+    /**
+     * Find jobs associated with a user.
+     *
+     * @param User $user
+     * @param string[] $states
+     * @return Job[]
+     */
+    public function findJobsForUser(User $user, $states = [])
+    {
+        $fields = 'j.*';
+        $sql = $this->createSQL($user, $states, $fields, $params);
+        $rsm = new ResultSetMappingBuilder($this->em);
+        $rsm->addRootEntityFromClassMetadata('JMSJobQueueBundle:Job', 'j');
+        return $this->em->createNativeQuery($sql, $rsm)->setParameters($params)->getResult();
+    }
+
+    /**
+     * Count jobs associated with a user.
+     *
+     * @param User $user
+     * @param string[] $states
+     * @return int
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countJobsForUser(User $user, $states = []): int
+    {
+        $fields = 'COUNT(j.id) AS c';
+        $sql = $this->createSQL($user, $states, $fields, $params);
+        $rsm = new ResultSetMappingBuilder($this->em);
+        $rsm->addEntityResult(Job::class, 'j');
+        $rsm->addFieldResult('j', 'c', 'id');
+        $result = $this->em->createNativeQuery($sql, $rsm)->setParameters($params);
+        return intval($result->getSingleScalarResult(), 10);
     }
 
     /**
@@ -127,10 +174,33 @@ class Jobs
      *
      * @return void
      * @link http://php.net/manual/en/language.oop5.decon.php
+     * @throws OptimisticLockException
      */
     function __destruct()
     {
         $this->em->flush();
+    }
+
+    /**
+     * Create a query to relate users and jobs.
+     *
+     * @param User $user
+     * @param $states
+     * @param $fields
+     * @param $params
+     * @return string
+     */
+    private function createSQL(User $user, $states, $fields, &$params): string
+    {
+        $params = new ArrayCollection();
+        $params->add(new Parameter('related_id', json_encode(['id' => $user->getId()])));
+        $params->add(new Parameter('related_class', User::class));
+        $sql = "SELECT $fields FROM jms_jobs j INNER JOIN jms_job_related_entities r ON r.job_id = j.id WHERE r.related_id = :related_id AND r.related_class = :related_class";
+        if (!empty($states)) {
+            $sql .= ' AND j.state IN (:states)';
+            $params->add(new Parameter('states', $states, Connection::PARAM_STR_ARRAY));
+        }
+        return $sql;
     }
 
 

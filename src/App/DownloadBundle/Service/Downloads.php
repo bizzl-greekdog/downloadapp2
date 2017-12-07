@@ -34,6 +34,7 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Exceptions\MissingDownloadServiceException;
+use DownloadApp\App\UserBundle\Entity\User;
 use DownloadApp\App\UserBundle\Service\UserFilesystem;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -42,13 +43,13 @@ use League\Flysystem\Exception;
 use League\Flysystem\FilesystemInterface;
 
 /**
- * Class Downloader
+ * Class Downloads
  *
  * This service is called to download files, and write metadata files for them.
  *
  * @package Benkle\DownloadApp\DownloadBundle\Service
  */
-class Downloader
+class Downloads
 {
     /** @var FileDownloaderInterface[] */
     private $fileDownloaders = [];
@@ -60,7 +61,7 @@ class Downloader
     private $userFilesystem;
 
     /**
-     * Downloader constructor.
+     * Downloads constructor.
      *
      * @param EntityManager $entityManager
      * @param FilesystemInterface $filesystem
@@ -76,9 +77,9 @@ class Downloader
      *
      * @param string $forClass
      * @param FileDownloaderInterface $fileDownloader
-     * @return Downloader
+     * @return Downloads
      */
-    public function setFileDownloader(string $forClass, FileDownloaderInterface $fileDownloader): Downloader
+    public function setFileDownloader(string $forClass, FileDownloaderInterface $fileDownloader): Downloads
     {
         $this->fileDownloaders[$forClass] = $fileDownloader;
         return $this;
@@ -104,6 +105,17 @@ class Downloader
     public function findByGUID(string $guid)
     {
         return $this->entityManager->getRepository(Download::class)->findOneBy(['guid' => $guid]);
+    }
+
+    /**
+     * Get downloads for a user.
+     *
+     * @param User $user
+     * @return Download[]
+     */
+    public function findByUser(User $user)
+    {
+        return $this->entityManager->getRepository(Download::class)->findBy(['user' => $user]);
     }
 
     /**

@@ -31,7 +31,7 @@ use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
-use DownloadApp\App\DownloadBundle\Service\Downloader;
+use DownloadApp\App\DownloadBundle\Service\Downloads;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\App\UtilsBundle\Service\Notifications;
 use DownloadApp\App\UtilsBundle\Service\PathUtils;
@@ -59,7 +59,7 @@ class Scanner
     /** @var  CurrentUser */
     private $currentUser;
 
-    /** @var  Downloader */
+    /** @var  Downloads */
     private $downloader;
 
     /** @var  PathUtils */
@@ -76,12 +76,12 @@ class Scanner
      * @param Client $client
      * @param EntityManager $entityManager
      * @param CurrentUser $currentUser
-     * @param Downloader $downloader
+     * @param Downloads $downloader
      * @param PathUtils $pathUtils
      * @param ScanScheduler $scanScheduler
      * @param Notifications $notifications
      */
-    public function __construct(Client $client, EntityManager $entityManager, CurrentUser $currentUser, Downloader $downloader, PathUtils $pathUtils, ScanScheduler $scanScheduler, Notifications $notifications)
+    public function __construct(Client $client, EntityManager $entityManager, CurrentUser $currentUser, Downloads $downloader, PathUtils $pathUtils, ScanScheduler $scanScheduler, Notifications $notifications)
     {
         $this->client = $client;
         $this->entityManager = $entityManager;

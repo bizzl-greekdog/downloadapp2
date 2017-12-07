@@ -36,7 +36,7 @@ use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
-use DownloadApp\App\DownloadBundle\Service\Downloader;
+use DownloadApp\App\DownloadBundle\Service\Downloads;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
 use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
@@ -64,7 +64,7 @@ class Scanner
     /** @var  CurrentUser */
     private $currentUser;
 
-    /** @var  Downloader */
+    /** @var  Downloads */
     private $downloader;
 
     /**
@@ -74,14 +74,14 @@ class Scanner
      * @param Client $client
      * @param EntityManager $entityManager
      * @param CurrentUser $currentUser
-     * @param Downloader $downloader
+     * @param Downloads $downloader
      */
     public function __construct(
         ApiProvider $apiProvider,
         Client $client,
         EntityManager $entityManager,
         CurrentUser $currentUser,
-        Downloader $downloader
+        Downloads $downloader
     )
     {
         $this->apiProvider = $apiProvider;

@@ -28,6 +28,7 @@
 namespace DownloadApp\Scanners\CoreBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use DownloadApp\App\UserBundle\Exception\NoLoggedInUserException;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use JMS\JobQueueBundle\Entity\Job;
 
@@ -71,16 +72,19 @@ class ScanScheduler
      * @param string $url
      * @param string|null $referer
      * @internal param string $command
+     * @throws NoLoggedInUserException
      */
     public function schedule(string $url, string $referer = null)
     {
+        $user = $this->currentUser->get();
         $job = new Job(
             $this->commandName,
-            [$this->currentUser->get()->getUsernameCanonical(), $url],
+            [$user->getUsernameCanonical(), $url],
             true,
             $this->queue
         );
         $job->setMaxRetries(1024);
+        $job->addRelatedEntity($user);
         $this->entityManager->persist($job);
     }
 
@@ -99,6 +103,7 @@ class ScanScheduler
      *
      * @return void
      * @link http://php.net/manual/en/language.oop5.decon.php
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     function __destruct()
     {
