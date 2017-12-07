@@ -107,15 +107,44 @@ class Downloads
         return $this->entityManager->getRepository(Download::class)->findOneBy(['guid' => $guid]);
     }
 
+    const FAILED_REQUIRED = 1;
+    const FAILED_EXCLUDED = 2;
+    const FAILED_ALLOWED  = 3;
+
+    const DOWNLOADED_REQUIRED = 1;
+    const DOWNLOADED_EXCLUDED = 2;
+    const DOWNLOADED_ALLOWED  = 3;
+
     /**
      * Get downloads for a user.
      *
      * @param User $user
-     * @return Download[]
+     * @param int $failed
+     * @param int $downloaded
+     * @return array|Download[]
      */
-    public function findByUser(User $user)
+    public function findByUser(User $user, int $failed = self::FAILED_ALLOWED, int $downloaded = self::DOWNLOADED_ALLOWED)
     {
-        return $this->entityManager->getRepository(Download::class)->findBy(['user' => $user]);
+        $queryBuilder = $this->createByUserQuery($failed, $downloaded);
+        $queryBuilder->select('d');
+        return $queryBuilder->getQuery()->setParameter('user', $user)->getResult();
+    }
+
+    /**
+     * Count downloads for a user.
+     *
+     * @param User $user
+     * @param int $failed
+     * @param int $downloaded
+     * @return int
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countByUser(User $user, int $failed = self::FAILED_ALLOWED, int $downloaded = self::DOWNLOADED_ALLOWED): int
+    {
+        $queryBuilder = $this->createByUserQuery($failed, $downloaded);
+        $queryBuilder->select($queryBuilder->expr()->count('d'));
+        return $queryBuilder->getQuery()->setParameter('user', $user)->getSingleScalarResult();
     }
 
     /**
@@ -153,6 +182,9 @@ class Downloads
      * Do the download.
      *
      * @param Download $download
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function download(Download $download)
     {
@@ -161,8 +193,9 @@ class Downloads
             $fs = $this->userFilesystem->get($user);
             $filename = $this->fetch($download->getFile(), $fs);
             $download->setFile($this->entityManager->find(File::class, $download->getFile()->getId()));
-            $fs->put("$filename.txt", $download);
+            $fs->put("$filename.txt", $download); // TODO Clean comment
             $download->setDownloaded(true);
+            $download->setFailed(false);
         } catch (Exception $e) {
             $this->fail($download, $e);
         } catch (MissingDownloadServiceException $e) {
@@ -219,9 +252,47 @@ class Downloads
      *
      * @return void
      * @link http://php.net/manual/en/language.oop5.decon.php
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     function __destruct()
     {
         $this->entityManager->flush();
+    }
+
+    /**
+     * Create query fpr *byUser methods.
+     *
+     * @param int $failed
+     * @param int $downloaded
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    private function createByUserQuery(int $failed, int $downloaded): \Doctrine\ORM\QueryBuilder
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->from('DownloadBundle:Download', 'd');
+        $queryBuilder->where('d.user = :user');
+        switch ($failed) {
+            case self::FAILED_REQUIRED:
+                $queryBuilder->andWhere('d.failed = true');
+                break;
+            case self::FAILED_EXCLUDED:
+                $queryBuilder->andWhere('d.failed = false');
+                break;
+            case self::FAILED_ALLOWED:
+            default:
+                break;
+        }
+        switch ($downloaded) {
+            case self::DOWNLOADED_REQUIRED:
+                $queryBuilder->andWhere('d.downloaded = true');
+                break;
+            case self::DOWNLOADED_EXCLUDED:
+                $queryBuilder->andWhere('d.downloaded = false');
+                break;
+            case self::DOWNLOADED_ALLOWED:
+            default:
+                break;
+        }
+        return $queryBuilder;
     }
 }

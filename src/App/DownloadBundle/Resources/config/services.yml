@@ -36,7 +36,7 @@ services:
                   - '@downloadapp.utils.path'
 
     downloadapp.download:
-        class: DownloadApp\App\DownloadBundle\Service\Downloader
+        class: DownloadApp\App\DownloadBundle\Service\Downloads
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@downloadapp.user.filesystem"
