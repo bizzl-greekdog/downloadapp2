@@ -157,7 +157,10 @@ class Scanner
             ->setFile($file)
             ->setUser($this->currentUser->get());
 
-        $this->downloader->schedule($download);
+        $this
+            ->downloader
+            ->persist($download)
+            ->schedule($download);
         $this->notifications->log("{$title} by {$artist} scanned and download scheduled");
     }
 

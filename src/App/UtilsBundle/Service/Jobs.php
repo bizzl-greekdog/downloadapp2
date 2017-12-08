@@ -202,6 +202,4 @@ class Jobs
         }
         return $sql;
     }
-
-
 }

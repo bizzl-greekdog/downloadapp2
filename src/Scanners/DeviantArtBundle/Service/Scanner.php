@@ -264,7 +264,10 @@ class Scanner
             ->setFile($file)
             ->setUser($this->currentUser->get());
 
-        $this->downloader->schedule($download);
+        $this
+            ->downloader
+            ->persist($download)
+            ->schedule($download);
     }
 
     /**

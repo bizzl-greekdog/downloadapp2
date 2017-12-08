@@ -51,6 +51,14 @@ use League\Flysystem\FilesystemInterface;
  */
 class Downloads
 {
+    const FAILED_REQUIRED = 1;
+    const FAILED_EXCLUDED = 2;
+    const FAILED_ALLOWED  = 3;
+
+    const DOWNLOADED_REQUIRED = 1;
+    const DOWNLOADED_EXCLUDED = 2;
+    const DOWNLOADED_ALLOWED  = 3;
+
     /** @var FileDownloaderInterface[] */
     private $fileDownloaders = [];
 
@@ -106,14 +114,6 @@ class Downloads
     {
         return $this->entityManager->getRepository(Download::class)->findOneBy(['guid' => $guid]);
     }
-
-    const FAILED_REQUIRED = 1;
-    const FAILED_EXCLUDED = 2;
-    const FAILED_ALLOWED  = 3;
-
-    const DOWNLOADED_REQUIRED = 1;
-    const DOWNLOADED_EXCLUDED = 2;
-    const DOWNLOADED_ALLOWED  = 3;
 
     /**
      * Get downloads for a user.
@@ -182,6 +182,7 @@ class Downloads
      * Do the download.
      *
      * @param Download $download
+     * @return Downloads
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
@@ -206,35 +207,29 @@ class Downloads
             $this->fail($download, $e);
         }
         $this->entityManager->persist($download);
+
+        return $this;
     }
 
     /**
      * Persist and schedule a download.
      *
      * @param Download $download
+     * @return Downloads
      * @throws DownloadAlreadyExistsException
      */
     public function schedule(Download $download)
     {
-        if (
-        $this
-            ->entityManager
-            ->getRepository(Download::class)
-            ->findOneBy(['guid' => $download->getGuid()])
-        ) {
-            throw new DownloadAlreadyExistsException($download->getGuid());
-        } else {
-            $this->entityManager->persist($download);
+        $job = new Job(
+            DownloadCommand::NAME,
+            [$download->getGuid()],
+            true,
+            DownloadCommand::QUEUE
+        );
+        $job->addRelatedEntity($download);
 
-            $job = new Job(
-                DownloadCommand::NAME,
-                [$download->getGuid()],
-                true,
-                DownloadCommand::QUEUE
-            );
-
-            $this->entityManager->persist($job);
-        }
+        $this->entityManager->persist($job);
+        return $this;
     }
 
     /**
@@ -294,5 +289,40 @@ class Downloads
                 break;
         }
         return $queryBuilder;
+    }
+
+    /**
+     * Check if a download is already scheduled.
+     *
+     * @param Download $download
+     * @return bool
+     */
+    public function isScheduled(Download $download): bool
+    {
+        $jobsRepository = $this->entityManager->getRepository('JMSJobQueueBundle:Job');
+        $jobs = $jobsRepository->findJobForRelatedEntity(DownloadCommand::NAME, $download);
+        return !empty($jobs);
+    }
+
+    /**
+     * Persist a download to the database.
+     *
+     * @param Download $download
+     * @return Downloads
+     * @throws DownloadAlreadyExistsException
+     */
+    public function persist(Download $download)
+    {
+        if (
+        $this
+            ->entityManager
+            ->getRepository(Download::class)
+            ->findOneBy(['guid' => $download->getGuid()])
+        ) {
+            throw new DownloadAlreadyExistsException($download->getGuid());
+        } else {
+            $this->entityManager->persist($download);
+        }
+        return $this;
     }
 }

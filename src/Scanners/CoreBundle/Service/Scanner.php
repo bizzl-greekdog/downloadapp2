@@ -29,11 +29,10 @@ namespace DownloadApp\Scanners\CoreBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
-use DownloadApp\App\DownloadBundle\Command\DownloadCommand;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
+use DownloadApp\App\DownloadBundle\Service\Downloads;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
-use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 
 /**
@@ -45,19 +44,20 @@ class Scanner
     /** @var  CurrentUser */
     private $currentUser;
 
-    /** @var  EntityManager */
-    private $em;
+    /** @var Downloads */
+    private $downloads;
 
     /**
      * Scanner constructor.
      *
      * @param CurrentUser $currentUser
      * @param EntityManager $em
+     * @param Downloads $downloads
      */
-    public function __construct(CurrentUser $currentUser, EntityManager $em)
+    public function __construct(CurrentUser $currentUser, Downloads $downloads)
     {
         $this->currentUser = $currentUser;
-        $this->em = $em;
+        $this->downloads = $downloads;
     }
 
     /**
@@ -65,6 +65,8 @@ class Scanner
      *
      * @param string $url
      * @param string $referer
+     * @throws \DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scan(string $url, string $referer)
     {
@@ -82,31 +84,10 @@ class Scanner
             ->setMetadatum('Found at', $referer ?? '')
             ->setComment('')
             ->setFile($file);
-        $this->em->persist($download);
 
-        $job = new Job(DownloadCommand::NAME, [$download->getGuid()], DownloadCommand::QUEUE);
-        $this->em->persist($job);
-
-    }
-
-    /**
-     * PHP 5 introduces a destructor concept similar to that of other object-oriented languages, such as C++.
-     * The destructor method will be called as soon as all references to a particular object are removed or
-     * when the object is explicitly destroyed or in any order in shutdown sequence.
-     *
-     * Like constructors, parent destructors will not be called implicitly by the engine.
-     * In order to run a parent destructor, one would have to explicitly call parent::__destruct() in the destructor body.
-     *
-     * Note: Destructors called during the script shutdown have HTTP headers already sent.
-     * The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).
-     *
-     * Note: Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.
-     *
-     * @return void
-     * @link http://php.net/manual/en/language.oop5.decon.php
-     */
-    function __destruct()
-    {
-        $this->em->flush();
+        $this
+            ->downloads
+            ->persist($download)
+            ->schedule($download);
     }
 }
