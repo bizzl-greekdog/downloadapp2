@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Benkle\DoctrineAdoptionBundle\BenkleDoctrineAdoptionBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle(),
+            new JMS\AopBundle\JMSAopBundle(),
             new JMS\JobQueueBundle\JMSJobQueueBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Benkle\NotificationBundle\BenkleNotificationBundle(),

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title>{% block title %}Download App{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}"/>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+    </head>
+    <body>
+        <div id="wrapper">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <span class="navbar-brand">{% block brand %}Welcome!{% endblock %}</span>
+                    </div>
+                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="{{ path('fos_user_security_logout') }}"><span class="glyphicon glyphicon-user"></span>
+                                    Logout</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </nav>
+            <main class="container-fluid">{% block body %}{% endblock %}</main>
+        </div>
+        <script src="{{ asset('build/app.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

@@ -1,1 +1,31 @@
-Hello World!
+{% extends 'base.html.twig' %}
+
+{% block brand %}
+    Download App :: Welcome, {{ user.username }}
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-11">
+        <div class="panel panel-default">
+            <div class="panel-heading">Failed downloads</div>
+            <ul class="list-group">
+                {% for download in downloads.failed %}
+                    <li class="list-group-item">
+                        <em>{{ download.metadata.Title }}</em> by <em>{{ download.metadata.Artist }}</em>
+                        <span class="pull-right">{{ download.error }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-1">
+        <div class="panel panel-default">
+            <div class="panel-heading">Stats</div>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Open scans:</strong> {{ stats.open.scans }}</li>
+                <li class="list-group-item"><strong>Open downloads:</strong> {{ stats.open.downloads }}</li>
+                <li class="list-group-item"><strong>Failed downloads:</strong> {{ stats.failed.downloads }}</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

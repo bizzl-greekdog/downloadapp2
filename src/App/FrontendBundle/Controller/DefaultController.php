@@ -28,18 +28,24 @@ class DefaultController extends Controller
         $downloads = $this->get('downloadapp.download');
 
         $variables = [
-            'open'   => [
-                'scans'     => $jobs->countJobsForUser(
-                    $user, [
-                    Job::STATE_INCOMPLETE,
-                    Job::STATE_NEW,
-                    Job::STATE_PENDING,
-                ]
-                ),
-                'downloads' => $downloads->countByUser($user, Downloads::FAILED_ALLOWED, Downloads::DOWNLOADED_EXCLUDED),
+            'user'      => $user,
+            'downloads' => [
+                'failed' => $downloads->findByUser($user, Downloads::FAILED_REQUIRED, Downloads::DOWNLOADED_EXCLUDED),
             ],
-            'failed' => [
-                'downloads' => $downloads->countByUser($user, Downloads::FAILED_REQUIRED, Downloads::DOWNLOADED_EXCLUDED),
+            'stats'     => [
+                'open'   => [
+                    'scans'     => $jobs->countJobsForUser(
+                        $user, [
+                                 Job::STATE_INCOMPLETE,
+                                 Job::STATE_NEW,
+                                 Job::STATE_PENDING,
+                             ]
+                    ),
+                    'downloads' => $downloads->countByUser($user, Downloads::FAILED_ALLOWED, Downloads::DOWNLOADED_EXCLUDED),
+                ],
+                'failed' => [
+                    'downloads' => $downloads->countByUser($user, Downloads::FAILED_REQUIRED, Downloads::DOWNLOADED_EXCLUDED),
+                ],
             ],
         ];
 

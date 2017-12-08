@@ -121,7 +121,7 @@ class Downloads
      * @param User $user
      * @param int $failed
      * @param int $downloaded
-     * @return array|Download[]
+     * @return Download[]
      */
     public function findByUser(User $user, int $failed = self::FAILED_ALLOWED, int $downloaded = self::DOWNLOADED_ALLOWED)
     {
