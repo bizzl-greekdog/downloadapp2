@@ -11,8 +11,14 @@
             <ul class="list-group">
                 {% for download in downloads.failed %}
                     <li class="list-group-item">
-                        <em>{{ download.metadata.Title }}</em> by <em>{{ download.metadata.Artist }}</em>
-                        <span class="pull-right">{{ download.error }}</span>
+                        <div class="collapsed" data-toggle="collapse" href="#collapse-{{ download.id }}" id="heading-{{ download.id }}">
+                            {{ download|titleDownload }}
+                            {% if (download.error) %}
+                                <span class="pull-right text-danger">{{ download.error }}</span>{% endif %}
+                        </div>
+                        <div id="collapse-{{ download.id }}" class="collapse" aria-labelledby="heading-{{ download.id }}">
+                            <div class="well preformatted">{{ download|formatDownload }}</div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>

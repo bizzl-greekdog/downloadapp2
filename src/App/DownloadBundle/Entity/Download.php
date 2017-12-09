@@ -233,6 +233,14 @@ class Download
     }
 
     /**
+     * @return bool
+     */
+    public function hasId(): bool
+    {
+        return isset($this->id);
+    }
+
+    /**
      * @return string
      */
     public function getGuid(): string
@@ -241,35 +249,21 @@ class Download
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getError(): string
+    public function getError()
     {
         return $this->error;
     }
 
     /**
-     * @param string $error
+     * @param string|null $error
      * @return $this
      */
     public function setError($error)
     {
         $this->error = $error;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        $result = [];
-        foreach ($this->metadata as $key => $value) {
-            $result[] = "$key: $value";
-        }
-        $result[] = '======================================';
-        $result[] = $this->getComment();
-        return implode(PHP_EOL, $result);
     }
 
     /**

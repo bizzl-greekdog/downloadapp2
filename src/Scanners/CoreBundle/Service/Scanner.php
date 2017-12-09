@@ -67,6 +67,7 @@ class Scanner
      * @param string $referer
      * @throws \DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function scan(string $url, string $referer)
     {
@@ -82,6 +83,8 @@ class Scanner
         $download
             ->setUser($this->currentUser->get())
             ->setMetadatum('Found at', $referer ?? '')
+            ->setMetadatum('Source', $url ?? '')
+            ->setMetadatum('Original Filename', basename($url) ?? '')
             ->setComment('')
             ->setFile($file);
 

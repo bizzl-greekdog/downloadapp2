@@ -68,16 +68,20 @@ class Downloads
     /** @var  UserFilesystem */
     private $userFilesystem;
 
+    /** @var Formatter */
+    private $formatter;
+
     /**
      * Downloads constructor.
-     *
      * @param EntityManager $entityManager
-     * @param FilesystemInterface $filesystem
+     * @param UserFilesystem $userFilesystem
+     * @param Formatter $formatter
      */
-    public function __construct(EntityManager $entityManager, UserFilesystem $userFilesystem)
+    public function __construct(EntityManager $entityManager, UserFilesystem $userFilesystem, Formatter $formatter)
     {
         $this->entityManager = $entityManager;
         $this->userFilesystem = $userFilesystem;
+        $this->formatter = $formatter;
     }
 
     /**
@@ -194,7 +198,7 @@ class Downloads
             $fs = $this->userFilesystem->get($user);
             $filename = $this->fetch($download->getFile(), $fs);
             $download->setFile($this->entityManager->find(File::class, $download->getFile()->getId()));
-            $fs->put("$filename.txt", $download); // TODO Clean comment
+            $fs->put("$filename.txt", $this->formatter->format($download));
             $download->setDownloaded(true);
             $download->setFailed(false);
         } catch (Exception $e) {
@@ -217,6 +221,7 @@ class Downloads
      * @param Download $download
      * @return Downloads
      * @throws DownloadAlreadyExistsException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function schedule(Download $download)
     {
@@ -226,6 +231,9 @@ class Downloads
             true,
             DownloadCommand::QUEUE
         );
+        if (!$download->hasId()) {
+            $this->entityManager->flush($download);
+        }
         $job->addRelatedEntity($download);
 
         $this->entityManager->persist($job);

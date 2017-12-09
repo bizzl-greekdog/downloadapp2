@@ -61,10 +61,11 @@ class DefaultContractor implements ContractorInterface
      * @param string $url
      * @param string|null $referer
      * @return bool
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function contract(string $url, string $referer = null): bool
     {
-        $job = new Job(DefaultScanCommand::NAME, [$url, $referer]);
+        $job = new Job(DefaultScanCommand::NAME, [$this->currentUser->get()->getUsernameCanonical(), $url, $referer]);
         $this->jobs->persist($job);
         return true;
     }

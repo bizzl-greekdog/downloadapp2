@@ -34,7 +34,7 @@ class DownloadCommand extends ContainerAwareCommand
     {
         $downloader = $this
             ->getContainer()
-            ->get('downloadapp.download');
+            ->get('downloadapp.downloads');
         $download = $downloader->findByGUID($input->getArgument('key'));
         $downloader->download($download);
     }

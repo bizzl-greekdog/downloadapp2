@@ -6,7 +6,7 @@ services:
             - '@csa_guzzle.client.general'
             - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
-            - '@downloadapp.download'
+            - '@downloadapp.downloads'
 
     downloadapp.scanners.deviantart.api:
         class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiProvider

@@ -5,7 +5,7 @@ services:
             - '@csa_guzzle.client.weasyl'
             - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
-            - '@downloadapp.download'
+            - '@downloadapp.downloads'
             - '@downloadapp.utils.path'
             - '@downloadapp.scanners.weasyl.scheduler'
             - '@downloadapp.utils.notifications'

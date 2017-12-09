@@ -64,7 +64,7 @@ class ScheduleDownloadCommand extends ContainerAwareCommand
             return -1;
         }
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $downloads = $this->getContainer()->get('downloadapp.download');
+        $downloads = $this->getContainer()->get('downloadapp.downloads');
         if ($input->hasOption('all')) {
             foreach ($em->getRepository(Download::class)->findBy(['downloaded' => false]) as $download) {
                 if (!$downloads->isScheduled($download)) {

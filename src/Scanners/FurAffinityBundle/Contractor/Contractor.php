@@ -66,6 +66,7 @@ class Contractor implements ContractorInterface
      * @param string $url
      * @param string|null $referer
      * @return bool
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function contract(string $url, string $referer = null): bool
     {
@@ -85,9 +86,16 @@ class Contractor implements ContractorInterface
 
     /**
      * Contract a watchlist scan.
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function contractWatchlist()
     {
-        $this->em->persist(new Job(WatchlistCommand::NAME, [$this->currentUser->get()], Scanner::QUEUE));
+        $this->em->persist(
+            new Job(
+                WatchlistCommand::NAME, [
+                $this->currentUser->get()->getUsernameCanonical(),
+            ], Scanner::QUEUE
+            )
+        );
     }
 }

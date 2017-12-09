@@ -3,7 +3,7 @@ services:
         class: DownloadApp\Scanners\CoreBundle\Service\Scanner
         arguments:
             - '@downloadapp.user.current'
-            - '@downloadapp.download'
+            - '@downloadapp.downloads'
 
     downloadapp.contractors:
         class: DownloadApp\Scanners\CoreBundle\Service\Contractors

@@ -5,7 +5,7 @@ services:
             - '@csa_guzzle.client.furaffinity'
             - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
-            - '@downloadapp.download'
+            - '@downloadapp.downloads'
             - '@downloadapp.utils.path'
             - '@downloadapp.scanners.furaffinity.scheduler'
             - '@downloadapp.utils.notifications'

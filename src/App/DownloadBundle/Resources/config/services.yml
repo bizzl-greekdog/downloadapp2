@@ -1,19 +1,19 @@
 services:
-    downloadapp.download.file.remote:
+    downloadapp.downloads.file.remote:
         class: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         tags:
             - name: benkle.doctrine.adoption.child
               of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: remote_file
 
-    downloadapp.download.file.content:
+    downloadapp.downloads.file.content:
         class: DownloadApp\App\DownloadBundle\Entity\ContentFile
         tags:
             - name: benkle.doctrine.adoption.child
               of: DownloadApp\App\DownloadBundle\Entity\File
               discriminator: content_file
 
-    downloadapp.download.filedownloader.content:
+    downloadapp.downloads.filedownloader.content:
         class: DownloadApp\App\DownloadBundle\Service\ContentFileDownloader
         tags:
             - name: downloadapp.file.downloader
@@ -23,21 +23,26 @@ services:
               arguments:
                   - '@downloadapp.utils.path'
 
-    downloadapp.download.file.downloader.remote:
+    downloadapp.downloads.file.downloader.remote:
         class: DownloadApp\App\DownloadBundle\Service\RemoteFileFileDownloader
         tags:
             - name: downloadapp.file.downloader
               for: DownloadApp\App\DownloadBundle\Entity\RemoteFile
         arguments:
-            - "@csa_guzzle.client.general"
+            - '@csa_guzzle.client.general'
         calls:
             - method: setPathUtils
               arguments:
                   - '@downloadapp.utils.path'
 
-    downloadapp.download:
+    downloadapp.downloads.formatter:
+        class: DownloadApp\App\DownloadBundle\Service\Formatter
+        tags:
+            - name: 'twig.extension'
+
+    downloadapp.downloads:
         class: DownloadApp\App\DownloadBundle\Service\Downloads
         arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@downloadapp.user.filesystem"
-            - '@downloadapp.utils.jobs'
+            - '@doctrine.orm.entity_manager'
+            - '@downloadapp.user.filesystem'
+            - '@downloadapp.downloads.formatter'

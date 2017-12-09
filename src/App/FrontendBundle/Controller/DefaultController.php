@@ -25,7 +25,7 @@ class DefaultController extends Controller
 
         $user = $this->get('downloadapp.user.current')->get();
         $jobs = $this->get('downloadapp.utils.jobs');
-        $downloads = $this->get('downloadapp.download');
+        $downloads = $this->get('downloadapp.downloads');
 
         $variables = [
             'user'      => $user,
