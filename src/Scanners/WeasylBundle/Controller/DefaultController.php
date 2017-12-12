@@ -39,7 +39,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function cookieAction(Request $request)
+    public function cookiesAction(Request $request)
     {
         $cookies = json_decode($request->getContent(), true);
         if (!is_array($cookies)) {

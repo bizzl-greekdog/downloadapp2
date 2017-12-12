@@ -173,7 +173,7 @@ class Scanner
             $this->notifications->log("page {$i} of {$url} scanned");
         } while (count($submissions));
         $submissionsUrls = array_unique($submissionsUrls);
-        array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
+        array_map([$this->scanScheduler, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
         $this->notifications->alert("Gallery contained a total of {$total} submissions, scans scheduled");
     }
@@ -216,7 +216,7 @@ class Scanner
             }
         } while ($added);
         $submissionsUrls = array_keys($submissionsUrls);
-        array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
+        array_map([$this->scanScheduler, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
         $this->notifications->alert("Your FurAffinity watchlist contained a total of {$total} submissions, scans scheduled");
     }
@@ -242,8 +242,8 @@ class Scanner
                 $this->scanSubmission($url);
                 break;
             case 'user':
-                $this->scanScheduler->schedule("http://www.furaffinity.net/gallery/{$path[1]}/");
-                $this->scanScheduler->schedule("http://www.furaffinity.net/scraps/{$path[1]}/");
+                $this->scanScheduler->scheduleScan("http://www.furaffinity.net/gallery/{$path[1]}/");
+                $this->scanScheduler->scheduleScan("http://www.furaffinity.net/scraps/{$path[1]}/");
                 break;
             default:
                 throw new NotAFurAffinityPageException($url);

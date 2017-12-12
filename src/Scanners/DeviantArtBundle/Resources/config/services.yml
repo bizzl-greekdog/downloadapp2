@@ -4,9 +4,9 @@ services:
         arguments:
             - '@downloadapp.scanners.deviantart.api'
             - '@csa_guzzle.client.general'
-            - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
             - '@downloadapp.downloads'
+            - '@downloadapp.scanners.deviantart.scheduler'
 
     downloadapp.scanners.deviantart.api:
         class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiProvider
@@ -33,6 +33,16 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@downloadapp.user.current'
+            - '@downloadapp.scanners.deviantart.scheduler'
         tags:
             - name: downloadapp.contractor
               priority: 25
+
+    downloadapp.scanners.deviantart.scheduler:
+        class: DownloadApp\Scanners\CoreBundle\Service\ScanScheduler
+        arguments:
+            - '@downloadapp.user.current'
+            - '@doctrine.orm.entity_manager'
+            - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand::NAME
+            - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Command\WatchlistCommand::NAME
+            - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Service\Scanner::QUEUE

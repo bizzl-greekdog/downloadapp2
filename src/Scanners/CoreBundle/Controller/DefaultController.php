@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace DownloadApp\Scanners\FurAffinityBundle\Controller;
+namespace DownloadApp\Scanners\CoreBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DefaultController
- * @package DownloadApp\Scanners\FurAffinityBundle\Controller
+ * @package DownloadApp\Scanners\CoreBundle\Controller
  */
 class DefaultController extends Controller
 {
@@ -39,19 +39,15 @@ class DefaultController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function cookiesAction(Request $request)
+    public function scanAction(Request $request)
     {
-        $cookies = json_decode($request->getContent(), true);
-        if (!is_array($cookies)) {
-            return $this->json(['success' => false, 'error' => 'No cookies posted'], 526);
+        $data = json_decode($request->getContent(), true);
+        $url = $data['url'] ?? false;
+        $referer = $data['referer'] ?? $url;
+        if (!$url) {
+            return $this->json(['success' => false, 'error' => 'no url provided'], 522);
         }
-        try {
-            $cookieUtils = $this->get('downloadapp.utils.cookies');
-            $cookieJar = $this->get('downloadapp.user.cookiejars.furaffinity');
-            $cookieUtils->import($cookies, $cookieJar);
-        } catch (\Exception $e) {
-            return $this->json(['success' => false, 'error' => $e->getMessage()], 525);
-        }
-        return $this->json(['success' => true]);
+        $success = $this->get('downloadapp.contractors')->contractScan($url, $referer);
+        return $this->json(['success' => $success]);
     }
 }

@@ -48,6 +48,9 @@ class ScanScheduler
     private $commandName;
 
     /** @var  string */
+    private $watchlistCommand;
+
+    /** @var  string */
     private $queue;
 
     /**
@@ -58,11 +61,12 @@ class ScanScheduler
      * @param string $commandName
      * @param string $queue
      */
-    public function __construct(CurrentUser $currentUser, EntityManager $entityManager, string $commandName, string $queue)
+    public function __construct(CurrentUser $currentUser, EntityManager $entityManager, string $commandName, string $watchlistCommand, string $queue)
     {
         $this->currentUser = $currentUser;
         $this->entityManager = $entityManager;
         $this->commandName = $commandName;
+        $this->watchlistCommand = $watchlistCommand;
         $this->queue = $queue;
     }
 
@@ -74,12 +78,31 @@ class ScanScheduler
      * @internal param string $command
      * @throws NoLoggedInUserException
      */
-    public function schedule(string $url, string $referer = null)
+    public function scheduleScan(string $url, string $referer = null)
     {
         $user = $this->currentUser->get();
         $job = new Job(
             $this->commandName,
             [$user->getUsernameCanonical(), $url],
+            true,
+            $this->queue
+        );
+        $job->setMaxRetries(1024);
+        $job->addRelatedEntity($user);
+        $this->entityManager->persist($job);
+    }
+
+    /**
+     * Schedule a scan of the watchlist.
+     *
+     * @throws NoLoggedInUserException
+     */
+    public function scheduleWatchlist()
+    {
+        $user = $this->currentUser->get();
+        $job = new Job(
+            $this->watchlistCommand,
+            [$user->getUsernameCanonical()],
             true,
             $this->queue
         );

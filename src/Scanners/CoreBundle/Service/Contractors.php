@@ -120,10 +120,10 @@ class Contractors implements \Iterator, ContractorInterface
      * @param string|null $referer
      * @return bool
      */
-    public function contract(string $url, string $referer = null): bool
+    public function contractScan(string $url, string $referer = null): bool
     {
         foreach ($this as $contractor) {
-            if ($contractor->contract($url, $referer)) {
+            if ($contractor->contractScan($url, $referer)) {
                 return true;
             }
         }

@@ -18,7 +18,7 @@ class DeviantArtController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function indexAction(Request $request)
+    public function authorizeAction(Request $request)
     {
         if (!$request->query->has('code')) {
             throw new MissingMandatoryParametersException('Parameter "code" is missing');

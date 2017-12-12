@@ -31,10 +31,7 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Contractor;
 use Doctrine\ORM\EntityManager;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
 use DownloadApp\Scanners\CoreBundle\Contractor\ContractorInterface;
-use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
-use DownloadApp\Scanners\DeviantArtBundle\Command\WatchlistCommand;
-use DownloadApp\Scanners\DeviantArtBundle\Service\Scanner;
-use JMS\JobQueueBundle\Entity\Job;
+use DownloadApp\Scanners\CoreBundle\Service\ScanScheduler;
 use League\Uri\Uri;
 
 /**
@@ -49,15 +46,20 @@ class Contractor implements ContractorInterface
     /** @var  CurrentUser */
     private $currentUser;
 
+    /** @var  ScanScheduler */
+    private $scanScheduler;
+
     /**
      * Contractor constructor.
      * @param EntityManager $em
      * @param CurrentUser $currentUser
+     * @param ScanScheduler $scanScheduler
      */
-    public function __construct(EntityManager $em, CurrentUser $currentUser)
+    public function __construct(EntityManager $em, CurrentUser $currentUser, ScanScheduler $scanScheduler)
     {
         $this->em = $em;
         $this->currentUser = $currentUser;
+        $this->scanScheduler = $scanScheduler;
     }
 
     /**
@@ -68,7 +70,7 @@ class Contractor implements ContractorInterface
      * @return bool
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
-    public function contract(string $url, string $referer = null): bool
+    public function contractScan(string $url, string $referer = null): bool
     {
         $sourceUri = Uri::createFromString($url);
         $refererUri = Uri::createFromString($referer);
@@ -76,7 +78,7 @@ class Contractor implements ContractorInterface
         /** @var Uri $uri */
         foreach ([$sourceUri, $refererUri] as $uri) {
             if (preg_match('/^([^.]+\.)?deviantart\.com$/', $uri->getHost())) {
-                $this->em->persist(new Job(ScanCommand::NAME, [$this->currentUser->get()->getUsernameCanonical(), "$uri"], true, Scanner::QUEUE));
+                $this->scanScheduler->scheduleScan($url);
                 return true;
             }
         }
@@ -86,16 +88,11 @@ class Contractor implements ContractorInterface
 
     /**
      * Contract a watchlist scan.
+     *
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function contractWatchlist()
     {
-        $this->em->persist(
-            new Job(
-                WatchlistCommand::NAME, [
-                $this->currentUser->get()->getUsernameCanonical(),
-            ], Scanner::QUEUE
-            )
-        );
+        $this->scanScheduler->scheduleWatchlist();
     }
 }

@@ -2,6 +2,6 @@ deviantart_authorize:
     path: /authorize
     methods: [GET]
     defaults:
-        _controller: DeviantArtBundle:DeviantArt:index
+        _controller: DeviantArtBundle:DeviantArt:authorize
     requirements:
         code: \w+

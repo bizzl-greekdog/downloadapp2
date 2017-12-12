@@ -10,10 +10,19 @@ services:
             - '@downloadapp.scanners.weasyl.scheduler'
             - '@downloadapp.utils.notifications'
 
+    downloadapp.scanners.weasyl.contractor:
+        class: DownloadApp\Scanners\WeasylBundle\Contractor\Contractor
+        arguments:
+            - '@downloadapp.scanners.furaffinity.scheduler'
+        tags:
+            - name: downloadapp.contractor
+              priority: 25
+
     downloadapp.scanners.weasyl.scheduler:
         class: DownloadApp\Scanners\CoreBundle\Service\ScanScheduler
         arguments:
             - '@downloadapp.user.current'
             - '@doctrine.orm.entity_manager'
             - !php/const:\DownloadApp\Scanners\WeasylBundle\Command\ScanCommand::NAME
+            - !php/const:\DownloadApp\Scanners\WeasylBundle\Command\WatchlistCommand::NAME
             - !php/const:\DownloadApp\Scanners\WeasylBundle\Service\Scanner::QUEUE

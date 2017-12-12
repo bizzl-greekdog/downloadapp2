@@ -40,7 +40,7 @@ interface ContractorInterface
      * @param string|null $referer
      * @return bool
      */
-    public function contract(string $url, string $referer = null): bool;
+    public function contractScan(string $url, string $referer = null): bool;
 
     /**
      * Contract a watchlist scan.

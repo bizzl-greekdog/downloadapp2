@@ -30,7 +30,6 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Service;
 
 use Benkle\Deviantart\Api;
 use Benkle\Deviantart\Exceptions\ApiException;
-use Doctrine\ORM\EntityManager;
 use DownloadApp\App\DownloadBundle\Entity\ContentFile;
 use DownloadApp\App\DownloadBundle\Entity\Download;
 use DownloadApp\App\DownloadBundle\Entity\File;
@@ -38,10 +37,9 @@ use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Service\Downloads;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
-use DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand;
+use DownloadApp\Scanners\CoreBundle\Service\ScanScheduler;
 use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
 use GuzzleHttp\Client;
-use JMS\JobQueueBundle\Entity\Job;
 use League\Uri\Uri;
 
 /**
@@ -58,37 +56,37 @@ class Scanner
     /** @var  Client */
     private $client;
 
-    /** @var  EntityManager */
-    private $entityManager;
-
     /** @var  CurrentUser */
     private $currentUser;
 
     /** @var  Downloads */
     private $downloader;
 
+    /** @var  ScanScheduler */
+    private $scanScheduler;
+
     /**
      * Scanner constructor.
      *
      * @param ApiProvider $apiProvider
      * @param Client $client
-     * @param EntityManager $entityManager
      * @param CurrentUser $currentUser
      * @param Downloads $downloader
+     * @param ScanScheduler $scanScheduler
      */
     public function __construct(
         ApiProvider $apiProvider,
         Client $client,
-        EntityManager $entityManager,
         CurrentUser $currentUser,
-        Downloads $downloader
+        Downloads $downloader,
+        ScanScheduler $scanScheduler
     )
     {
         $this->apiProvider = $apiProvider;
         $this->client = $client;
-        $this->entityManager = $entityManager;
         $this->currentUser = $currentUser;
         $this->downloader = $downloader;
+        $this->scanScheduler = $scanScheduler;
     }
 
     /**
@@ -164,28 +162,12 @@ class Scanner
     }
 
     /**
-     * Schedule a scan.
-     *
-     * @param string $command
-     * @param string $url
-     */
-    private function scheduleScan(string $command, string $url)
-    {
-        $job = new Job(
-            $command,
-            [$this->currentUser->get()->getUsernameCanonical(), $url],
-            true,
-            self::QUEUE
-        );
-        $job->setMaxRetries(1024);
-        $this->entityManager->persist($job);
-    }
-
-    /**
      * Scan a deviation.
      *
      * @param string $deviationId
      * @throws DownloadAlreadyExistsException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function ScanDeviation(string $deviationId)
     {
@@ -277,6 +259,7 @@ class Scanner
      * @param string|null $username
      * @param int $offset
      * @throws ApiException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scanCollection(string $collectionId, string $username = null, int $offset = 0)
     {
@@ -285,10 +268,7 @@ class Scanner
             do {
                 $response = $collection->getFolder($collectionId, $username, $offset, 20, true);
                 foreach ($response->results as $result) {
-                    $this->scheduleScan(
-                        ScanCommand::NAME,
-                        "DeviantArt://deviation/{$result->deviationid}"
-                    );
+                    $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$result->deviationid}");
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
@@ -312,6 +292,7 @@ class Scanner
      * @param string|null $username
      * @param int $offset
      * @throws ApiException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scanGallery(string $galleryId, string $username = null, int $offset = 0)
     {
@@ -327,10 +308,7 @@ class Scanner
                     true
                 );
                 foreach ($response->results as $result) {
-                    $this->scheduleScan(
-                        ScanCommand::NAME,
-                        "DeviantArt://deviation/{$result->deviationid}"
-                    );
+                    $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$result->deviationid}");
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
@@ -351,15 +329,13 @@ class Scanner
      * Scan a user profile and schedule scans for it's galleries.
      *
      * @param string $username
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scanProfile(string $username)
     {
         $response = $this->apiProvider->getApi()->user()->getProfile($username, true, true, true);
         foreach ($response->galleries as $gallery) {
-            $this->scheduleScan(
-                ScanCommand::NAME,
-                "DeviantArt://gallery/{$username}/{$gallery->folderid}"
-            );
+            $this->scanScheduler->scheduleScan("DeviantArt://gallery/{$username}/{$gallery->folderid}");
         }
     }
 
@@ -397,31 +373,11 @@ class Scanner
     }
 
     /**
-     * PHP 5 introduces a destructor concept similar to that of other object-oriented languages, such as C++.
-     * The destructor method will be called as soon as all references to a particular object are removed or
-     * when the object is explicitly destroyed or in any order in shutdown sequence.
-     *
-     * Like constructors, parent destructors will not be called implicitly by the engine.
-     * In order to run a parent destructor, one would have to explicitly call parent::__destruct() in the destructor body.
-     *
-     * Note: Destructors called during the script shutdown have HTTP headers already sent.
-     * The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).
-     *
-     * Note: Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.
-     *
-     * @return void
-     * @link http://php.net/manual/en/language.oop5.decon.php
-     */
-    function __destruct()
-    {
-        $this->entityManager->flush();
-    }
-
-    /**
      * Fetch the users watch list and schedule scans for deviantions.
      *
      * @param string|null $cursor
      * @throws ApiException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scanWatchlist(string $cursor = null)
     {
@@ -435,10 +391,7 @@ class Scanner
                 foreach ($response->items as $item) {
                     if ($item->type === 'deviation_submitted') {
                         foreach ($item->deviations as $deviation) {
-                            $this->scheduleScan(
-                                ScanCommand::NAME,
-                                "DeviantArt://deviation/{$deviation->deviationid}"
-                            );
+                            $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$deviation->deviationid}");
                         }
                     }
                 }

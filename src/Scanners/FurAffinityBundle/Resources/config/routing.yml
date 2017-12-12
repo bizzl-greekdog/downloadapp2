@@ -1,3 +1,4 @@
-fur_affinity_homepage:
+fur_affinity_cookies:
     path:     /cookies
-    defaults: { _controller: FurAffinityBundle:Default:cookie }
+    defaults: { _controller: FurAffinityBundle:Default:cookies }
+    methods: [POST]

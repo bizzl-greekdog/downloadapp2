@@ -1,3 +1,4 @@
-weasyl_homepage:
+weasyl_cookies:
     path:     /cookies
-    defaults: { _controller: WeasylBundle:Default:cookie }
+    defaults: { _controller: WeasylBundle:Default:cookies }
+    methods: [POST]

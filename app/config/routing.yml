@@ -1,18 +1,22 @@
-weasyl:
-    resource: "@WeasylBundle/Resources/config/routing.yml"
-    prefix:   /weasyl
-
 frontend:
     resource: "@FrontendBundle/Resources/config/routing.yml"
     prefix:   /
 
+scanner_core:
+    resource: "@CoreBundle/Resources/config/routing.yml"
+    prefix:   /scanners
+
+weasyl:
+    resource: "@WeasylBundle/Resources/config/routing.yml"
+    prefix:   /scanners/weasyl
+
 fur_affinity:
     resource: "@FurAffinityBundle/Resources/config/routing.yml"
-    prefix:   /furaffinity
+    prefix:   /scanners/furaffinity
 
 deviantart:
     resource: "@DeviantArtBundle/Resources/config/routing.yml"
-    prefix:   /deviantart
+    prefix:   /scanners/deviantart
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"

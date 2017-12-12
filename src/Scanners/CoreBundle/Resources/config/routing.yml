@@ -1,0 +1,4 @@
+scanners_scan:
+    path:     /scan
+    defaults: { _controller: CoreBundle:Default:scan }
+    methods: [POST]

@@ -13,8 +13,7 @@ services:
     downloadapp.scanners.furaffinity.contractor:
         class: DownloadApp\Scanners\FurAffinityBundle\Contractor\Contractor
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@downloadapp.user.current'
+            - '@downloadapp.scanners.furaffinity.scheduler'
         tags:
             - name: downloadapp.contractor
               priority: 25
@@ -25,4 +24,5 @@ services:
             - '@downloadapp.user.current'
             - '@doctrine.orm.entity_manager'
             - !php/const:\DownloadApp\Scanners\FurAffinityBundle\Command\ScanCommand::NAME
+            - !php/const:\DownloadApp\Scanners\FurAffinityBundle\Command\WatchlistCommand::NAME
             - !php/const:\DownloadApp\Scanners\FurAffinityBundle\Service\Scanner::QUEUE

@@ -189,7 +189,7 @@ class Scanner
             }
         } while ($nextLink);
         $submissionsUrls = array_unique($submissionsUrls);
-        array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
+        array_map([$this->scanScheduler, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
         $this->notifications->alert("Gallery contained a total of {$total} submissions, scans scheduled");
     }
@@ -228,7 +228,7 @@ class Scanner
             }
         } while ($added);
         $submissionsUrls = array_keys($submissionsUrls);
-        array_map([$this->scanScheduler, 'schedule'], $submissionsUrls);
+        array_map([$this->scanScheduler, 'scheduleScan'], $submissionsUrls);
         $total = count($submissionsUrls);
         $this->notifications->alert("Your Weasyl watchlist contained a total of {$total} submissions, scans scheduled");
     }
@@ -271,8 +271,8 @@ class Scanner
                 $this->scanSubmission($url);
                 break;
             case 'user':
-                $this->scanScheduler->schedule("https://www.weasyl.com/submissions/{$path[1]}/");
-                $this->scanScheduler->schedule("https://www.weasyl.com/characters/{$path[1]}/");
+                $this->scanScheduler->scheduleScan("https://www.weasyl.com/submissions/{$path[1]}/");
+                $this->scanScheduler->scheduleScan("https://www.weasyl.com/characters/{$path[1]}/");
                 break;
             default:
                 throw new NotAWeasylPageException($url);

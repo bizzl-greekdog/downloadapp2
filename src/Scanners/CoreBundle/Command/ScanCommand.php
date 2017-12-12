@@ -70,6 +70,6 @@ class ScanCommand extends ContainerAwareCommand
         $this
             ->getContainer()
             ->get('downloadapp.contractors')
-            ->contract($url, $referer);
+            ->contractScan($url, $referer);
     }
 }
