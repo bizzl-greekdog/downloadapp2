@@ -50,4 +50,13 @@ class DefaultController extends Controller
         $success = $this->get('downloadapp.contractors')->contractScan($url, $referer);
         return $this->json(['success' => $success]);
     }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function watchlistAction()
+    {
+        $this->get('downloadapp.contractors')->contractWatchlist();
+        return $this->json(['success' => true]);
+    }
 }

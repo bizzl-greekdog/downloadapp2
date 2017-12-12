@@ -1,3 +1,9 @@
 require('../css/app.scss');
-var $ = require('jquery');
+let $ = require('jquery');
 require('bootstrap-sass');
+
+$('#getWatchlist').on('click', (event) => {
+    $.ajax('/scanners/watchlist').then(() => {
+        location.reload();
+    });
+});

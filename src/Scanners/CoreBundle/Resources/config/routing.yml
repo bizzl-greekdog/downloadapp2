@@ -2,3 +2,7 @@ scanners_scan:
     path:     /scan
     defaults: { _controller: CoreBundle:Default:scan }
     methods: [POST]
+
+scanners_watchlist:
+    path:     /watchlist
+    defaults: { _controller: CoreBundle:Default:watchlist }

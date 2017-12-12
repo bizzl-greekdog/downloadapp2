@@ -4,8 +4,16 @@
     Download App :: Welcome, {{ user.username }}
 {% endblock %}
 
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li>
+            <button type="button" class="btn btn-default navbar-btn" id="getWatchlist">Get Watchlist</button>
+        </li>
+    </ul>
+{% endblock %}
+
 {% block body %}
-    <div class="col-md-11">
+    <div class="col-md-9 col-xl-10">
         <div class="panel panel-default">
             <div class="panel-heading">Failed downloads</div>
             <ul class="list-group">
@@ -13,18 +21,19 @@
                     <li class="list-group-item">
                         <div class="collapsed" data-toggle="collapse" href="#collapse-{{ download.id }}" id="heading-{{ download.id }}">
                             {{ download|titleDownload }}
-                            {% if (download.error) %}
-                                <span class="pull-right text-danger">{{ download.error }}</span>{% endif %}
                         </div>
                         <div id="collapse-{{ download.id }}" class="collapse" aria-labelledby="heading-{{ download.id }}">
                             <div class="well preformatted">{{ download|formatDownload }}</div>
+                            {% if (download.error) %}
+                                <div class="well text-danger">{{ download.error }}</div>
+                            {% endif %}
                         </div>
                     </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
-    <div class="col-md-1">
+    <div class="col-md-3 col-xl-2">
         <div class="panel panel-default">
             <div class="panel-heading">Stats</div>
             <ul class="list-group">
