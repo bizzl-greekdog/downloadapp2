@@ -13,7 +13,7 @@ services:
     downloadapp.scanners.weasyl.contractor:
         class: DownloadApp\Scanners\WeasylBundle\Contractor\Contractor
         arguments:
-            - '@downloadapp.scanners.furaffinity.scheduler'
+            - '@downloadapp.scanners.weasyl.scheduler'
         tags:
             - name: downloadapp.contractor
               priority: 25

@@ -97,6 +97,8 @@ class Scanner
      *
      * @param string $url
      * @throws DownloadAlreadyExistsException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scanSubmission(string $url)
     {
@@ -240,7 +242,10 @@ class Scanner
      * Scan a weasyl page.
      *
      * @param string $url
+     * @throws DownloadAlreadyExistsException
      * @throws NotAWeasylPageException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function scan(string $url)
     {
@@ -294,6 +299,7 @@ class Scanner
      *
      * @return void
      * @link http://php.net/manual/en/language.oop5.decon.php
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     function __destruct()
     {

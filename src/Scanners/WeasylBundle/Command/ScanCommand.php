@@ -26,6 +26,7 @@
 
 namespace DownloadApp\Scanners\WeasylBundle\Command;
 
+use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\UtilsBundle\Listener\NotificationToOutputListener;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,8 +50,7 @@ class ScanCommand extends ContainerAwareCommand
             ->setName(self::NAME)
             ->setDescription('Scan a weasyl url')
             ->addArgument('user', InputArgument::REQUIRED)
-            ->addArgument('url', InputArgument::REQUIRED)
-        ;
+            ->addArgument('url', InputArgument::REQUIRED);
     }
 
     /**
@@ -75,6 +75,10 @@ class ScanCommand extends ContainerAwareCommand
             ->getContainer()
             ->get('downloadapp.scanners.weasyl.scanner');
 
-        $scanner->scan($input->getArgument('url'));
+        try {
+            $scanner->scan($input->getArgument('url'));
+        } catch (DownloadAlreadyExistsException $e) {
+            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+        }
     }
 }

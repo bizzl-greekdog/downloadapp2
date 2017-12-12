@@ -3,6 +3,7 @@
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
 use Benkle\Deviantart\Exceptions\ApiException;
+use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\Scanners\DeviantArtBundle\Service\Scanner;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -60,6 +61,8 @@ class ScanCommand extends ContainerAwareCommand
             } else {
                 throw $e;
             }
+        } catch (DownloadAlreadyExistsException $e) {
+            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
         }
         sleep(5); // Cooldown
     }

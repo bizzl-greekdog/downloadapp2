@@ -343,7 +343,11 @@ class Scanner
      * Fetch data from an app url.
      *
      * @param string $appUrl
-     * @throws \Exception
+     * @throws ApiException
+     * @throws DownloadAlreadyExistsException
+     * @throws NotADeviantArtPageException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scan(string $appUrl)
     {

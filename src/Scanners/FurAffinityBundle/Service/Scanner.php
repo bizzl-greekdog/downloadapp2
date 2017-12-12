@@ -225,7 +225,9 @@ class Scanner
      * Scan a furaffinity page.
      *
      * @param string $url
+     * @throws DownloadAlreadyExistsException
      * @throws NotAFurAffinityPageException
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function scan(string $url)
     {
