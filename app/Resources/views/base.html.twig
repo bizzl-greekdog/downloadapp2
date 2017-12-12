@@ -9,10 +9,10 @@
     </head>
     <body>
         <div id="wrapper">
-            <nav class="navbar navbar-inverse">
+            <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <span class="navbar-brand">{% block brand %}Welcome!{% endblock %}</span>
+                        <span class="navbar-brand">{% block brand %}Download App{% endblock %}</span>
                     </div>
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                         <ul class="nav navbar-nav navbar-right">
