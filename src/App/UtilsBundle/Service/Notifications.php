@@ -59,12 +59,15 @@ class Notifications
      * Send a notification.
      *
      * @param string $message
-     * @param int $priority
+     * @param string $urgency
      * @return Event
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
-    public function send(string $message, int $priority = NotificationEvent::PRIORITY_MIDDLE): Event
+    public function send(string $message, string $urgency = NotificationEvent::URGENCY_NORMAL): Event
     {
-        $notification = new NotificationEvent($this->currentUser->get(), $message, $priority);
+        $notification = new NotificationEvent($this->currentUser->get(), ['title' => 'Download App', 'message' => $message]);
+        $notification->setUrgency($urgency);
+        $notification->setSendable(in_array($urgency, [NotificationEvent::URGENCY_HIGH, NotificationEvent::URGENCY_NORMAL]));
         return $notification->dispatchTo($this->dispatcher);
     }
 
@@ -73,10 +76,11 @@ class Notifications
      *
      * @param string $message
      * @return Event
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function log(string $message): Event
     {
-        return $this->send($message, NotificationEvent::PRIORITY_LOW);
+        return $this->send($message, NotificationEvent::URGENCY_LOW);
     }
 
     /**
@@ -84,9 +88,10 @@ class Notifications
      *
      * @param string $message
      * @return Event
+     * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
     public function alert(string $message): Event
     {
-        return $this->send($message, NotificationEvent::PRIORITY_HIGH);
+        return $this->send($message, NotificationEvent::URGENCY_HIGH);
     }
 }

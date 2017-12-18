@@ -21,3 +21,7 @@ deviantart:
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
     prefix: /
+
+benkle_notifications:
+    resource: "@BenkleNotificationBundle/Resources/config/routing.yml"
+    prefix: /

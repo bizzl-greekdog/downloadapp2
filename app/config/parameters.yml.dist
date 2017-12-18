@@ -28,3 +28,8 @@ parameters:
     deviantart_secret: ~
     deviantart_id: ~
     base_url: ~
+
+    # VAPID data for notifications
+    vapid_pem: ~
+    vapid_private: ~
+    vapid_public: ~

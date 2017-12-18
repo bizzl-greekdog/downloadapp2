@@ -115,3 +115,12 @@ jms_job_queue:
             max_concurrent_jobs: 1
         scanners.furaffinity:
             max_concurrent_jobs: 4
+
+benkle_notification:
+    subscriptions:
+        provider: '@downloadapp.utils.notifications.subscriptions'
+    vapid:
+        subject: '%registration_mail%'
+        pemFile: '%vapid_pem%'
+        publicKey: '%vapid_public%'
+        privateKey: '%vapid_private%'

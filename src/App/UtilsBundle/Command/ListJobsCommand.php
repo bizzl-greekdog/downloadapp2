@@ -27,9 +27,6 @@ class ListJobsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $currentUser = $this
-            ->getContainer()
-            ->get('downloadapp.user.current');
         $user = $this
             ->getContainer()
             ->get('fos_user.user_provider.username')

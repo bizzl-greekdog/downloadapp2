@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8"/>
+        <meta name="x-vapid-public-key" content="{{ benkle_notifications_public_key }}"/>
         <title>{% block title %}Download App{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
         <link rel="stylesheet" href="{{ asset('build/app.css') }}"/>
@@ -27,6 +28,9 @@
             <main class="container-fluid">{% block body %}{% endblock %}</main>
         </div>
         <script src="{{ asset('build/app.js') }}"></script>
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED")  %}
+            <script src="{{ asset('bundles/benklenotification/register.js') }}"></script>
+        {% endif %}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

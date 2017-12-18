@@ -15,3 +15,9 @@ services:
         arguments:
             - '@downloadapp.user.current'
             - '@event_dispatcher'
+
+    downloadapp.utils.notifications.subscriptions:
+        class: DownloadApp\App\UtilsBundle\Service\SubscriptionProvider
+        arguments:
+            - '@downloadapp.user.current'
+            - '@doctrine.orm.entity_manager'
