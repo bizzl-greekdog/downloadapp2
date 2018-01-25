@@ -4,6 +4,7 @@ namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
 use Benkle\Deviantart\Exceptions\ApiException;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
+use DownloadApp\App\UtilsBundle\Listener\NotificationToOutputListener;
 use DownloadApp\Scanners\DeviantArtBundle\Service\Scanner;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -35,6 +36,10 @@ class ScanCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $eventDispatcher = $this
+            ->getContainer()
+            ->get('event_dispatcher');
+        $eventDispatcher->addSubscriber(new NotificationToOutputListener($output));
         $currentUser = $this
             ->getContainer()
             ->get('downloadapp.user.current');

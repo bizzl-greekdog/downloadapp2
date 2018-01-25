@@ -2,6 +2,7 @@
 
 namespace DownloadApp\Scanners\DeviantArtBundle\Command;
 
+use DownloadApp\App\UtilsBundle\Listener\NotificationToOutputListener;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,6 +32,10 @@ class WatchlistCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $eventDispatcher = $this
+            ->getContainer()
+            ->get('event_dispatcher');
+        $eventDispatcher->addSubscriber(new NotificationToOutputListener($output));
         $scanner = $this
             ->getContainer()
             ->get('downloadapp.scanners.deviantart.scanner');

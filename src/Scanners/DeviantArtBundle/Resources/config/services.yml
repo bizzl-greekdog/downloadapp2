@@ -7,6 +7,7 @@ services:
             - '@downloadapp.user.current'
             - '@downloadapp.downloads'
             - '@downloadapp.scanners.deviantart.scheduler'
+            - '@downloadapp.utils.notifications'
 
     downloadapp.scanners.deviantart.api:
         class: DownloadApp\Scanners\DeviantArtBundle\Service\ApiProvider

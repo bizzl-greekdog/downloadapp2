@@ -37,6 +37,7 @@ use DownloadApp\App\DownloadBundle\Entity\RemoteFile;
 use DownloadApp\App\DownloadBundle\Exceptions\DownloadAlreadyExistsException;
 use DownloadApp\App\DownloadBundle\Service\Downloads;
 use DownloadApp\App\UserBundle\Service\CurrentUser;
+use DownloadApp\App\UtilsBundle\Service\Notifications;
 use DownloadApp\Scanners\CoreBundle\Service\ScanScheduler;
 use DownloadApp\Scanners\DeviantArtBundle\Exception\NotADeviantArtPageException;
 use GuzzleHttp\Client;
@@ -65,6 +66,9 @@ class Scanner
     /** @var  ScanScheduler */
     private $scanScheduler;
 
+    /** @var Notifications */
+    private $notifications;
+
     /**
      * Scanner constructor.
      *
@@ -73,13 +77,15 @@ class Scanner
      * @param CurrentUser $currentUser
      * @param Downloads $downloader
      * @param ScanScheduler $scanScheduler
+     * @param Notifications $notifications
      */
     public function __construct(
         ApiProvider $apiProvider,
         Client $client,
         CurrentUser $currentUser,
         Downloads $downloader,
-        ScanScheduler $scanScheduler
+        ScanScheduler $scanScheduler,
+        Notifications $notifications
     )
     {
         $this->apiProvider = $apiProvider;
@@ -87,6 +93,7 @@ class Scanner
         $this->currentUser = $currentUser;
         $this->downloader = $downloader;
         $this->scanScheduler = $scanScheduler;
+        $this->notifications = $notifications;
     }
 
     /**
@@ -250,6 +257,8 @@ class Scanner
             ->downloader
             ->persist($download)
             ->schedule($download);
+
+        $this->notifications->log("{$username} by {$deviationMetaData->title} scanned and download scheduled");
     }
 
     /**
@@ -258,30 +267,38 @@ class Scanner
      * @param string $collectionId
      * @param string|null $username
      * @param int $offset
+     * @param int $total
      * @throws ApiException
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
-    public function scanCollection(string $collectionId, string $username = null, int $offset = 0)
+    public function scanCollection(string $collectionId, string $username = null, int $offset = 0, int $total = 0)
     {
         $collection = $this->apiProvider->getApi()->collections();
+        $silentEnd = false;
         try {
             do {
                 $response = $collection->getFolder($collectionId, $username, $offset, 20, true);
                 foreach ($response->results as $result) {
                     $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$result->deviationid}");
+                    $total++;
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
                     sleep(4);
                 }
+                $this->notifications->log("scanned up to {$offset} of collection {$collectionId}");
             } while ($response->has_more);
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
-                $this->scanCollection($collectionId, $username, $offset);
+                $this->scanCollection($collectionId, $username, $offset, $total);
+                $silentEnd = true;
             } else {
                 throw $e;
             }
+        }
+        if (!$silentEnd) {
+            $this->notifications->alert("Collection {$collectionId} contained a total of {$total} submissions, scans scheduled");
         }
     }
 
@@ -291,12 +308,14 @@ class Scanner
      * @param string $galleryId
      * @param string|null $username
      * @param int $offset
+     * @param int $total
      * @throws ApiException
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
-    public function scanGallery(string $galleryId, string $username = null, int $offset = 0)
+    public function scanGallery(string $galleryId, string $username = null, int $offset = 0, int $total = 0)
     {
         $gallery = $this->apiProvider->getApi()->gallery();
+        $silentEnd = false;
         try {
             do {
                 $response = $gallery->getFolder(
@@ -309,19 +328,25 @@ class Scanner
                 );
                 foreach ($response->results as $result) {
                     $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$result->deviationid}");
+                    $total++;
                 }
                 $offset = $response->next_offset;
                 if ($offset % 100 === 0) {
                     sleep(4);
                 }
+                $this->notifications->log("scanned up to {$offset} of gallery {$galleryId}");
             } while ($response->has_more);
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
                 $this->scanGallery($galleryId, $username, $offset);
+                $silentEnd = true;
             } else {
                 throw $e;
             }
+        }
+        if (!$silentEnd) {
+            $this->notifications->alert("Gallery {$galleryId} contained a total of {$total} submissions, scans scheduled");
         }
     }
 
@@ -380,13 +405,15 @@ class Scanner
      * Fetch the users watch list and schedule scans for deviantions.
      *
      * @param string|null $cursor
+     * @param int $total
      * @throws ApiException
      * @throws \DownloadApp\App\UserBundle\Exception\NoLoggedInUserException
      */
-    public function scanWatchlist(string $cursor = null)
+    public function scanWatchlist(string $cursor = null, int $total = 0)
     {
         $feed = $this->apiProvider->getApi()->feed();
         $iteration = 0;
+        $silentEnd = false;
         try {
             do {
                 $response = $feed->getHome($cursor, true);
@@ -396,20 +423,30 @@ class Scanner
                     if ($item->type === 'deviation_submitted') {
                         foreach ($item->deviations as $deviation) {
                             $this->scanScheduler->scheduleScan("DeviantArt://deviation/{$deviation->deviationid}");
+                            $total++;
                         }
                     }
                 }
+                $this->notifications->log("scanned watchlist, total so far is {$total}");
                 if ($iteration % 4 === 0) {
                     sleep(4);
+                }
+                if ($total > 1000) {
+                    break;
                 }
             } while ($response->has_more);
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
                 sleep(10);
-                $this->scanWatchlist($cursor);
+                $this->notifications->log($e->getMessage());
+                $this->scanWatchlist($cursor, $total);
+                $silentEnd = true;
             } else {
                 throw $e;
             }
+        }
+        if (!$silentEnd) {
+            $this->notifications->alert("Watchlist contained a total of {$total} submissions, scans scheduled");
         }
     }
 }
