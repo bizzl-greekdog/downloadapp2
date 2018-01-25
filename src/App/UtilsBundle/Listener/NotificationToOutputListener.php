@@ -30,6 +30,7 @@ namespace DownloadApp\App\UtilsBundle\Listener;
 
 use Benkle\NotificationBundle\Event\NotificationEvent;
 use Benkle\NotificationBundle\Listener\AbstractNotificationListener;
+use Benkle\NotificationBundle\Util\Payload;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -58,16 +59,18 @@ class NotificationToOutputListener extends AbstractNotificationListener
      */
     public function handleNotificationEvent(NotificationEvent $event)
     {
+        $payload = $event->getPayload();
+        $message = $payload instanceof Payload ? $payload->getBody() : json_encode($payload);
         switch ($event->getUrgency()) {
             case NotificationEvent::URGENCY_HIGH:
-                $this->output->writeln(sprintf('<info>%s</info>', json_encode($event->getPayload())));
+                $this->output->writeln(sprintf('<info>%s</info>', $message));
                 break;
             case NotificationEvent::URGENCY_LOW:
             case NotificationEvent::URGENCY_VERY_LOW:
-            $this->output->writeln(sprintf('<comment>%s</comment>', json_encode($event->getPayload())));
+                $this->output->writeln(sprintf('<comment>%s</comment>', $message));
                 break;
             default:
-                $this->output->writeln(json_encode($event->getPayload()));
+                $this->output->writeln($message);
         }
     }
 }

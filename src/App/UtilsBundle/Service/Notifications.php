@@ -65,9 +65,12 @@ class Notifications
      */
     public function send(string $message, string $urgency = NotificationEvent::URGENCY_NORMAL): Event
     {
-        $notification = new NotificationEvent($this->currentUser->get(), ['title' => 'Download App', 'message' => $message]);
+        $notification = new NotificationEvent($this->currentUser->get());
+        $notification->getPayload()
+                     ->setBody($message)
+                     ->setTitle('DownloadApp2');
         $notification->setUrgency($urgency);
-        $notification->setSendable(in_array($urgency, [NotificationEvent::URGENCY_HIGH, NotificationEvent::URGENCY_NORMAL]));
+        //$notification->setSendable(in_array($urgency, [NotificationEvent::URGENCY_HIGH, NotificationEvent::URGENCY_NORMAL]));
         return $notification->dispatchTo($this->dispatcher);
     }
 
