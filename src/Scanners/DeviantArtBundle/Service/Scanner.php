@@ -431,9 +431,6 @@ class Scanner
                 if ($iteration % 4 === 0) {
                     sleep(4);
                 }
-                if ($total > 1000) {
-                    break;
-                }
             } while ($response->has_more);
         } catch (ApiException $e) {
             if ($e->getCode() == 403) {
