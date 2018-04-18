@@ -1,0 +1,41 @@
+{% extends 'knp_menu.html.twig' %}
+
+{% block root %}
+    {% import 'knp_menu.html.twig' as macros %}
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            {{ item.label }}
+            <span class="caret"></span>
+        </a>
+        {% set listAttributes = item.childrenAttributes %}
+        {{ block('list') -}}
+    </li>
+{% endblock %}
+
+{% block list %}
+    {% import 'knp_menu.html.twig' as macros %}
+    {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
+        {% import _self as knp_menu %}
+        {% set listAttributes = listAttributes|merge({'class': 'dropdown-menu ' ~ (listAttributes.class is defined ? listAttributes.class : '')}) %}
+        <ul{{ macros.attributes(listAttributes) }}>
+            {{ block('children') }}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block spanElement %}
+    {% if item.label == '-' %}
+        <div class="dropdown-divider"></div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block label %}
+    {% if item.labelAttributes.glyphicon is defined %}
+        <span class="glyphicon glyphicon-{{ item.labelAttributes.glyphicon }}"></span>
+    {% else %}
+        <span class="glyphicon glyphicon-none"></span>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}

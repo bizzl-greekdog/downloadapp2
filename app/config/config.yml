@@ -93,7 +93,7 @@ deviantart:
     authentication:
         id: '%deviantart_id%'
         secret: '%deviantart_secret%'
-        redirectUri: '%base_url%/deviantart/authorize'
+        redirectUri: '%base_url%/scanners/deviantart/authorize'
     simpleToken:
         filename: '%kernel.project_dir%/var/deviantart_token.json'
     userToken:
@@ -124,3 +124,9 @@ benkle_notification:
         pemFile: '%vapid_pem%'
         publicKey: '%vapid_public%'
         privateKey: '%vapid_private%'
+
+knp_menu:
+    twig:
+        template: KnpMenuBundle::menu.html.twig
+    templating: false
+    default_renderer: twig

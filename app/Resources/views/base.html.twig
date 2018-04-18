@@ -19,8 +19,8 @@
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                         <ul class="nav navbar-nav navbar-right">
                             <li>
-                                <a href="{{ path('fos_user_security_logout') }}"><span class="glyphicon glyphicon-user"></span>
-                                    Logout</a></li>
+                                {{ knp_menu_render('settings', {'currentClass': 'active', 'template': 'menu/dropdown.html.twig'}) }}
+                            </li>
                         </ul>
                     {% endif %}
                 </div>

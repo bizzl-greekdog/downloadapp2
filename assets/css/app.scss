@@ -6,3 +6,8 @@ $brand-primary: darken(#428bca, 20%);
   font-family: monospace;
   white-space: pre;
 }
+
+.glyphicon-none:before {
+  content: "\2122";
+  color: transparent !important;
+}

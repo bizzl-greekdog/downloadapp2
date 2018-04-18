@@ -1,1 +1,18 @@
 services:
+    downloadapp.frontend.menus.settings:
+        class: DownloadApp\App\FrontendBundle\Menu\MenuBuilder
+        arguments:
+            - 'Settings'
+            - '@knp_menu.factory'
+        tags:
+            - name: downloadapp.menus.builder
+            - name: knp_menu.menu_builder
+              method: 'generateMenu'
+              alias: settings
+
+    downloadapp.frontend.menus.settings.logout:
+        class: DownloadApp\App\FrontendBundle\Menu\LogoutGenerator
+        tags:
+            - name: downloadapp.menus.generator
+              menu: downloadapp.frontend.menus.settings
+              priority: 0
