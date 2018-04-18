@@ -24,6 +24,7 @@ class AppKernel extends Kernel
             new JMS\JobQueueBundle\JMSJobQueueBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Benkle\NotificationBundle\BenkleNotificationBundle(),
+            new \Knp\Bundle\MenuBundle\KnpMenuBundle(),
             // Internal Bundles,
             new DownloadApp\App\FrontendBundle\FrontendBundle(),
             new DownloadApp\App\UtilsBundle\UtilsBundle(),

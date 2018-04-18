@@ -33,6 +33,7 @@ use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 /**
  * Class ApiProvider
+ *
  * @package DownloadApp\Scanners\DeviantArtBundle\Service
  */
 class ApiProvider
@@ -112,11 +113,22 @@ class ApiProvider
 
     /**
      * Get the API (and initialize if necessary).
+     *
      * @return Api
      */
     public function getApi(): Api
     {
         $this->initialize();
         return $this->api;
+    }
+
+    /**
+     * Check if there's a token.
+     *
+     * @return bool
+     */
+    public function hasToken(): bool
+    {
+        return $this->tokenProvider->getToken() !== null;
     }
 }

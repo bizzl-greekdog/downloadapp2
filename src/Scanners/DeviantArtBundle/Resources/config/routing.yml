@@ -5,3 +5,9 @@ deviantart_authorize:
         _controller: DeviantArtBundle:DeviantArt:authorize
     requirements:
         code: \w+
+
+deviantart_request_authorization:
+    path: /requestAuth
+    methods: [GET]
+    defaults:
+        _controller: DeviantArtBundle:DeviantArt:requestAuthorization

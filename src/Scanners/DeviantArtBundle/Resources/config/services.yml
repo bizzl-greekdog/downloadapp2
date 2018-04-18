@@ -47,3 +47,12 @@ services:
             - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Command\ScanCommand::NAME
             - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Command\WatchlistCommand::NAME
             - !php/const:\DownloadApp\Scanners\DeviantArtBundle\Service\Scanner::QUEUE
+
+    downloadapp.frontend.menus.settings.deviantart:
+        class: DownloadApp\Scanners\DeviantArtBundle\Menu\DeviantartGenerator
+        arguments:
+            - '@downloadapp.scanners.deviantart.api'
+        tags:
+            - name: downloadapp.menus.generator
+              menu: downloadapp.frontend.menus.settings
+              priority: 5
