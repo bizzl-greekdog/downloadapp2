@@ -258,7 +258,7 @@ class Scanner
             ->persist($download)
             ->schedule($download);
 
-        $this->notifications->log("{$username} by {$deviationMetaData->title} scanned and download scheduled");
+        $this->notifications->log("{$deviationMetaData->title} by {$username} scanned and download scheduled");
     }
 
     /**
