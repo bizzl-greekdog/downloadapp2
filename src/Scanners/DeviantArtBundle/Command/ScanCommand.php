@@ -58,7 +58,12 @@ class ScanCommand extends ContainerAwareCommand
         try {
             $scanner->scan($url);
         } catch (ApiException $e) {
-            if (in_array($e->getCode(), [403, 429]) && $input->hasOption('jms-job-id')) {
+            if (in_array(
+                    $e->getCode(), [
+                    403,
+                    429,
+                ]
+                ) && $input->hasOption('jms-job-id') && $input->getOption('jms-job-id') !== null) {
                 $thisJob = $jobs->find($input->getOption('jms-job-id'));
                 $jobs->reschedule($thisJob, '+1 minutes', true);
                 $jobs->pauseQueue(Scanner::QUEUE, 60, true);
