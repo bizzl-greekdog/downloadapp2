@@ -144,7 +144,7 @@ class Scanner
      */
     private function prepareRemoteFile(string $downloadUrl, string $referer, string $username, string &$origFilename, &$file)
     {
-        $origFilename = basename($downloadUrl);
+        $origFilename = basename(parse_url($downloadUrl, PHP_URL_PATH));
         $filename = $this->modifyFilename($origFilename, $username);
         $file = new RemoteFile();
         $file
