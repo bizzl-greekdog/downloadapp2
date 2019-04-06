@@ -37,7 +37,7 @@ use JMS\Serializer\Annotation as Serializer;
  *
  * @package Benkle\DownloadApp\DownloadBundle\Entity
  * @ORM\Entity()
- * @ORM\Table(name="download_file_content")
+ * @ORM\Table(name="download_files_content")
  */
 class ContentFile extends File
 {
